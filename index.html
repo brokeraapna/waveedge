@@ -1,10 +1,1867 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>WaveEdge</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WaveEdge.in — Elliott Wave Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#020c14;--s1:#061525;--s2:#0a1f30;--s3:#0f2840;
+  --border:#173348;--border2:#1e4060;
+  --cyan:#00e5ff;--cyan2:#00b8d4;--green:#00ff88;--gold:#ffca28;
+  --orange:#ff6d00;--red:#ff1744;--purple:#b388ff;--pink:#f48fb1;
+  --text:#dff0f8;--muted:#4d8099;--muted2:#2a5570;
+  --wave1:#00e5ff;--wave2:#ff6d00;--wave3:#00ff88;--wave4:#ffca28;--wave5:#f48fb1;
+  --waveA:#ff1744;--waveB:#b388ff;--waveC:#ff6d00;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden;cursor:crosshair;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.018) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0;}
+
+/* ─── PAGES ─── */
+.page{display:none;min-height:100vh;position:relative;z-index:1;}
+.page.active{display:block;}
+
+/* ─── NAV ─── */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:0 44px;height:64px;background:rgba(2,12,20,.92);backdrop-filter:blur(28px);border-bottom:1px solid var(--border);}
+.logo-wrap{display:flex;align-items:center;gap:11px;cursor:pointer;text-decoration:none;}
+.logo-svg{width:44px;height:44px;flex-shrink:0;}
+.logo-text{display:flex;flex-direction:column;line-height:1;}
+.logo-main{font-family:'Orbitron',monospace;font-size:18px;font-weight:900;color:var(--text);letter-spacing:2px;}
+.logo-main span{color:var(--cyan);}
+.logo-sub{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:3px;margin-top:2px;}
+.nav-links{display:flex;list-style:none;gap:6px;align-items:center;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:12px;font-weight:500;letter-spacing:1px;text-transform:uppercase;font-family:'Space Mono',monospace;transition:color .2s;cursor:pointer;padding:6px 12px;border-radius:4px;}
+.nav-links a:hover,.nav-links a.active-link{color:var(--cyan);}
+.nav-links a.active-link{background:rgba(0,229,255,.06);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--muted);padding:7px 18px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;border-radius:5px;cursor:pointer;transition:all .2s;}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan);}
+.btn-cta{background:linear-gradient(135deg,var(--cyan),var(--green));color:#000;border:none;padding:8px 22px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;border-radius:5px;cursor:pointer;transition:all .2s;}
+.btn-cta:hover{opacity:.88;transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,229,255,.3);}
+.user-pill{display:none;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--border);padding:5px 14px 5px 6px;border-radius:100px;cursor:pointer;}
+.u-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--green));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#000;}
+.u-nm{font-family:'Space Mono',monospace;font-size:11px;color:var(--text);}
+
+/* ─── COMMONS ─── */
+.wrap{max-width:1240px;margin:0 auto;padding:0 40px;}
+.sec{padding:90px 0;}
+.sec-lbl{font-family:'Space Mono',monospace;font-size:10px;color:var(--cyan);letter-spacing:3px;text-transform:uppercase;margin-bottom:14px;}
+.sec-title{font-family:'Orbitron',monospace;font-size:clamp(30px,4vw,50px);font-weight:900;line-height:1.05;letter-spacing:-1px;margin-bottom:18px;}
+.sec-title em{font-style:normal;color:var(--cyan);}
+.sec-desc{color:var(--muted);font-family:'Space Mono',monospace;font-size:13px;line-height:1.85;max-width:500px;margin-bottom:50px;}
+hr.div{border:none;border-top:1px solid var(--border);max-width:1240px;margin:0 auto;}
+.tag{display:inline-block;padding:3px 11px;border-radius:100px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;font-weight:700;}
+
+/* BUTTONS */
+.btn-lg{padding:14px 34px;font-size:15px;border-radius:6px;font-weight:700;cursor:pointer;transition:all .25s;font-family:'DM Sans',sans-serif;letter-spacing:.3px;}
+.btn-lg.primary{background:linear-gradient(135deg,var(--cyan),var(--green));color:#000;border:none;}
+.btn-lg.primary:hover{opacity:.85;transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,229,255,.3);}
+.btn-lg.outline{background:transparent;color:var(--text);border:1px solid var(--border2);}
+.btn-lg.outline:hover{border-color:var(--cyan);color:var(--cyan);}
+.btn-lg.gold{background:linear-gradient(135deg,var(--gold),var(--orange));color:#000;border:none;}
+.btn-lg.gold:hover{opacity:.85;transform:translateY(-2px);box-shadow:0 10px 30px rgba(255,202,40,.3);}
+
+/* PULSE */
+.pulse{width:7px;height:7px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;display:inline-block;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(1.5);}}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;right:28px;background:var(--s2);border:1px solid var(--cyan);color:var(--text);padding:13px 22px;border-radius:8px;font-family:'Space Mono',monospace;font-size:12px;z-index:9999;transform:translateY(70px);opacity:0;transition:all .3s;pointer-events:none;max-width:320px;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* WHATSAPP / TELEGRAM FLOATING */
+.float-btns{position:fixed;bottom:28px;left:28px;z-index:400;display:flex;flex-direction:column;gap:10px;}
+.float-btn{width:50px;height:50px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;transition:all .2s;text-decoration:none;}
+.float-btn:hover{transform:scale(1.12);}
+.wa-btn{background:#25D366;}
+.tg-btn{background:#0088cc;}
+
+/* ═══════════════════════════════════════════════════
+   HOME PAGE
+═══════════════════════════════════════════════════ */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 40px 50px;position:relative;overflow:hidden;}
+.hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:600px;height:300px;background:radial-gradient(ellipse,rgba(0,229,255,.08) 0%,transparent 70%);pointer-events:none;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,229,255,.07);border:1px solid rgba(0,229,255,.22);color:var(--cyan);padding:6px 18px;border-radius:100px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:32px;}
+.hero h1{font-family:'Orbitron',monospace;font-size:clamp(52px,9vw,108px);font-weight:900;line-height:.9;letter-spacing:-3px;margin-bottom:28px;}
+.hero h1 .l1{color:var(--text);}
+.hero h1 .l2{color:transparent;-webkit-text-stroke:1.5px var(--cyan);}
+.hero h1 .l3{background:linear-gradient(90deg,var(--cyan),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero-sub{max-width:560px;color:var(--muted);font-size:16px;line-height:1.75;margin-bottom:40px;font-family:'Space Mono',monospace;}
+.hero-actions{display:flex;gap:14px;margin-bottom:56px;flex-wrap:wrap;justify-content:center;}
+/* HERO WAVE SVG */
+.hero-chart-wrap{width:100%;max-width:940px;}
+.chart-frame{background:var(--s1);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.chart-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--border);background:var(--s2);}
+.chart-meta{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px;}
+.live-tag{display:flex;align-items:center;gap:7px;color:var(--green);font-family:'Space Mono',monospace;font-size:11px;}
+.chart-body{padding:20px 24px;}
+
+/* STATS */
+.stats-row{display:flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:0 40px 80px;}
+.stat-box{flex:1;padding:22px 26px;border-right:1px solid var(--border);background:var(--s1);transition:background .2s;}
+.stat-box:last-child{border-right:none;}
+.stat-box:hover{background:var(--s2);}
+.s-lbl{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:7px;}
+.s-val{font-family:'Orbitron',monospace;font-size:24px;font-weight:700;color:var(--cyan);line-height:1;margin-bottom:3px;}
+.s-sub{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted2);}
+
+/* FEATURES */
+.feat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:48px;}
+.feat-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:26px 22px;transition:all .3s;opacity:0;transform:translateY(18px);}
+.feat-card.visible{opacity:1;transform:translateY(0);}
+.feat-card:hover{border-color:rgba(0,229,255,.3);transform:translateY(-3px);}
+.fi{font-size:28px;margin-bottom:14px;display:block;}
+.ft{font-size:14px;font-weight:700;margin-bottom:8px;font-family:'DM Sans',sans-serif;}
+.fd{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);line-height:1.7;}
+
+/* PRICING */
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:48px;}
+.price-card{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:34px 28px;position:relative;transition:all .3s;}
+.price-card.feat{border-color:var(--cyan);background:rgba(0,229,255,.03);}
+.price-card.feat::before{content:'MOST POPULAR';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,var(--cyan),var(--green));color:#000;padding:4px 16px;border-radius:100px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;font-weight:700;white-space:nowrap;}
+.p-plan{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+.p-amt{font-family:'Orbitron',monospace;font-size:40px;font-weight:900;line-height:1;margin-bottom:3px;}
+.p-amt span{font-size:15px;color:var(--muted);font-weight:400;font-family:'DM Sans',sans-serif;}
+.p-period{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:24px;}
+.p-feats{list-style:none;margin-bottom:28px;display:flex;flex-direction:column;gap:9px;}
+.p-feats li{display:flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);}
+.p-feats li::before{content:'▸';color:var(--green);flex-shrink:0;}
+
+/* ═══════════════════════════════════════════════════
+   SCANNER PAGE
+═══════════════════════════════════════════════════ */
+.scanner-wrap{padding:90px 40px 60px;max-width:1280px;margin:0 auto;}
+.mkt-tabs{display:flex;gap:8px;margin-bottom:26px;flex-wrap:wrap;}
+.mkt-tab{background:var(--s1);border:1px solid var(--border);color:var(--muted);padding:9px 20px;border-radius:6px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:7px;}
+.mkt-tab.active{background:rgba(0,229,255,.08);border-color:var(--cyan);color:var(--cyan);}
+.sc-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:36px;}
+.sc-card{background:var(--s1);border:1px solid var(--border);border-radius:9px;padding:18px;cursor:pointer;transition:all .22s;position:relative;overflow:hidden;}
+.sc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--green));transform:scaleX(0);transform-origin:left;transition:transform .3s;}
+.sc-card:hover::before,.sc-card.sel::before{transform:scaleX(1);}
+.sc-card.sel{border-color:rgba(0,229,255,.35);background:rgba(0,229,255,.04);}
+.sc-card:hover{transform:translateY(-2px);}
+.sc-ico{font-size:20px;margin-bottom:10px;}
+.sc-nm{font-size:12px;font-weight:700;margin-bottom:5px;}
+.sc-ds{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);line-height:1.55;margin-bottom:10px;}
+/* Results table */
+.res-wrap{background:var(--s1);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.res-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--s2);}
+.res-title{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);}
+.f-btns{display:flex;gap:7px;}
+.f-btn{background:var(--s1);border:1px solid var(--border);color:var(--muted);padding:5px 13px;border-radius:4px;font-family:'Space Mono',monospace;font-size:10px;cursor:pointer;transition:all .15s;}
+.f-btn.active,.f-btn:hover{background:rgba(0,229,255,.08);border-color:var(--cyan);color:var(--cyan);}
+table.rt{width:100%;border-collapse:collapse;}
+table.rt thead tr{border-bottom:1px solid var(--border);}
+table.rt th{text-align:left;padding:12px 15px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:400;font-family:'Space Mono',monospace;}
+table.rt tbody tr{border-bottom:1px solid rgba(23,51,72,.4);transition:background .15s;cursor:pointer;}
+table.rt tbody tr:hover{background:var(--s2);}
+table.rt td{padding:14px 15px;vertical-align:middle;}
+.sym{font-weight:800;font-size:13px;font-family:'Space Mono',monospace;}
+.sym-n{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;margin-top:2px;}
+.mb{display:inline-block;padding:2px 8px;border-radius:3px;font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.5px;}
+.mb-nse{background:rgba(0,229,255,.1);color:var(--cyan);}
+.mb-cr{background:rgba(255,202,40,.1);color:var(--gold);}
+.mb-fx{background:rgba(179,136,255,.1);color:var(--purple);}
+.mb-us{background:rgba(0,255,136,.1);color:var(--green);}
+.wp{display:inline-flex;align-items:center;padding:3px 11px;border-radius:100px;font-size:11px;font-weight:700;font-family:'Space Mono',monospace;}
+.wp-i{background:rgba(0,229,255,.1);color:var(--cyan);border:1px solid rgba(0,229,255,.22);}
+.wp-c{background:rgba(255,109,0,.1);color:var(--orange);border:1px solid rgba(255,109,0,.22);}
+.wp-e{background:rgba(255,202,40,.1);color:var(--gold);border:1px solid rgba(255,202,40,.22);}
+.wp-a{background:rgba(179,136,255,.1);color:var(--purple);border:1px solid rgba(179,136,255,.22);}
+.conf-w{display:flex;align-items:center;gap:9px;}
+.c-track{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;min-width:70px;}
+.c-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));border-radius:2px;}
+.c-pct{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap;}
+.up{color:var(--green);font-family:'Space Mono',monospace;font-size:12px;font-weight:700;}
+.dn{color:var(--red);font-family:'Space Mono',monospace;font-size:12px;font-weight:700;}
+.tgt{font-family:'Space Mono',monospace;font-size:11px;color:var(--gold);}
+.a-btn{background:transparent;border:1px solid var(--border2);color:var(--muted);padding:5px 13px;border-radius:4px;font-family:'Space Mono',monospace;font-size:10px;cursor:pointer;transition:all .15s;}
+.a-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+
+/* ═══════════════════════════════════════════════════
+   THEORY PAGE
+═══════════════════════════════════════════════════ */
+.theory-page{padding:84px 0 60px;}
+/* Wave diagram */
+.wave-diagram-box{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:32px;margin-bottom:40px;}
+/* Pattern cards */
+.pattern-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:32px;}
+.pat-card{background:var(--s1);border:1px solid var(--border);border-radius:11px;padding:24px;transition:all .25s;}
+.pat-card:hover{border-color:rgba(0,229,255,.3);transform:translateY(-3px);}
+.pat-title{font-size:15px;font-weight:700;margin-bottom:8px;color:var(--cyan);font-family:'Orbitron',monospace;font-size:13px;}
+.pat-desc{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:14px;}
+/* Rules */
+.rules-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:32px;}
+.rule-card{background:var(--s1);border:1px solid var(--border);border-left:3px solid var(--cyan);border-radius:7px;padding:20px 22px;transition:all .2s;}
+.rule-card:hover{border-left-color:var(--green);background:var(--s2);transform:translateX(4px);}
+.r-num{font-family:'Space Mono',monospace;font-size:9px;color:var(--cyan);letter-spacing:2px;margin-bottom:5px;}
+.r-title{font-size:14px;font-weight:700;margin-bottom:5px;}
+.r-text{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);line-height:1.6;}
+/* Guidelines */
+.guide-card{background:var(--s1);border:1px solid var(--border);border-radius:9px;padding:20px 24px;margin-bottom:14px;display:flex;gap:16px;align-items:flex-start;transition:background .2s;}
+.guide-card:hover{background:var(--s2);}
+.g-icon{font-size:24px;flex-shrink:0;margin-top:2px;}
+.g-title{font-size:14px;font-weight:700;margin-bottom:5px;}
+.g-text{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);line-height:1.65;}
+/* Course */
+.course-grid{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:32px;}
+.course-card{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:30px;position:relative;overflow:hidden;transition:all .3s;}
+.course-card::after{content:'';position:absolute;top:0;right:0;width:120px;height:120px;background:radial-gradient(circle,rgba(0,229,255,.06),transparent);pointer-events:none;}
+.course-card:hover{border-color:rgba(255,202,40,.3);transform:translateY(-3px);}
+.course-badge{display:inline-block;background:linear-gradient(90deg,var(--gold),var(--orange));color:#000;padding:3px 12px;border-radius:100px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:14px;}
+.course-title{font-family:'Orbitron',monospace;font-size:16px;font-weight:700;margin-bottom:10px;line-height:1.3;}
+.course-price{font-family:'Orbitron',monospace;font-size:28px;font-weight:900;color:var(--gold);margin-bottom:4px;}
+.course-price span{font-size:13px;color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:400;}
+.course-desc{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:20px;}
+.course-modules{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:24px;}
+.course-modules li{display:flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);}
+.course-modules li::before{content:'◆';color:var(--gold);font-size:8px;}
+
+/* ═══════════════════════════════════════════════════
+   TRADINGVIEW PAGE
+═══════════════════════════════════════════════════ */
+.tv-page{padding:84px 0 40px;min-height:100vh;}
+.tv-wrap{padding:0 28px;max-width:100%;}
+.tv-header{display:flex;align-items:center;justify-content:space-between;padding:20px 0 18px;}
+.tv-title{font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:var(--text);}
+.tv-title span{color:var(--cyan);}
+.tv-widget-wrap{background:var(--s1);border:1px solid var(--border);border-radius:12px;overflow:hidden;height:calc(100vh - 150px);min-height:600px;}
+
+/* ═══════════════════════════════════════════════════
+   AUTH PAGE
+═══════════════════════════════════════════════════ */
+.auth-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:84px 20px 40px;}
+.auth-wrap{display:grid;grid-template-columns:1fr 1fr;max-width:980px;width:100%;background:var(--s1);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+.auth-left{padding:50px 46px;background:linear-gradient(145deg,rgba(0,229,255,.05),rgba(0,255,136,.03));border-right:1px solid var(--border);display:flex;flex-direction:column;justify-content:space-between;}
+.auth-logo{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;margin-bottom:32px;display:flex;align-items:center;gap:10px;}
+.auth-logo span{color:var(--cyan);}
+.auth-hl{font-family:'Orbitron',monospace;font-size:28px;font-weight:900;letter-spacing:-1px;line-height:1.1;margin-bottom:14px;}
+.auth-hl em{font-style:normal;color:var(--cyan);}
+.auth-tag{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);line-height:1.8;margin-bottom:32px;}
+.auth-feats{list-style:none;display:flex;flex-direction:column;gap:11px;}
+.auth-feats li{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);}
+.auth-feats li::before{content:'✦';color:var(--green);font-size:9px;}
+.auth-bot{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted2);margin-top:28px;}
+.auth-right{padding:50px 46px;display:flex;flex-direction:column;}
+.auth-tabs{display:flex;gap:0;border:1px solid var(--border);border-radius:7px;overflow:hidden;margin-bottom:32px;}
+.auth-tab{flex:1;background:var(--s2);border:none;color:var(--muted);padding:11px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;}
+.auth-tab.active{background:linear-gradient(135deg,var(--cyan),var(--green));color:#000;}
+.a-form{display:flex;flex-direction:column;gap:16px;}
+.f-grp{display:flex;flex-direction:column;gap:6px;}
+.f-lbl{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;}
+.f-inp{background:var(--s2);border:1px solid var(--border);color:var(--text);padding:12px 15px;border-radius:7px;font-family:'Space Mono',monospace;font-size:12px;outline:none;transition:border-color .2s;width:100%;}
+.f-inp:focus{border-color:var(--cyan);}
+.f-inp::placeholder{color:var(--muted2);}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.btn-auth{background:linear-gradient(135deg,var(--cyan),var(--green));color:#000;border:none;padding:13px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;border-radius:7px;cursor:pointer;transition:all .2s;margin-top:4px;}
+.btn-auth:hover{opacity:.85;box-shadow:0 8px 24px rgba(0,229,255,.3);}
+.a-div{display:flex;align-items:center;gap:12px;margin:4px 0;}
+.a-div::before,.a-div::after{content:'';flex:1;height:1px;background:var(--border);}
+.a-div span{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted2);}
+.soc-btns{display:flex;gap:10px;}
+.soc-btn{flex:1;background:var(--s2);border:1px solid var(--border);color:var(--text);padding:10px;border-radius:7px;font-family:'Space Mono',monospace;font-size:11px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px;}
+.soc-btn:hover{border-color:var(--border2);background:var(--s3);}
+.a-sw{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);text-align:center;margin-top:10px;}
+.a-sw a{color:var(--cyan);cursor:pointer;}
+.plan-sel{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.plan-opt{background:var(--s2);border:2px solid var(--border);border-radius:7px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .2s;}
+.plan-opt.sel{border-color:var(--cyan);background:rgba(0,229,255,.07);}
+.plan-opt-n{font-size:12px;font-weight:700;margin-bottom:3px;}
+.plan-opt-p{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);}
+
+/* FIBONACCI TABLE */
+.fib-row{display:flex;align-items:center;gap:14px;padding:11px 13px;border-radius:5px;transition:background .15s;}
+.fib-row:hover{background:var(--s2);}
+.fib-pct{font-family:'Space Mono',monospace;font-size:12px;color:var(--cyan);font-weight:700;width:56px;}
+.fib-tr{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.fib-fl{height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));border-radius:3px;}
+.fib-use{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);width:96px;text-align:right;}
+
+/* DEGREE TABLE */
+.dt{width:100%;border-collapse:collapse;}
+.dt th,.dt td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);font-family:'Space Mono',monospace;font-size:11px;}
+.dt th{color:var(--muted);font-size:9px;letter-spacing:2px;text-transform:uppercase;background:var(--s2);}
+.dt td:first-child{color:var(--cyan);font-weight:700;}
+.dt td:nth-child(3){color:var(--gold);}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ANIMATIONS */
+.fade-up{opacity:0;transform:translateY(20px);transition:opacity .5s ease,transform .5s ease;}
+.fade-up.visible{opacity:1;transform:translateY(0);}
+
+/* Glows */
+.glow-cyan{text-shadow:0 0 30px rgba(0,229,255,.4);}
+
+/* CONTACT STRIP */
+.contact-strip{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:32px 36px;display:flex;align-items:center;justify-content:space-between;margin-top:48px;gap:20px;flex-wrap:wrap;}
+.cs-text .cs-title{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;margin-bottom:6px;}
+.cs-text .cs-sub{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);}
+.cs-btns{display:flex;gap:12px;flex-wrap:wrap;}
+.wa-big{background:#25D366;color:#fff;border:none;padding:12px 24px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;text-decoration:none;transition:all .2s;}
+.wa-big:hover{opacity:.88;transform:translateY(-1px);}
+.tg-big{background:#0088cc;color:#fff;border:none;padding:12px 24px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;text-decoration:none;transition:all .2s;}
+.tg-big:hover{opacity:.88;transform:translateY(-1px);}
+</style>
 </head>
-<body style="font-family: Arial; text-align: center; margin-top: 100px;">
-  <h1>🚀 WaveEdge is Live</h1>
-  <p>Your website is now working on Vercel</p>
+<body>
+
+<!-- ─── FLOATING BUTTONS ─── -->
+<div class="float-btns">
+  <a href="https://wa.me/917715858526" target="_blank" class="float-btn wa-btn" title="WhatsApp Us">💬</a>
+  <a href="https://t.me/ewagaurav" target="_blank" class="float-btn tg-btn" title="Telegram">✈</a>
+</div>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <div class="logo-wrap" onclick="showPage('home')">
+    <!-- LOGO SVG -->
+    <svg class="logo-svg" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Hexagon background -->
+      <polygon points="22,2 40,12 40,32 22,42 4,32 4,12" fill="rgba(0,229,255,0.08)" stroke="rgba(0,229,255,0.35)" stroke-width="1.2"/>
+      <!-- Wave path -->
+      <path d="M8 28 L13 18 L18 23 L23 10 L28 20 L33 14 L38 16" stroke="url(#lg1)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <!-- Wave dots -->
+      <circle cx="13" cy="18" r="2.2" fill="#00e5ff"/>
+      <circle cx="23" cy="10" r="2.8" fill="#00ff88"/>
+      <circle cx="33" cy="14" r="2.2" fill="#ffca28"/>
+      <!-- Edge indicator triangle -->
+      <polygon points="22,4 26,11 18,11" fill="rgba(0,229,255,0.4)"/>
+      <defs>
+        <linearGradient id="lg1" x1="8" y1="20" x2="38" y2="20" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#00e5ff"/>
+          <stop offset="50%" stop-color="#00ff88"/>
+          <stop offset="100%" stop-color="#ffca28"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="logo-text">
+      <div class="logo-main">Wave<span>Edge</span></div>
+      <div class="logo-sub">.in · elliott wave intel</div>
+    </div>
+  </div>
+
+  <ul class="nav-links">
+    <li><a onclick="showPage('home')" id="nav-home" class="active-link">Home</a></li>
+    <li><a onclick="showPage('scanner')" id="nav-scanner">Scanner</a></li>
+    <li><a onclick="showPage('theory')" id="nav-theory">Theory & Course</a></li>
+    <li><a onclick="showPage('chart')" id="nav-chart">Live Chart</a></li>
+    <li><a onclick="showPage('blog')" id="nav-blog">Analysis</a></li>
+    <li><a onclick="scrollTo_('#pricing')" id="nav-pricing">Pricing</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <div id="user-pill" class="user-pill" onclick="logout()">
+      <div class="u-av" id="u-av">U</div>
+      <span class="u-nm" id="u-nm">User</span>
+    </div>
+    <button class="btn-ghost" id="nav-login" onclick="showPage('auth')">Log In</button>
+    <button class="btn-cta" id="nav-signup" onclick="showPage('auth');switchTab('signup')">Free Trial</button>
+  </div>
+</nav>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span id="t-msg"></span></div>
+
+<!-- ════════════════════════════════════════════════
+     HOME PAGE
+════════════════════════════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge"><div class="pulse"></div>AI-Powered • Real-Time • 4,200+ Symbols</div>
+    <h1>
+      <div class="l1">Decode</div>
+      <div class="l2">Market</div>
+      <div class="l3 glow-cyan">Waves.</div>
+    </h1>
+    <p class="hero-sub">Professional Elliott Wave analysis engine — scanning NSE, BSE, Crypto, Forex & US markets. Find the edge before the move begins.</p>
+    <div class="hero-actions">
+      <button class="btn-lg primary" onclick="showPage('scanner')">Launch Scanner →</button>
+      <button class="btn-lg outline" onclick="showPage('theory')">Learn Elliott Waves</button>
+      <button class="btn-lg gold" onclick="showPage('auth');switchTab('signup')">Start Free Trial</button>
+    </div>
+
+    <!-- HERO WAVE CHART -->
+    <div class="hero-chart-wrap">
+      <div class="chart-frame">
+        <div class="chart-hdr">
+          <span class="chart-meta">NIFTY50 · 1H · ELLIOTT WAVE OVERLAY</span>
+          <span class="live-tag"><div class="pulse"></div>SCANNING LIVE</span>
+        </div>
+        <div class="chart-body">
+          <svg viewBox="0 0 880 240" xmlns="http://www.w3.org/2000/svg" width="100%">
+            <defs>
+              <linearGradient id="hg1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#00e5ff"/><stop offset="100%" stop-color="#00ff88"/></linearGradient>
+            </defs>
+            <!-- Grid -->
+            <line x1="0" y1="60" x2="880" y2="60" stroke="#173348" stroke-width=".6" stroke-dasharray="4,5"/>
+            <line x1="0" y1="120" x2="880" y2="120" stroke="#173348" stroke-width=".6" stroke-dasharray="4,5"/>
+            <line x1="0" y1="180" x2="880" y2="180" stroke="#173348" stroke-width=".6" stroke-dasharray="4,5"/>
+            <!-- Candles -->
+            <g opacity=".5">
+              <rect x="16" y="188" width="7" height="22" fill="#ff1744"/><rect x="30" y="182" width="7" height="19" fill="#00ff88"/><rect x="44" y="172" width="7" height="20" fill="#00ff88"/><rect x="58" y="164" width="7" height="16" fill="#00ff88"/><rect x="72" y="168" width="7" height="17" fill="#ff1744"/><rect x="86" y="155" width="7" height="18" fill="#00ff88"/><rect x="100" y="143" width="7" height="20" fill="#00ff88"/><rect x="114" y="136" width="7" height="15" fill="#00ff88"/><rect x="128" y="143" width="7" height="19" fill="#ff1744"/><rect x="142" y="148" width="7" height="17" fill="#ff1744"/><rect x="156" y="134" width="7" height="20" fill="#00ff88"/><rect x="170" y="119" width="7" height="22" fill="#00ff88"/><rect x="184" y="112" width="7" height="18" fill="#00ff88"/><rect x="198" y="124" width="7" height="20" fill="#ff1744"/><rect x="212" y="119" width="7" height="15" fill="#ff1744"/><rect x="226" y="108" width="7" height="19" fill="#00ff88"/><rect x="240" y="93" width="7" height="22" fill="#00ff88"/><rect x="254" y="83" width="7" height="20" fill="#00ff88"/><rect x="268" y="88" width="7" height="17" fill="#ff1744"/><rect x="282" y="93" width="7" height="20" fill="#ff1744"/><rect x="296" y="88" width="7" height="18" fill="#00ff88"/><rect x="310" y="73" width="7" height="22" fill="#00ff88"/><rect x="324" y="58" width="7" height="20" fill="#00ff88"/><rect x="338" y="63" width="7" height="15" fill="#ff1744"/><rect x="352" y="68" width="7" height="18" fill="#ff1744"/><rect x="366" y="73" width="7" height="17" fill="#ff1744"/><rect x="380" y="81" width="7" height="20" fill="#ff1744"/><rect x="394" y="75" width="7" height="18" fill="#00ff88"/><rect x="408" y="65" width="7" height="22" fill="#00ff88"/><rect x="422" y="53" width="7" height="20" fill="#00ff88"/><rect x="436" y="58" width="7" height="15" fill="#ff1744"/><rect x="450" y="63" width="7" height="18" fill="#ff1744"/><rect x="464" y="58" width="7" height="17" fill="#00ff88"/><rect x="478" y="43" width="7" height="22" fill="#00ff88"/><rect x="492" y="35" width="7" height="20" fill="#00ff88"/><rect x="506" y="43" width="7" height="18" fill="#ff1744"/><rect x="520" y="48" width="7" height="17" fill="#ff1744"/><rect x="534" y="53" width="7" height="20" fill="#ff1744"/><rect x="548" y="61" width="7" height="18" fill="#ff1744"/><rect x="562" y="55" width="7" height="22" fill="#00ff88"/><rect x="576" y="43" width="7" height="20" fill="#00ff88"/><rect x="590" y="35" width="7" height="18" fill="#00ff88"/><rect x="604" y="39" width="7" height="15" fill="#ff1744"/><rect x="618" y="33" width="7" height="22" fill="#00ff88"/><rect x="632" y="25" width="7" height="20" fill="#00ff88"/><rect x="646" y="31" width="7" height="18" fill="#ff1744"/><rect x="660" y="26" width="7" height="20" fill="#00ff88"/><rect x="674" y="20" width="7" height="17" fill="#00ff88"/><rect x="688" y="24" width="7" height="18" fill="#ff1744"/><rect x="702" y="18" width="7" height="20" fill="#00ff88"/><rect x="716" y="14" width="7" height="18" fill="#00ff88"/><rect x="730" y="19" width="7" height="17" fill="#ff1744"/>
+              <!-- Post-wave5 correction -->
+              <rect x="744" y="24" width="7" height="20" fill="#ff1744"/><rect x="758" y="38" width="7" height="22" fill="#ff1744"/><rect x="772" y="50" width="7" height="18" fill="#ff1744"/><rect x="786" y="44" width="7" height="16" fill="#00ff88"/><rect x="800" y="54" width="7" height="20" fill="#ff1744"/><rect x="814" y="65" width="7" height="18" fill="#ff1744"/><rect x="828" y="73" width="7" height="22" fill="#ff1744"/><rect x="842" y="68" width="7" height="15" fill="#00ff88"/><rect x="856" y="76" width="7" height="18" fill="#ff1744"/>
+            </g>
+            <!-- Wave 1 -->
+            <line x1="20" y1="198" x2="128" y2="138" stroke="#00e5ff" stroke-width="2.8" stroke-linecap="round"/>
+            <!-- Wave 2 -->
+            <line x1="128" y1="138" x2="226" y2="152" stroke="#ff6d00" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="7,4"/>
+            <!-- Wave 3 -->
+            <line x1="226" y1="152" x2="330" y2="58" stroke="#00e5ff" stroke-width="3.2" stroke-linecap="round"/>
+            <!-- Wave 4 -->
+            <line x1="330" y1="58" x2="408" y2="80" stroke="#ff6d00" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="7,4"/>
+            <!-- Wave 5 -->
+            <line x1="408" y1="80" x2="498" y2="35" stroke="#ffca28" stroke-width="2.8" stroke-linecap="round"/>
+            <!-- Wave A -->
+            <line x1="498" y1="35" x2="580" y2="58" stroke="#ff1744" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- Wave B — proper bounce, partial retracement of A, does NOT exceed wave 5 high -->
+            <line x1="580" y1="58" x2="636" y2="38" stroke="#b388ff" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- Wave C — resumes down, below Wave A low -->
+            <line x1="636" y1="38" x2="858" y2="88" stroke="#ff6d00" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Dots -->
+            <circle cx="20" cy="198" r="5.5" fill="#061525" stroke="#00e5ff" stroke-width="2"/>
+            <circle cx="128" cy="138" r="5.5" fill="#061525" stroke="#00e5ff" stroke-width="2"/>
+            <circle cx="226" cy="152" r="5.5" fill="#061525" stroke="#ff6d00" stroke-width="2"/>
+            <circle cx="330" cy="58" r="5.5" fill="#061525" stroke="#00e5ff" stroke-width="2"/>
+            <circle cx="408" cy="80" r="5.5" fill="#061525" stroke="#ff6d00" stroke-width="2"/>
+            <circle cx="498" cy="35" r="5.5" fill="#061525" stroke="#ffca28" stroke-width="2"/>
+            <circle cx="580" cy="58" r="4.5" fill="#061525" stroke="#ff1744" stroke-width="2"/>
+            <circle cx="636" cy="38" r="4.5" fill="#061525" stroke="#b388ff" stroke-width="2"/>
+            <circle cx="858" cy="88" r="4.5" fill="#061525" stroke="#ff6d00" stroke-width="2"/>
+            <!-- Labels -->
+            <text x="62" y="120" fill="#00e5ff" font-family="Orbitron,monospace" font-size="15" font-weight="700">①</text>
+            <text x="162" y="142" fill="#ff6d00" font-family="Orbitron,monospace" font-size="15" font-weight="700">②</text>
+            <text x="268" y="74" fill="#00e5ff" font-family="Orbitron,monospace" font-size="15" font-weight="700">③</text>
+            <text x="356" y="66" fill="#ff6d00" font-family="Orbitron,monospace" font-size="15" font-weight="700">④</text>
+            <text x="440" y="50" fill="#ffca28" font-family="Orbitron,monospace" font-size="15" font-weight="700">⑤</text>
+            <text x="550" y="46" fill="#ff1744" font-family="Orbitron,monospace" font-size="14" font-weight="700">Ⓐ</text>
+            <text x="612" y="28" fill="#b388ff" font-family="Orbitron,monospace" font-size="14" font-weight="700">Ⓑ</text>
+            <text x="736" y="78" fill="#ff6d00" font-family="Orbitron,monospace" font-size="14" font-weight="700">Ⓒ</text>
+            <!-- Fib level at wave 5 -->
+            <line x1="498" y1="35" x2="880" y2="35" stroke="#ffca28" stroke-width=".8" stroke-dasharray="3,7" opacity=".4"/>
+            <text x="840" y="30" fill="#ffca28" font-family="Space Mono" font-size="9">100%</text>
+            <!-- Fib 61.8% -->
+            <line x1="498" y1="74" x2="880" y2="74" stroke="#ffca28" stroke-width=".6" stroke-dasharray="3,7" opacity=".25"/>
+            <text x="840" y="70" fill="#ffca28" font-family="Space Mono" font-size="9">61.8%</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="wrap">
+    <div class="stats-row">
+      <div class="stat-box"><div class="s-lbl">Symbols Scanned</div><div class="s-val">4,200+</div><div class="s-sub">NSE·BSE·CRYPTO·FOREX·US</div></div>
+      <div class="stat-box"><div class="s-lbl">Active Setups</div><div class="s-val">427</div><div class="s-sub">Live patterns now</div></div>
+      <div class="stat-box"><div class="s-lbl">Accuracy</div><div class="s-val" style="color:var(--green)">87.4%</div><div class="s-sub">Backtested 2010–2025</div></div>
+      <div class="stat-box"><div class="s-lbl">Scanners</div><div class="s-val" style="color:var(--gold)">14</div><div class="s-sub">All EW patterns</div></div>
+      <div class="stat-box"><div class="s-lbl">Timeframes</div><div class="s-val">9</div><div class="s-sub">1m → Monthly</div></div>
+    </div>
+  </div>
+
+  <hr class="div">
+
+  <!-- FEATURES -->
+  <div class="wrap sec">
+    <div class="sec-lbl">// Platform Features</div>
+    <h2 class="sec-title">Everything you need<br>to <em>trade the waves.</em></h2>
+    <div class="feat-grid">
+      <div class="feat-card fade-up"><span class="fi">🤖</span><div class="ft">AI Wave Detection</div><div class="fd">ML trained on 100k+ historical patterns. Auto-identifies all impulse and corrective structures.</div></div>
+      <div class="feat-card fade-up"><span class="fi">📡</span><div class="ft">Real-Time Alerts</div><div class="fd">SMS, email & push the moment a high-confidence wave setup appears on your watchlist.</div></div>
+      <div class="feat-card fade-up"><span class="fi">📐</span><div class="ft">14 Scanner Types</div><div class="fd">Wave 3 Breakout, Ending Diagonal, Zigzag, Triangle, Double Three & 9 more patterns.</div></div>
+      <div class="feat-card fade-up"><span class="fi">🌏</span><div class="ft">4 Global Markets</div><div class="fd">NSE/BSE, Crypto, Forex & US (NYSE/NASDAQ) — 4,200+ instruments in one dashboard.</div></div>
+      <div class="feat-card fade-up"><span class="fi">🎯</span><div class="ft">Fib Target Projection</div><div class="fd">Auto-calculates 1.618x, 2.618x price targets for every detected wave before it completes.</div></div>
+      <div class="feat-card fade-up"><span class="fi">📊</span><div class="ft">TradingView Charts</div><div class="fd">Full TradingView advanced chart with all indicators, tools and custom intervals built-in.</div></div>
+      <div class="feat-card fade-up"><span class="fi">🔗</span><div class="ft">Broker Integration</div><div class="fd">Zerodha, Angel One, ICICI Direct, Interactive Brokers & Binance via direct API.</div></div>
+      <div class="feat-card fade-up"><span class="fi">🎓</span><div class="ft">Online Course</div><div class="fd">Full Elliott Wave mastery course — from basics to advanced patterns & live trading setups.</div></div>
+    </div>
+  </div>
+
+  <hr class="div">
+
+  <!-- PRICING -->
+  <div class="wrap sec" id="pricing">
+    <div class="sec-lbl">// Pricing Plans</div>
+    <h2 class="sec-title">Start reading<br>the <em>market's language.</em></h2>
+    <p class="sec-desc">All plans include a 14-day free trial. No credit card required to start.</p>
+    <div class="price-grid">
+      <!-- STARTER -->
+      <div class="price-card">
+        <div class="p-plan">Starter</div>
+        <div class="p-amt">₹999<span>/mo</span></div>
+        <div class="p-period">Billed monthly · 14-day free trial</div>
+        <ul class="p-feats">
+          <li>500 symbols (NSE/BSE only)</li>
+          <li>5 core scanner types</li>
+          <li>Daily & 4H timeframes</li>
+          <li>Basic Fibonacci tools</li>
+          <li>Email alerts only</li>
+          <li>TradingView basic chart</li>
+        </ul>
+        <a href="https://rzp.io/rzp/uM8NL2F" target="_blank" style="text-decoration:none;display:block;">
+          <button class="btn-lg outline" style="width:100%;padding:12px;font-size:14px;">Pay ₹999/mo →</button>
+        </a>
+      </div>
+      <!-- PROFESSIONAL -->
+      <div class="price-card feat">
+        <div class="p-plan">Professional</div>
+        <div class="p-amt">₹2,499<span>/mo</span></div>
+        <div class="p-period">Billed monthly · 14-day free trial</div>
+        <ul class="p-feats">
+          <li>2,000+ symbols all markets</li>
+          <li>All 14 scanner types</li>
+          <li>All 9 timeframes (1m–Monthly)</li>
+          <li>Full Fibonacci suite & projections</li>
+          <li>SMS + Push + Email alerts</li>
+          <li>Wave degree correlation</li>
+          <li>Backtesting engine (15yr data)</li>
+          <li>TradingView advanced chart</li>
+        </ul>
+        <a href="https://rzp.io/rzp/VMsJmBwc" target="_blank" style="text-decoration:none;display:block;">
+          <button class="btn-lg primary" style="width:100%;padding:12px;font-size:14px;">Pay ₹2,499/mo →</button>
+        </a>
+      </div>
+      <!-- INSTITUTIONAL + COURSE -->
+      <div class="price-card">
+        <div class="p-plan">Institutional + Course</div>
+        <div class="p-amt">₹7,499<span>/mo</span></div>
+        <div class="p-period">Billed monthly · Includes EW course</div>
+        <ul class="p-feats">
+          <li>All 4,200+ global symbols</li>
+          <li>API access & custom rules</li>
+          <li>Broker API integration</li>
+          <li>Team seats (5 users)</li>
+          <li>Full Elliott Wave Online Course</li>
+          <li>Dedicated analyst support</li>
+          <li>Telegram & WhatsApp signals</li>
+          <li>White-label option</li>
+        </ul>
+        <a href="https://rzp.io/rzp/jhulNmN" target="_blank" style="text-decoration:none;display:block;">
+          <button class="btn-lg gold" style="width:100%;padding:12px;font-size:14px;">Pay ₹7,499/mo →</button>
+        </a>
+      </div>
+    </div>
+
+    <!-- CONTACT STRIP -->
+    <div class="contact-strip">
+      <div class="cs-text">
+        <div class="cs-title">Have questions? Talk to us directly.</div>
+        <div class="cs-sub">WhatsApp or Telegram — we reply within minutes during market hours.</div>
+      </div>
+      <div class="cs-btns">
+        <a href="https://wa.me/917715858526" target="_blank" class="wa-big">💬 WhatsApp +91-7715858526</a>
+        <a href="https://t.me/ewagaurav" target="_blank" class="tg-big">✈ Telegram @ewagaurav</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="border-top:1px solid var(--border);padding:32px 44px;display:flex;align-items:center;justify-content:space-between;max-width:1240px;margin:0 auto;">
+    <div>
+      <div style="font-family:'Orbitron',monospace;font-size:16px;font-weight:900;">Wave<span style="color:var(--cyan)">Edge</span><span style="color:var(--muted);font-size:12px;">.in</span></div>
+      <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted2);margin-top:5px;">© 2026 WaveEdge Analytics Pvt. Ltd. — Not financial advice.</div>
+    </div>
+    <div style="display:flex;gap:22px;">
+      <a style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);cursor:pointer;text-decoration:none;" href="https://t.me/ewagaurav" target="_blank">Telegram</a>
+      <a style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);cursor:pointer;text-decoration:none;" href="https://wa.me/917715858526" target="_blank">WhatsApp</a>
+      <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);cursor:pointer;">Privacy</span>
+      <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);cursor:pointer;">Terms</span>
+    </div>
+  </div>
+
+</div><!-- END HOME -->
+
+
+<!-- ════════════════════════════════════════════════
+     SCANNER PAGE
+════════════════════════════════════════════════ -->
+<div class="page" id="page-scanner">
+<div class="scanner-wrap">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">
+    <div>
+      <div class="sec-lbl" style="margin-bottom:4px;">// Live Wave Scanner</div>
+      <div style="font-family:'Orbitron',monospace;font-size:24px;font-weight:900;">Pattern <span style="color:var(--cyan)">Detection</span></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div id="api-status" class="live-tag" style="cursor:pointer;" onclick="showApiInfo()"><div class="pulse"></div><span id="api-status-txt">Demo Mode</span></div>
+      <button class="btn-cta" onclick="runScan()">↻ Refresh</button>
+    </div>
+  </div>
+
+  <!-- MARKET TABS -->
+  <div class="mkt-tabs">
+    <button class="mkt-tab active" onclick="setMkt('all',this)"><div class="pulse" style="width:6px;height:6px;background:var(--cyan)"></div>All Markets</button>
+    <button class="mkt-tab" onclick="setMkt('nse',this)"><div style="width:6px;height:6px;border-radius:50%;background:var(--cyan)"></div>NSE / BSE</button>
+    <button class="mkt-tab" onclick="setMkt('crypto',this)"><div style="width:6px;height:6px;border-radius:50%;background:var(--gold)"></div>Crypto</button>
+    <button class="mkt-tab" onclick="setMkt('forex',this)"><div style="width:6px;height:6px;border-radius:50%;background:var(--purple)"></div>Forex</button>
+    <button class="mkt-tab" onclick="setMkt('us',this)"><div style="width:6px;height:6px;border-radius:50%;background:var(--green)"></div>US Markets</button>
+  </div>
+
+  <!-- SCANNER CARDS -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+    <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">SELECT SCANNER — 14 TYPES</div>
+  </div>
+  <div class="sc-cards" id="sc-cards"></div>
+
+  <!-- RESULTS -->
+  <div class="res-wrap">
+    <div class="res-bar">
+      <span class="res-title" id="res-title">SHOWING ALL — 427 PATTERNS DETECTED</span>
+      <div class="f-btns">
+        <button class="f-btn active" onclick="setConf('all',this)">All</button>
+        <button class="f-btn" onclick="setConf('high',this)">80%+ Conf</button>
+        <button class="f-btn" onclick="setConf('med',this)">60–80%</button>
+        <button class="f-btn" onclick="setConf('new',this)">New Today</button>
+      </div>
+    </div>
+    <table class="rt">
+      <thead><tr><th>Symbol</th><th>Market</th><th>Pattern</th><th>Wave</th><th>Target</th><th>TF</th><th>Confidence</th><th>Chg</th><th></th></tr></thead>
+      <tbody id="sc-tbody"></tbody>
+    </table>
+  </div>
+</div>
+</div><!-- END SCANNER -->
+
+
+<!-- ════════════════════════════════════════════════
+     THEORY & COURSE PAGE
+════════════════════════════════════════════════ -->
+<div class="page" id="page-theory">
+<div class="wrap theory-page">
+
+  <div class="sec-lbl">// Elliott Wave — Complete Guide</div>
+  <h2 class="sec-title" style="margin-bottom:8px;">Theory, Rules,<br>Guidelines & <em>Patterns</em></h2>
+  <p style="font-family:'Space Mono',monospace;font-size:13px;color:var(--muted);margin-bottom:40px;max-width:600px;">Ralph Nelson Elliott (1871–1948) discovered that stock market prices unfold in specific patterns. These patterns reflect investor psychology and repeat at every scale of trend.</p>
+
+  <!-- THE MASTER WAVE DIAGRAM -->
+  <div class="wave-diagram-box">
+    <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--cyan);letter-spacing:2px;margin-bottom:18px;">THE COMPLETE 5-3 WAVE CYCLE</div>
+    <svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg" width="100%">
+      <defs>
+        <linearGradient id="wg1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#00e5ff"/><stop offset="100%" stop-color="#00ff88"/></linearGradient>
+      </defs>
+      <!-- Grid -->
+      <line x1="0" y1="75" x2="760" y2="75" stroke="#173348" stroke-width=".5" stroke-dasharray="4,5"/>
+      <line x1="0" y1="150" x2="760" y2="150" stroke="#173348" stroke-width=".5" stroke-dasharray="4,5"/>
+      <line x1="0" y1="225" x2="760" y2="225" stroke="#173348" stroke-width=".5" stroke-dasharray="4,5"/>
+      <line x1="0" y1="270" x2="760" y2="270" stroke="#173348" stroke-width="1"/>
+
+      <!-- IMPULSE WAVES -->
+      <!-- Wave 0→1 -->
+      <line x1="60" y1="248" x2="140" y2="110" stroke="#00e5ff" stroke-width="3" stroke-linecap="round"/>
+      <!-- Wave 1→2 (corrective, dashed) -->
+      <line x1="140" y1="110" x2="200" y2="178" stroke="#ff6d00" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="8,5"/>
+      <!-- Wave 2→3 (longest impulse) -->
+      <line x1="200" y1="178" x2="320" y2="52" stroke="#00e5ff" stroke-width="3.5" stroke-linecap="round"/>
+      <!-- Wave 3→4 (corrective, dashed) -->
+      <line x1="320" y1="52" x2="390" y2="118" stroke="#ff6d00" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="8,5"/>
+      <!-- Wave 4→5 -->
+      <line x1="390" y1="118" x2="480" y2="36" stroke="#ffca28" stroke-width="3" stroke-linecap="round"/>
+
+      <!-- CORRECTIVE WAVES (ABC) -->
+      <!-- Wave A -->
+      <line x1="480" y1="36" x2="555" y2="108" stroke="#ff1744" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- Wave B — PROPER: partial retracement of A, does NOT exceed Wave 5 high at y=36 -->
+      <line x1="555" y1="108" x2="600" y2="68" stroke="#b388ff" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- Wave C — goes below Wave A low (y=108), completing the correction -->
+      <line x1="600" y1="68" x2="700" y2="165" stroke="#ff6d00" stroke-width="2.8" stroke-linecap="round"/>
+
+      <!-- DOTS -->
+      <circle cx="60" cy="248" r="6" fill="#0a1f30" stroke="#00e5ff" stroke-width="2.2"/>
+      <circle cx="140" cy="110" r="6" fill="#0a1f30" stroke="#00e5ff" stroke-width="2.2"/>
+      <circle cx="200" cy="178" r="6" fill="#0a1f30" stroke="#ff6d00" stroke-width="2.2"/>
+      <circle cx="320" cy="52" r="6" fill="#0a1f30" stroke="#00e5ff" stroke-width="2.5"/>
+      <circle cx="390" cy="118" r="6" fill="#0a1f30" stroke="#ff6d00" stroke-width="2.2"/>
+      <circle cx="480" cy="36" r="6" fill="#0a1f30" stroke="#ffca28" stroke-width="2.2"/>
+      <circle cx="555" cy="108" r="5" fill="#0a1f30" stroke="#ff1744" stroke-width="2"/>
+      <circle cx="600" cy="68" r="5" fill="#0a1f30" stroke="#b388ff" stroke-width="2"/>
+      <circle cx="700" cy="165" r="5" fill="#0a1f30" stroke="#ff6d00" stroke-width="2"/>
+
+      <!-- LABELS -->
+      <text x="46" y="266" fill="#4d8099" font-family="Space Mono" font-size="14" font-weight="700">0</text>
+      <text x="132" y="100" fill="#00e5ff" font-family="Orbitron,monospace" font-size="16" font-weight="700">1</text>
+      <text x="192" y="198" fill="#ff6d00" font-family="Orbitron,monospace" font-size="16" font-weight="700">2</text>
+      <text x="312" y="42" fill="#00e5ff" font-family="Orbitron,monospace" font-size="16" font-weight="700">3</text>
+      <text x="382" y="138" fill="#ff6d00" font-family="Orbitron,monospace" font-size="16" font-weight="700">4</text>
+      <text x="472" y="26" fill="#ffca28" font-family="Orbitron,monospace" font-size="16" font-weight="700">5</text>
+      <text x="547" y="128" fill="#ff1744" font-family="Orbitron,monospace" font-size="15" font-weight="700">A</text>
+      <text x="592" y="58" fill="#b388ff" font-family="Orbitron,monospace" font-size="15" font-weight="700">B</text>
+      <text x="692" y="185" fill="#ff6d00" font-family="Orbitron,monospace" font-size="15" font-weight="700">C</text>
+
+      <!-- ANNOTATIONS -->
+      <text x="88" y="185" fill="#00e5ff" font-family="Space Mono" font-size="9" opacity=".6">IMPULSE</text>
+      <text x="156" y="148" fill="#ff6d00" font-family="Space Mono" font-size="9" opacity=".6">CORR.</text>
+      <text x="240" y="108" fill="#00e5ff" font-family="Space Mono" font-size="9" opacity=".6">LONGEST</text>
+      <text x="628" y="115" fill="#ff6d00" font-family="Space Mono" font-size="9" opacity=".6">CORRECTION</text>
+
+      <!-- Wave B annotation -->
+      <text x="570" y="62" fill="#b388ff" font-family="Space Mono" font-size="9" opacity=".8">B retraces</text>
+      <text x="570" y="72" fill="#b388ff" font-family="Space Mono" font-size="9" opacity=".8">38–62% of A</text>
+
+      <!-- Fib level guides -->
+      <line x1="480" y1="36" x2="720" y2="36" stroke="#ffca28" stroke-width=".7" stroke-dasharray="3,7" opacity=".35"/>
+      <text x="722" y="32" fill="#ffca28" font-family="Space Mono" font-size="9">W5 high</text>
+      <line x1="555" y1="108" x2="720" y2="108" stroke="#ff1744" stroke-width=".7" stroke-dasharray="3,7" opacity=".25"/>
+      <text x="722" y="104" fill="#ff1744" font-family="Space Mono" font-size="9">A low</text>
+
+      <!-- Legend -->
+      <rect x="20" y="278" width="8" height="8" fill="#00e5ff" rx="4"/>
+      <text x="32" y="287" fill="#4d8099" font-family="Space Mono" font-size="10">Impulse (1,3,5)</text>
+      <rect x="150" y="278" width="8" height="8" fill="#ff6d00" rx="4"/>
+      <text x="162" y="287" fill="#4d8099" font-family="Space Mono" font-size="10">Corrective (2,4)</text>
+      <rect x="300" y="278" width="8" height="8" fill="#ffca28" rx="4"/>
+      <text x="312" y="287" fill="#4d8099" font-family="Space Mono" font-size="10">Wave 5</text>
+      <rect x="390" y="278" width="8" height="8" fill="#ff1744" rx="4"/>
+      <text x="402" y="287" fill="#4d8099" font-family="Space Mono" font-size="10">Wave A</text>
+      <rect x="462" y="278" width="8" height="8" fill="#b388ff" rx="4"/>
+      <text x="474" y="287" fill="#4d8099" font-family="Space Mono" font-size="10">Wave B</text>
+      <rect x="540" y="278" width="8" height="8" fill="#ff6d00" rx="4"/>
+      <text x="552" y="287" fill="#4d8099" font-family="Space Mono" font-size="10">Wave C</text>
+    </svg>
+  </div>
+
+  <!-- RULES -->
+  <div class="sec-lbl">// The 3 Absolute Rules</div>
+  <div class="rules-grid">
+    <div class="rule-card"><div class="r-num">RULE 01 — WAVE 2</div><div class="r-title">Never Retraces Wave 1 Fully</div><div class="r-text">Wave 2 corrects Wave 1 but can NEVER retrace 100% or more of Wave 1. If it does, the wave count is incorrect and must be re-labeled.</div></div>
+    <div class="rule-card"><div class="r-num">RULE 02 — WAVE 3</div><div class="r-title">Never the Shortest Impulse</div><div class="r-text">Wave 3 is never the shortest among Waves 1, 3, and 5. It is almost always the longest and the most powerful with high volume.</div></div>
+    <div class="rule-card"><div class="r-num">RULE 03 — WAVE 4</div><div class="r-title">No Price Overlap with Wave 1</div><div class="r-text">Wave 4 cannot enter the price territory of Wave 1 in a standard impulse. An exception exists only in Diagonal Triangle patterns.</div></div>
+    <div class="rule-card" style="border-left-color:var(--gold)"><div class="r-num">CORRECTIVE — WAVE B</div><div class="r-title">B Never Exceeds Wave 5 High</div><div class="r-text">In a standard ABC correction, Wave B is a counter-trend bounce that retraces 38%–78% of Wave A. It must NOT exceed the origin of Wave A (Wave 5 high in a bull market).</div></div>
+  </div>
+
+  <!-- GUIDELINES -->
+  <div style="margin-top:48px;">
+    <div class="sec-lbl">// Guidelines (Not Rules)</div>
+    <h3 style="font-family:'Orbitron',monospace;font-size:18px;font-weight:700;margin-bottom:24px;">Trading <em style="font-style:normal;color:var(--cyan)">Guidelines</em></h3>
+    <div class="guide-card"><div class="g-icon">🔄</div><div><div class="g-title">Principle of Alternation</div><div class="g-text">If Wave 2 is sharp (zigzag), Wave 4 will be sideways (flat or triangle) — and vice versa. This helps anticipate the correction type before it forms.</div></div></div>
+    <div class="guide-card"><div class="g-icon">📏</div><div><div class="g-title">Wave 3 Extension</div><div class="g-text">Wave 3 is most commonly 161.8% of Wave 1. Extended Wave 3s can reach 261.8% or even 423.6% of Wave 1 in strong trending markets.</div></div></div>
+    <div class="guide-card"><div class="g-icon">🎯</div><div><div class="g-title">Wave 4 Target Zone</div><div class="g-text">Wave 4 typically retraces 23.6%–38.2% of Wave 3. The 4th wave frequently ends near the price territory of the prior Wave 4 of one lower degree.</div></div></div>
+    <div class="guide-card"><div class="g-icon">⚖️</div><div><div class="g-title">Wave 5 & Equality</div><div class="g-text">Wave 5 is often equal in length to Wave 1, or travels 61.8% of the distance covered by Waves 1 through 3. Watch for momentum divergence at Wave 5 tops.</div></div></div>
+    <div class="guide-card"><div class="g-icon">🌊</div><div><div class="g-title">Fibonacci Relationships</div><div class="g-text">Elliott Wave and Fibonacci are inseparable. Every wave has a Fibonacci relationship to its adjacent wave — retracements of 38.2%, 50%, 61.8% and extensions of 100%, 161.8%, 261.8%.</div></div></div>
+  </div>
+
+  <!-- PATTERNS -->
+  <div style="margin-top:48px;">
+    <div class="sec-lbl">// Elliott Wave Patterns</div>
+    <h3 style="font-family:'Orbitron',monospace;font-size:18px;font-weight:700;margin-bottom:24px;">All <em style="font-style:normal;color:var(--cyan)">EW Patterns</em></h3>
+    <div class="pattern-grid">
+      <!-- Impulse -->
+      <div class="pat-card">
+        <svg viewBox="0 0 200 120" width="100%" style="margin-bottom:14px;">
+          <line x1="20" y1="100" x2="55" y2="45" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="55" y1="45" x2="80" y2="72" stroke="#ff6d00" stroke-width="2" stroke-linecap="round" stroke-dasharray="5,3"/>
+          <line x1="80" y1="72" x2="125" y2="20" stroke="#00e5ff" stroke-width="3" stroke-linecap="round"/>
+          <line x1="125" y1="20" x2="150" y2="50" stroke="#ff6d00" stroke-width="2" stroke-linecap="round" stroke-dasharray="5,3"/>
+          <line x1="150" y1="50" x2="185" y2="15" stroke="#ffca28" stroke-width="2.5" stroke-linecap="round"/>
+          <text x="18" y="115" fill="#00e5ff" font-family="Space Mono" font-size="11">1</text>
+          <text x="74" y="90" fill="#ff6d00" font-family="Space Mono" font-size="11">2</text>
+          <text x="120" y="14" fill="#00e5ff" font-family="Space Mono" font-size="11">3</text>
+          <text x="144" y="68" fill="#ff6d00" font-family="Space Mono" font-size="11">4</text>
+          <text x="180" y="11" fill="#ffca28" font-family="Space Mono" font-size="11">5</text>
+        </svg>
+        <div class="pat-title">Standard Impulse</div>
+        <div class="pat-desc">The classic 5-wave motive pattern driving the primary trend. Waves 1, 3, 5 are impulses; Waves 2, 4 are corrections. Wave 3 is always the strongest.</div>
+        <span class="tag" style="background:rgba(0,229,255,.1);color:var(--cyan);border:1px solid rgba(0,229,255,.2);">MOTIVE</span>
+      </div>
+      <!-- Zigzag -->
+      <div class="pat-card">
+        <svg viewBox="0 0 200 120" width="100%" style="margin-bottom:14px;">
+          <line x1="20" y1="20" x2="80" y2="100" stroke="#ff1744" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="80" y1="100" x2="120" y2="50" stroke="#b388ff" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="120" y1="50" x2="185" y2="110" stroke="#ff6d00" stroke-width="2.5" stroke-linecap="round"/>
+          <text x="14" y="16" fill="#ff1744" font-family="Space Mono" font-size="13">A</text>
+          <text x="114" y="44" fill="#b388ff" font-family="Space Mono" font-size="13">B</text>
+          <text x="178" y="118" fill="#ff6d00" font-family="Space Mono" font-size="13">C</text>
+          <text x="60" y="88" fill="#4d8099" font-family="Space Mono" font-size="9">5-wave</text>
+          <text x="96" y="52" fill="#4d8099" font-family="Space Mono" font-size="9">3-wave</text>
+          <text x="138" y="78" fill="#4d8099" font-family="Space Mono" font-size="9">5-wave</text>
+        </svg>
+        <div class="pat-title">Zigzag (5-3-5)</div>
+        <div class="pat-desc">Sharp corrective pattern (5-3-5). Wave B retraces less than 75% of A. Wave C usually equals Wave A. Common in Wave 2 corrections.</div>
+        <span class="tag" style="background:rgba(255,23,68,.1);color:var(--red);border:1px solid rgba(255,23,68,.2);">CORRECTIVE</span>
+      </div>
+      <!-- Flat -->
+      <div class="pat-card">
+        <svg viewBox="0 0 200 120" width="100%" style="margin-bottom:14px;">
+          <line x1="20" y1="30" x2="70" y2="95" stroke="#ff1744" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="70" y1="95" x2="130" y2="28" stroke="#b388ff" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="130" y1="28" x2="185" y2="96" stroke="#ff6d00" stroke-width="2.5" stroke-linecap="round"/>
+          <text x="14" y="26" fill="#ff1744" font-family="Space Mono" font-size="13">A</text>
+          <text x="124" y="22" fill="#b388ff" font-family="Space Mono" font-size="13">B</text>
+          <text x="178" y="114" fill="#ff6d00" font-family="Space Mono" font-size="13">C</text>
+          <line x1="20" y1="30" x2="185" y2="30" stroke="#173348" stroke-width=".7" stroke-dasharray="4,4"/>
+          <line x1="20" y1="96" x2="185" y2="96" stroke="#173348" stroke-width=".7" stroke-dasharray="4,4"/>
+        </svg>
+        <div class="pat-title">Flat (3-3-5)</div>
+        <div class="pat-desc">Sideways correction (3-3-5). Wave B retraces nearly 100% of Wave A. Common in Wave 4. Three sub-types: Regular, Expanded, Running Flat.</div>
+        <span class="tag" style="background:rgba(255,23,68,.1);color:var(--red);border:1px solid rgba(255,23,68,.2);">CORRECTIVE</span>
+      </div>
+      <!-- Triangle -->
+      <div class="pat-card">
+        <svg viewBox="0 0 200 120" width="100%" style="margin-bottom:14px;">
+          <line x1="20" y1="20" x2="65" y2="90" stroke="#ffca28" stroke-width="2" stroke-linecap="round"/>
+          <line x1="65" y1="90" x2="100" y2="38" stroke="#ffca28" stroke-width="2" stroke-linecap="round"/>
+          <line x1="100" y1="38" x2="135" y2="78" stroke="#ffca28" stroke-width="2" stroke-linecap="round"/>
+          <line x1="135" y1="78" x2="162" y2="52" stroke="#ffca28" stroke-width="2" stroke-linecap="round"/>
+          <line x1="162" y1="52" x2="185" y2="65" stroke="#ffca28" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- converging lines -->
+          <line x1="20" y1="20" x2="185" y2="52" stroke="#173348" stroke-width=".8" stroke-dasharray="4,4"/>
+          <line x1="65" y1="90" x2="185" y2="65" stroke="#173348" stroke-width=".8" stroke-dasharray="4,4"/>
+          <text x="14" y="16" fill="#ffca28" font-family="Space Mono" font-size="10">A</text><text x="59" y="106" fill="#ffca28" font-family="Space Mono" font-size="10">B</text><text x="94" y="34" fill="#ffca28" font-family="Space Mono" font-size="10">C</text><text x="130" y="94" fill="#ffca28" font-family="Space Mono" font-size="10">D</text><text x="156" y="48" fill="#ffca28" font-family="Space Mono" font-size="10">E</text>
+        </svg>
+        <div class="pat-title">Triangle (3-3-3-3-3)</div>
+        <div class="pat-desc">Five 3-wave structures (ABCDE) forming converging trendlines. Contracting, Expanding, Ascending and Descending types. Appears in Wave 4 or Wave B.</div>
+        <span class="tag" style="background:rgba(255,202,40,.1);color:var(--gold);border:1px solid rgba(255,202,40,.2);">TRIANGLE</span>
+      </div>
+      <!-- Ending Diagonal -->
+      <div class="pat-card">
+        <svg viewBox="0 0 200 120" width="100%" style="margin-bottom:14px;">
+          <line x1="20" y1="100" x2="60" y2="48" stroke="#00ff88" stroke-width="2" stroke-linecap="round"/>
+          <line x1="60" y1="48" x2="90" y2="66" stroke="#ff6d00" stroke-width="2" stroke-linecap="round" stroke-dasharray="5,3"/>
+          <line x1="90" y1="66" x2="130" y2="30" stroke="#00ff88" stroke-width="2" stroke-linecap="round"/>
+          <line x1="130" y1="30" x2="155" y2="46" stroke="#ff6d00" stroke-width="2" stroke-linecap="round" stroke-dasharray="5,3"/>
+          <line x1="155" y1="46" x2="185" y2="16" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- wedge lines -->
+          <line x1="20" y1="100" x2="185" y2="46" stroke="#173348" stroke-width=".7" stroke-dasharray="4,5"/>
+          <line x1="60" y1="48" x2="185" y2="16" stroke="#173348" stroke-width=".7" stroke-dasharray="4,5"/>
+          <text x="14" y="116" fill="#00ff88" font-family="Space Mono" font-size="11">1</text><text x="84" y="84" fill="#ff6d00" font-family="Space Mono" font-size="11">2</text><text x="124" y="24" fill="#00ff88" font-family="Space Mono" font-size="11">3</text><text x="149" y="62" fill="#ff6d00" font-family="Space Mono" font-size="11">4</text><text x="178" y="12" fill="#00ff88" font-family="Space Mono" font-size="11">5</text>
+        </svg>
+        <div class="pat-title">Ending Diagonal (Wedge)</div>
+        <div class="pat-desc">A wedge-shaped pattern with overlapping waves appearing at the end of Wave 5 or Wave C. Signals trend exhaustion and impending sharp reversal.</div>
+        <span class="tag" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.2);">REVERSAL</span>
+      </div>
+      <!-- Double Three -->
+      <div class="pat-card">
+        <svg viewBox="0 0 200 120" width="100%" style="margin-bottom:14px;">
+          <!-- W -->
+          <line x1="20" y1="30" x2="45" y2="90" stroke="#ff1744" stroke-width="2" stroke-linecap="round"/>
+          <line x1="45" y1="90" x2="65" y2="55" stroke="#b388ff" stroke-width="2" stroke-linecap="round"/>
+          <line x1="65" y1="55" x2="90" y2="95" stroke="#ff6d00" stroke-width="2" stroke-linecap="round"/>
+          <!-- X connector -->
+          <line x1="90" y1="95" x2="115" y2="50" stroke="#00e5ff" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="5,3"/>
+          <!-- Y -->
+          <line x1="115" y1="50" x2="140" y2="100" stroke="#ff1744" stroke-width="2" stroke-linecap="round"/>
+          <line x1="140" y1="100" x2="162" y2="65" stroke="#b388ff" stroke-width="2" stroke-linecap="round"/>
+          <line x1="162" y1="65" x2="185" y2="105" stroke="#ff6d00" stroke-width="2" stroke-linecap="round"/>
+          <text x="14" y="26" fill="#4d8099" font-family="Space Mono" font-size="10">W</text>
+          <text x="108" y="44" fill="#00e5ff" font-family="Space Mono" font-size="10">X</text>
+          <text x="178" y="100" fill="#4d8099" font-family="Space Mono" font-size="10">Y</text>
+        </svg>
+        <div class="pat-title">Double Three (W-X-Y)</div>
+        <div class="pat-desc">Two corrective patterns connected by an X wave. Complex correction that takes more time and can mislead traders expecting trend resumption.</div>
+        <span class="tag" style="background:rgba(179,136,255,.1);color:var(--purple);border:1px solid rgba(179,136,255,.2);">COMPLEX</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIBONACCI REFERENCE -->
+  <div style="margin-top:56px;display:grid;grid-template-columns:1fr 1fr;gap:32px;">
+    <div>
+      <div class="sec-lbl">// Fibonacci Ratios</div>
+      <h3 style="font-family:'Orbitron',monospace;font-size:17px;font-weight:700;margin-bottom:22px;">Key <em style="font-style:normal;color:var(--cyan)">Levels</em></h3>
+      <div class="fib-row"><div class="fib-pct">23.6%</div><div class="fib-tr"><div class="fib-fl" style="width:23.6%"></div></div><div class="fib-use">Wave 4 shallow</div></div>
+      <div class="fib-row"><div class="fib-pct">38.2%</div><div class="fib-tr"><div class="fib-fl" style="width:38.2%"></div></div><div class="fib-use">Waves 2 & 4</div></div>
+      <div class="fib-row"><div class="fib-pct">50.0%</div><div class="fib-tr"><div class="fib-fl" style="width:50%"></div></div><div class="fib-use">Mid retracement</div></div>
+      <div class="fib-row"><div class="fib-pct">61.8%</div><div class="fib-tr"><div class="fib-fl" style="width:61.8%"></div></div><div class="fib-use">Wave 2 ideal</div></div>
+      <div class="fib-row"><div class="fib-pct">78.6%</div><div class="fib-tr"><div class="fib-fl" style="width:78.6%"></div></div><div class="fib-use">Deep correction</div></div>
+      <div class="fib-row"><div class="fib-pct" style="color:var(--green)">161.8%</div><div class="fib-tr"><div class="fib-fl" style="width:100%"></div></div><div class="fib-use">Wave 3 extension</div></div>
+      <div class="fib-row"><div class="fib-pct" style="color:var(--gold)">261.8%</div><div class="fib-tr"><div class="fib-fl" style="width:100%;background:var(--gold)"></div></div><div class="fib-use">Wave 3 extreme</div></div>
+    </div>
+    <div>
+      <div class="sec-lbl">// Wave Degrees</div>
+      <h3 style="font-family:'Orbitron',monospace;font-size:17px;font-weight:700;margin-bottom:22px;">Degree <em style="font-style:normal;color:var(--cyan)">Reference</em></h3>
+      <table class="dt">
+        <thead><tr><th>Degree</th><th>Duration</th><th>Timeframe</th></tr></thead>
+        <tbody>
+          <tr><td>Grand Supercycle</td><td>100–200 yrs</td><td>Secular</td></tr>
+          <tr><td>Supercycle</td><td>40–70 yrs</td><td>Quarterly</td></tr>
+          <tr><td>Cycle</td><td>1–10 yrs</td><td>Monthly</td></tr>
+          <tr><td>Primary</td><td>Months</td><td>Weekly</td></tr>
+          <tr><td>Intermediate</td><td>Weeks</td><td>Daily</td></tr>
+          <tr><td>Minor</td><td>Days</td><td>4H–1D</td></tr>
+          <tr><td>Minute</td><td>Hours</td><td>1H–4H</td></tr>
+          <tr><td>Minuette</td><td>Minutes</td><td>15m–1H</td></tr>
+          <tr><td>Subminuette</td><td>Seconds</td><td>1m–5m</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ONLINE COURSES -->
+  <div style="margin-top:60px;">
+    <div class="sec-lbl">// Online Courses</div>
+    <h2 class="sec-title" style="margin-bottom:16px;">Master Elliott Wave<br>with <em>Gaurav's Courses</em></h2>
+    <p style="font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);margin-bottom:32px;max-width:560px;">Structured learning from beginner to advanced level — with live chart examples, recorded sessions & personal mentorship from a seasoned EW practitioner.</p>
+    <div class="course-grid">
+      <div class="course-card">
+        <div class="course-badge">BEGINNER → INTERMEDIATE</div>
+        <div class="course-title">Elliott Wave Foundations<br>& Practical Trading</div>
+        <div class="course-price">₹7,499<span>/lifetime access</span></div>
+        <div class="course-desc">Complete foundation course covering all EW theory, rules, guidelines, corrective patterns, Fibonacci application and real trade setups on NSE & Crypto markets.</div>
+        <ul class="course-modules">
+          <li>Module 1 — Elliott Wave History & Basics</li>
+          <li>Module 2 — Impulse & Motive Waves</li>
+          <li>Module 3 — Corrective Patterns (ABC, Flat, Triangle)</li>
+          <li>Module 4 — Fibonacci in EW Trading</li>
+          <li>Module 5 — Wave Counting on Live Charts</li>
+          <li>Module 6 — Trade Setups & Risk Management</li>
+          <li>30 recorded sessions + PDF workbook</li>
+          <li>30-day Telegram support group access</li>
+        </ul>
+        <a href="https://rzp.io/rzp/jhulNmN" target="_blank" style="text-decoration:none;display:block;">
+          <button class="btn-lg gold" style="width:100%;font-size:14px;padding:13px;">Enroll Now — ₹7,499 →</button>
+        </a>
+      </div>
+      <div class="course-card">
+        <div class="course-badge">ADVANCED · LIVE MENTORSHIP</div>
+        <div class="course-title">Advanced EW &<br>Institutional Flow Analysis</div>
+        <div class="course-price">₹7,499<span>/month (Institutional Plan)</span></div>
+        <div class="course-desc">Monthly subscription that combines the WaveEdge Institutional scanner with live mentorship sessions, real-time Telegram signals and custom wave counts shared daily.</div>
+        <ul class="course-modules">
+          <li>Daily wave count updates via Telegram</li>
+          <li>Weekly live chart session (Zoom)</li>
+          <li>Advanced diagonal & complex correction setups</li>
+          <li>Multi-degree count analysis</li>
+          <li>Institutional plan scanner access (all markets)</li>
+          <li>Direct WhatsApp access to Gaurav</li>
+          <li>API & broker integration support</li>
+          <li>Team access (5 users)</li>
+        </ul>
+        <a href="https://rzp.io/rzp/jhulNmN" target="_blank" style="text-decoration:none;display:block;">
+          <button class="btn-lg primary" style="width:100%;font-size:14px;padding:13px;">Subscribe — ₹7,499/mo →</button>
+        </a>
+      </div>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="contact-strip" style="margin-top:36px;">
+      <div class="cs-text">
+        <div class="cs-title">Questions about the course?</div>
+        <div class="cs-sub">WhatsApp or Telegram Gaurav directly — usually replies within 30 minutes.</div>
+      </div>
+      <div class="cs-btns">
+        <a href="https://wa.me/917715858526" target="_blank" class="wa-big">💬 +91-7715858526</a>
+        <a href="https://t.me/ewagaurav" target="_blank" class="tg-big">✈ @ewagaurav</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div><!-- END THEORY -->
+
+
+<!-- ════════════════════════════════════════════════
+     LIVE CHART PAGE (TradingView)
+════════════════════════════════════════════════ -->
+<div class="page" id="page-chart">
+<div class="tv-page">
+  <div class="tv-wrap">
+    <div class="tv-header">
+      <div class="tv-title">Live <span>TradingView</span> Chart</div>
+      <div class="live-tag"><div class="pulse"></div>Opens full chart on TradingView — all symbols, all indicators</div>
+    </div>
+
+    <!-- SYMBOL GRID -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:28px;" id="chart-sym-grid"></div>
+
+    <!-- OPEN BUTTON -->
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:12px;">or type any symbol below and open</div>
+      <div style="display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;">
+        <input id="custom-sym" type="text" placeholder="e.g. NSE:SBIN, BINANCE:SOLUSDT" style="background:var(--s2);border:1px solid var(--border2);color:var(--text);padding:12px 18px;border-radius:7px;font-family:'Space Mono',monospace;font-size:13px;outline:none;width:320px;transition:border-color .2s;" onfocus="this.style.borderColor='var(--cyan)'" onblur="this.style.borderColor='var(--border2)'" onkeydown="if(event.key==='Enter')openChart()"/>
+        <button class="btn-cta" style="padding:12px 28px;font-size:14px;" onclick="openChart()">Open Chart →</button>
+      </div>
+    </div>
+
+    <!-- INTERVAL INFO -->
+    <div style="display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap;align-items:center;">
+      <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);flex-shrink:0;">PREFERRED INTERVAL:</span>
+      <button class="int-btn active-int" onclick="setIntPref('1',this)">1m</button>
+      <button class="int-btn" onclick="setIntPref('5',this)">5m</button>
+      <button class="int-btn" onclick="setIntPref('15',this)">15m</button>
+      <button class="int-btn" onclick="setIntPref('30',this)">30m</button>
+      <button class="int-btn" onclick="setIntPref('60',this)">1H</button>
+      <button class="int-btn" onclick="setIntPref('240',this)">4H</button>
+      <button class="int-btn" onclick="setIntPref('D',this)">1D</button>
+      <button class="int-btn" onclick="setIntPref('W',this)">1W</button>
+    </div>
+
+    <!-- INFO CARD -->
+    <div style="background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.15);border-radius:10px;padding:22px 26px;display:flex;gap:20px;align-items:flex-start;margin-bottom:28px;">
+      <div style="font-size:28px;flex-shrink:0;">💡</div>
+      <div>
+        <div style="font-size:15px;font-weight:700;margin-bottom:6px;">Why does it open in TradingView?</div>
+        <div style="font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);line-height:1.8;">
+          NSE, BSE and many exchange symbols are <strong style="color:var(--cyan)">restricted by TradingView</strong> and cannot be embedded on external websites without a paid data license.
+          Clicking any symbol opens the full TradingView advanced chart in a new tab — giving you <strong style="color:var(--green)">all indicators, drawing tools, replay mode, alerts</strong> and every feature, with no restrictions.
+        </div>
+      </div>
+    </div>
+
+    <!-- POPULAR SYMBOLS GRID -->
+    <div class="sec-lbl" style="margin-bottom:16px;">// Popular Symbols — Click to Open Chart</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;" id="popular-grid"></div>
+
+  </div>
+</div>
+</div><!-- END CHART -->
+
+<style>
+.sym-card{background:var(--s1);border:1px solid var(--border);border-radius:9px;padding:16px 18px;cursor:pointer;transition:all .22s;text-decoration:none;display:block;}
+.sym-card:hover{border-color:var(--cyan);background:rgba(0,229,255,.05);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4);}
+.sym-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.sym-card-name{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--text);}
+.sym-card-mkt{font-family:'Space Mono',monospace;font-size:9px;padding:2px 7px;border-radius:3px;font-weight:700;}
+.sym-card-full{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:4px;}
+.sym-card-link{font-family:'Space Mono',monospace;font-size:10px;color:var(--cyan);display:flex;align-items:center;gap:4px;}
+.int-btn{background:var(--s2);border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:4px;font-family:'Space Mono',monospace;font-size:11px;cursor:pointer;transition:all .15s;}
+.int-btn:hover,.int-btn.active-int{background:rgba(0,255,136,.1);border-color:var(--green);color:var(--green);}
+</style>
+
+<script>
+var _intPref = '15';
+
+var SYMBOLS = [
+  {name:'NIFTY',     full:'NSE:NIFTY',         mkt:'NSE',    mc:'rgba(0,229,255,.1)',  mcc:'#00e5ff'},
+  {name:'BANKNIFTY', full:'NSE:BANKNIFTY',      mkt:'NSE',    mc:'rgba(0,229,255,.1)',  mcc:'#00e5ff'},
+  {name:'SENSEX',    full:'BSE:SENSEX',          mkt:'BSE',    mc:'rgba(0,229,255,.1)',  mcc:'#00e5ff'},
+  {name:'RELIANCE',  full:'NSE:RELIANCE',        mkt:'NSE',    mc:'rgba(0,229,255,.1)',  mcc:'#00e5ff'},
+  {name:'TCS',       full:'NSE:TCS',             mkt:'NSE',    mc:'rgba(0,229,255,.1)',  mcc:'#00e5ff'},
+  {name:'HDFCBANK',  full:'NSE:HDFCBANK',        mkt:'NSE',    mc:'rgba(0,229,255,.1)',  mcc:'#00e5ff'},
+  {name:'INFY',      full:'NSE:INFY',            mkt:'NSE',    mc:'rgba(0,229,255,.1)',  mcc:'#00e5ff'},
+  {name:'SBIN',      full:'NSE:SBIN',            mkt:'NSE',    mc:'rgba(0,229,255,.1)',  mcc:'#00e5ff'},
+  {name:'ADANIENT',  full:'NSE:ADANIENT',        mkt:'NSE',    mc:'rgba(0,229,255,.1)',  mcc:'#00e5ff'},
+  {name:'TATAMOTORS',full:'NSE:TATAMOTORS',      mkt:'NSE',    mc:'rgba(0,229,255,.1)',  mcc:'#00e5ff'},
+  {name:'BTC/USDT',  full:'BINANCE:BTCUSDT',     mkt:'CRYPTO', mc:'rgba(255,202,40,.1)', mcc:'#ffca28'},
+  {name:'ETH/USDT',  full:'BINANCE:ETHUSDT',     mkt:'CRYPTO', mc:'rgba(255,202,40,.1)', mcc:'#ffca28'},
+  {name:'SOL/USDT',  full:'BINANCE:SOLUSDT',     mkt:'CRYPTO', mc:'rgba(255,202,40,.1)', mcc:'#ffca28'},
+  {name:'BNB/USDT',  full:'BINANCE:BNBUSDT',     mkt:'CRYPTO', mc:'rgba(255,202,40,.1)', mcc:'#ffca28'},
+  {name:'EUR/USD',   full:'FX:EURUSD',            mkt:'FOREX',  mc:'rgba(179,136,255,.1)','mcc':'#b388ff'},
+  {name:'GBP/USD',   full:'FX:GBPUSD',            mkt:'FOREX',  mc:'rgba(179,136,255,.1)','mcc':'#b388ff'},
+  {name:'USD/INR',   full:'FX:USDINR',            mkt:'FOREX',  mc:'rgba(179,136,255,.1)','mcc':'#b388ff'},
+  {name:'GOLD',      full:'TVC:GOLD',             mkt:'COMMO',  mc:'rgba(255,202,40,.1)', mcc:'#ffca28'},
+  {name:'CRUDE OIL', full:'NYMEX:CL1!',          mkt:'COMMO',  mc:'rgba(255,202,40,.1)', mcc:'#ffca28'},
+  {name:'AAPL',      full:'NASDAQ:AAPL',          mkt:'US',     mc:'rgba(0,255,136,.1)',  mcc:'#00ff88'},
+  {name:'NVDA',      full:'NASDAQ:NVDA',          mkt:'US',     mc:'rgba(0,255,136,.1)',  mcc:'#00ff88'},
+  {name:'TSLA',      full:'NASDAQ:TSLA',          mkt:'US',     mc:'rgba(0,255,136,.1)',  mcc:'#00ff88'},
+  {name:'MSFT',      full:'NASDAQ:MSFT',          mkt:'US',     mc:'rgba(0,255,136,.1)',  mcc:'#00ff88'},
+  {name:'AMZN',      full:'NASDAQ:AMZN',          mkt:'US',     mc:'rgba(0,255,136,.1)',  mcc:'#00ff88'},
+];
+
+function tvURL(sym, interval) {
+  return 'https://www.tradingview.com/chart/?symbol=' + encodeURIComponent(sym) + '&interval=' + interval;
+}
+
+function renderSymGrid() {
+  var grid = document.getElementById('popular-grid');
+  if (!grid) return;
+  grid.innerHTML = SYMBOLS.map(function(s) {
+    return '<a class="sym-card" href="' + tvURL(s.full, _intPref) + '" target="_blank" rel="noopener">'
+      + '<div class="sym-card-top">'
+      + '<div class="sym-card-name">' + s.name + '</div>'
+      + '<span class="sym-card-mkt" style="background:' + s.mc + ';color:' + s.mcc + '">' + s.mkt + '</span>'
+      + '</div>'
+      + '<div class="sym-card-full">' + s.full + '</div>'
+      + '<div class="sym-card-link">Open chart ↗</div>'
+      + '</a>';
+  }).join('');
+}
+
+function setIntPref(interval, el) {
+  _intPref = interval;
+  document.querySelectorAll('.int-btn').forEach(function(b){ b.classList.remove('active-int'); });
+  if (el) el.classList.add('active-int');
+  renderSymGrid(); // re-render links with new interval
+}
+
+function openChart() {
+  var val = document.getElementById('custom-sym').value.trim();
+  if (!val) { showToast('⚠ Please enter a symbol first'); return; }
+  window.open(tvURL(val.toUpperCase(), _intPref), '_blank');
+}
+
+// init on page load
+document.addEventListener('DOMContentLoaded', renderSymGrid);
+// also init when nav to chart page
+var _origShowPage = window.showPage;
+</script>
+
+
+<!-- ════════════════════════════════════════════════
+     AUTH PAGE
+════════════════════════════════════════════════ -->
+<div class="page" id="page-auth">
+<div class="auth-page">
+  <div class="auth-wrap">
+    <!-- LEFT -->
+    <div class="auth-left">
+      <div>
+        <div class="auth-logo">
+          <svg width="28" height="28" viewBox="0 0 44 44" fill="none">
+            <polygon points="22,2 40,12 40,32 22,42 4,32 4,12" fill="rgba(0,229,255,0.1)" stroke="rgba(0,229,255,0.4)" stroke-width="1.2"/>
+            <path d="M8 28 L13 18 L18 23 L23 10 L28 20 L33 14 L38 16" stroke="url(#lg2)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <circle cx="23" cy="10" r="2.5" fill="#00ff88"/>
+            <defs><linearGradient id="lg2" x1="8" y1="20" x2="38" y2="20" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00e5ff"/><stop offset="100%" stop-color="#ffca28"/></linearGradient></defs>
+          </svg>
+          Wave<span>Edge</span>.in
+        </div>
+        <div class="auth-hl">Trade with<br><em>wave precision.</em></div>
+        <div class="auth-tag">Join 12,000+ traders using AI-powered Elliott Wave intelligence across NSE, Crypto, Forex & US markets. Find the edge before the move begins.</div>
+        <ul class="auth-feats">
+          <li>14 automated wave scanners — all markets</li>
+          <li>NSE · BSE · Crypto · Forex · NYSE · NASDAQ</li>
+          <li>Real-time alerts across 4,200+ symbols</li>
+          <li>Fibonacci auto-projection on every wave</li>
+          <li>Full TradingView advanced chart access</li>
+          <li>14-day free trial — no credit card needed</li>
+        </ul>
+      </div>
+      <div class="auth-bot">🔒 256-bit SSL · Data never sold · Trusted by 12,000+ traders</div>
+    </div>
+    <!-- RIGHT -->
+    <div class="auth-right">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Log In</button>
+        <button class="auth-tab" id="tab-signup" onclick="switchTab('signup')">Sign Up Free</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div class="a-form" id="login-form">
+        <div class="f-grp"><label class="f-lbl">Email Address</label><input class="f-inp" type="email" placeholder="you@example.com" id="l-email"/></div>
+        <div class="f-grp"><label class="f-lbl">Password</label><input class="f-inp" type="password" placeholder="••••••••" id="l-pass"/></div>
+        <div style="text-align:right;"><a style="font-family:'Space Mono',monospace;font-size:11px;color:var(--cyan);cursor:pointer;">Forgot password?</a></div>
+        <button class="btn-auth" onclick="doLogin()">Log In to WaveEdge</button>
+        <div class="a-div"><span>or</span></div>
+        <div class="soc-btns">
+          <button class="soc-btn" onclick="socialLogin('Google')">🌐 Google</button>
+          <button class="soc-btn" onclick="socialLogin('GitHub')">⚡ GitHub</button>
+        </div>
+        <div class="a-sw">No account? <a onclick="switchTab('signup')">Sign up free →</a></div>
+      </div>
+
+      <!-- SIGNUP -->
+      <div class="a-form" id="signup-form" style="display:none;">
+        <div class="f-row">
+          <div class="f-grp"><label class="f-lbl">First Name</label><input class="f-inp" type="text" placeholder="Arjun" id="s-fn"/></div>
+          <div class="f-grp"><label class="f-lbl">Last Name</label><input class="f-inp" type="text" placeholder="Sharma" id="s-ln"/></div>
+        </div>
+        <div class="f-grp"><label class="f-lbl">Email</label><input class="f-inp" type="email" placeholder="you@example.com" id="s-em"/></div>
+        <div class="f-grp"><label class="f-lbl">Phone (for SMS alerts)</label><input class="f-inp" type="tel" placeholder="+91 98765 43210" id="s-ph"/></div>
+        <div class="f-grp"><label class="f-lbl">Password</label><input class="f-inp" type="password" placeholder="Min 8 characters" id="s-pw"/></div>
+        <div class="f-grp">
+          <label class="f-lbl">Choose Plan</label>
+          <div class="plan-sel">
+            <div class="plan-opt" onclick="selPlan(this,0)"><div class="plan-opt-n">Starter</div><div class="plan-opt-p">₹999/mo</div></div>
+            <div class="plan-opt sel" onclick="selPlan(this,1)"><div class="plan-opt-n">Pro</div><div class="plan-opt-p">₹2,499/mo</div></div>
+            <div class="plan-opt" onclick="selPlan(this,2)"><div class="plan-opt-n">Institutional</div><div class="plan-opt-p">₹7,499/mo</div></div>
+          </div>
+        </div>
+        <button class="btn-auth" onclick="doSignup()">Start 14-Day Free Trial →</button>
+        <div class="a-sw">Already a member? <a onclick="switchTab('login')">Log in →</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div><!-- END AUTH -->
+
+<!-- ════════════════════════════════════════════════
+     BLOG / ANALYSIS PAGE
+════════════════════════════════════════════════ -->
+<div class="page" id="page-blog">
+<div style="max-width:1100px;margin:0 auto;padding:90px 40px 60px;">
+
+  <!-- HEADER -->
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:40px;flex-wrap:wrap;gap:16px;">
+    <div>
+      <div class="sec-lbl">// Daily Wave Analysis</div>
+      <h2 class="sec-title" style="margin-bottom:8px;">Market <em>Analysis</em><br>& Wave Counts</h2>
+      <p style="font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);">Updated daily by Gaurav — Elliott Wave counts, trade setups & market outlook.</p>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn-cta" onclick="showAdminLogin()" id="admin-btn" style="display:flex;align-items:center;gap:7px;">🔐 Admin</button>
+      <a href="https://t.me/ewagaurav" target="_blank" class="tg-big" style="padding:9px 18px;font-size:13px;">✈ Follow on Telegram</a>
+    </div>
+  </div>
+
+  <!-- FILTER TABS -->
+  <div style="display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap;" id="blog-filters">
+    <button class="f-btn active" onclick="filterBlog('all',this)">All</button>
+    <button class="f-btn" onclick="filterBlog('nse',this)">NSE/BSE</button>
+    <button class="f-btn" onclick="filterBlog('crypto',this)">Crypto</button>
+    <button class="f-btn" onclick="filterBlog('forex',this)">Forex</button>
+    <button class="f-btn" onclick="filterBlog('us',this)">US Markets</button>
+    <button class="f-btn" onclick="filterBlog('education',this)">Education</button>
+  </div>
+
+  <!-- FEATURED POST -->
+  <div id="blog-featured" style="margin-bottom:32px;"></div>
+
+  <!-- POSTS GRID -->
+  <div id="blog-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:22px;"></div>
+
+  <!-- EMPTY STATE -->
+  <div id="blog-empty" style="display:none;text-align:center;padding:60px 20px;">
+    <div style="font-size:48px;margin-bottom:16px;">📭</div>
+    <div style="font-size:18px;font-weight:700;margin-bottom:8px;">No posts yet in this category</div>
+    <div style="font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);">Follow <a href="https://t.me/ewagaurav" target="_blank" style="color:var(--cyan);">@ewagaurav</a> on Telegram for daily updates.</div>
+  </div>
+
+  <!-- CONTACT STRIP -->
+  <div class="contact-strip" style="margin-top:48px;">
+    <div class="cs-text">
+      <div class="cs-title">Get daily wave analysis free.</div>
+      <div class="cs-sub">Join Gaurav on Telegram & WhatsApp for real-time Elliott Wave setups.</div>
+    </div>
+    <div class="cs-btns">
+      <a href="https://wa.me/917715858526" target="_blank" class="wa-big">💬 +91-7715858526</a>
+      <a href="https://t.me/ewagaurav" target="_blank" class="tg-big">✈ @ewagaurav</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── ADMIN LOGIN MODAL ── -->
+<div id="admin-modal" style="display:none;position:fixed;inset:0;background:rgba(2,12,20,.92);z-index:600;align-items:center;justify-content:center;">
+  <div style="background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:40px;width:100%;max-width:420px;position:relative;">
+    <button onclick="closeAdmin()" style="position:absolute;top:16px;right:16px;background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;">✕</button>
+    <div style="font-family:'Orbitron',monospace;font-size:16px;font-weight:700;margin-bottom:6px;">Admin Panel</div>
+    <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:24px;">Enter password to manage posts</div>
+    <div id="admin-login-wrap">
+      <input id="admin-pw" type="password" class="f-inp" placeholder="Admin password" style="margin-bottom:14px;width:100%;"/>
+      <button class="btn-auth" onclick="checkAdminPw()" style="width:100%;">Unlock Admin →</button>
+      <div id="admin-pw-err" style="display:none;font-family:'Space Mono',monospace;font-size:11px;color:var(--red);margin-top:10px;text-align:center;">❌ Wrong password</div>
+    </div>
+    <div id="admin-panel-wrap" style="display:none;">
+      <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--green);margin-bottom:20px;">✦ Admin access granted</div>
+      <!-- New Post Form -->
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="f-grp"><label class="f-lbl">Title *</label><input id="p-title" class="f-inp" type="text" placeholder="NIFTY — Wave 3 Breakout Imminent"/></div>
+        <div class="f-grp"><label class="f-lbl">Symbol</label><input id="p-symbol" class="f-inp" type="text" placeholder="NSE:NIFTY"/></div>
+        <div class="f-grp">
+          <label class="f-lbl">Category</label>
+          <select id="p-cat" class="f-inp" style="cursor:pointer;">
+            <option value="nse">NSE/BSE</option>
+            <option value="crypto">Crypto</option>
+            <option value="forex">Forex</option>
+            <option value="us">US Markets</option>
+            <option value="education">Education</option>
+          </select>
+        </div>
+        <div class="f-grp">
+          <label class="f-lbl">Wave Position</label>
+          <select id="p-wave" class="f-inp" style="cursor:pointer;">
+            <option>Wave ① — Starting impulse</option>
+            <option>Wave ② — Correcting</option>
+            <option>Wave ③ — Strongest move</option>
+            <option>Wave ④ — Consolidating</option>
+            <option>Wave ⑤ — Final push</option>
+            <option>Wave A — First correction</option>
+            <option>Wave B — Dead cat bounce</option>
+            <option>Wave C — Completion</option>
+            <option>Ending Diagonal</option>
+            <option>Triangle — Wave B/4</option>
+          </select>
+        </div>
+        <div class="f-grp"><label class="f-lbl">Bias</label>
+          <div style="display:flex;gap:8px;">
+            <button id="bias-bull" onclick="setBias('bullish')" style="flex:1;padding:8px;border-radius:5px;border:2px solid var(--green);background:rgba(0,255,136,.1);color:var(--green);font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;">🐂 Bullish</button>
+            <button id="bias-bear" onclick="setBias('bearish')" style="flex:1;padding:8px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--muted);font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;">🐻 Bearish</button>
+            <button id="bias-neut" onclick="setBias('neutral')" style="flex:1;padding:8px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--muted);font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;">⚖️ Neutral</button>
+          </div>
+        </div>
+        <div class="f-grp"><label class="f-lbl">Target Price</label><input id="p-target" class="f-inp" type="text" placeholder="₹24,800 or $98,000"/></div>
+        <div class="f-grp"><label class="f-lbl">Stop Loss</label><input id="p-sl" class="f-inp" type="text" placeholder="₹23,200 or $88,000"/></div>
+        <div class="f-grp"><label class="f-lbl">Analysis *</label><textarea id="p-body" class="f-inp" rows="5" placeholder="Write your full wave analysis here..." style="resize:vertical;line-height:1.6;"></textarea></div>
+        <div class="f-grp"><label class="f-lbl">TradingView Chart URL (optional)</label><input id="p-chart" class="f-inp" type="text" placeholder="https://www.tradingview.com/chart/..."/></div>
+        <button class="btn-auth" onclick="savePost()" style="margin-top:4px;">📝 Publish Post</button>
+        <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px;">
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:10px;">MANAGE EXISTING POSTS</div>
+          <div id="manage-list" style="display:flex;flex-direction:column;gap:8px;max-height:180px;overflow-y:auto;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div><!-- END BLOG -->
+
+<style>
+.blog-card{background:var(--s1);border:1px solid var(--border);border-radius:11px;overflow:hidden;transition:all .25s;cursor:pointer;}
+.blog-card:hover{border-color:rgba(0,229,255,.3);transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.4);}
+.blog-card-img{height:8px;width:100%;}
+.blog-card-body{padding:22px;}
+.blog-card-meta{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.blog-cat{font-family:'Space Mono',monospace;font-size:9px;padding:2px 9px;border-radius:100px;font-weight:700;letter-spacing:1px;}
+.blog-date{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);}
+.blog-title{font-size:16px;font-weight:700;line-height:1.35;margin-bottom:8px;}
+.blog-sym{font-family:'Space Mono',monospace;font-size:11px;color:var(--cyan);margin-bottom:8px;}
+.blog-wave{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;margin-bottom:10px;}
+.blog-excerpt{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);line-height:1.7;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.blog-footer{display:flex;align-items:center;justify-content:space-between;}
+.blog-bias{display:flex;align-items:center;gap:5px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;}
+.blog-tgt{font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);}
+/* Featured post */
+.blog-featured{background:linear-gradient(135deg,var(--s1),var(--s2));border:1px solid rgba(0,229,255,.2);border-radius:12px;padding:32px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:start;}
+.blog-feat-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.2);color:var(--cyan);padding:4px 12px;border-radius:100px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;margin-bottom:12px;}
+</style>
+
+<script>
+// ── BLOG DATA (localStorage) ──
+var ADMIN_PW = 'waveedge2024'; // CHANGE THIS
+var _blogFilter = 'all';
+var _blogBias = 'bullish';
+
+function getBlogPosts() {
+  try { return JSON.parse(localStorage.getItem('we_posts') || '[]'); } catch(e) { return []; }
+}
+function saveBlogPosts(posts) {
+  localStorage.setItem('we_posts', JSON.stringify(posts));
+}
+
+// Seed with sample posts if empty
+function seedPosts() {
+  if (getBlogPosts().length > 0) return;
+  var samples = [
+    {
+      id: Date.now() + 1,
+      title: 'NIFTY — Wave 3 Breakout Setting Up',
+      symbol: 'NSE:NIFTY',
+      cat: 'nse',
+      wave: 'Wave ③ — Strongest move',
+      bias: 'bullish',
+      target: '₹24,800',
+      sl: '₹23,200',
+      body: 'NIFTY has completed a textbook Wave 2 correction at the 61.8% Fibonacci retracement of Wave 1. Volume is contracting at the lows — a classic sign of corrective exhaustion. The structure suggests we are on the cusp of a powerful Wave 3 impulse. Watch for a breakout above 24,100 with volume expansion. Target: 24,800 (161.8% extension of Wave 1). Invalidation below 23,200.',
+      chart: 'https://www.tradingview.com/chart/?symbol=NSE:NIFTY',
+      date: new Date().toISOString(),
+      featured: true
+    },
+    {
+      id: Date.now() + 2,
+      title: 'BTCUSDT — ABC Correction Nearly Complete',
+      symbol: 'BINANCE:BTCUSDT',
+      cat: 'crypto',
+      wave: 'Wave C — Completion',
+      bias: 'bullish',
+      target: '$98,400',
+      sl: '$85,000',
+      body: 'Bitcoin is tracing a clean zigzag (5-3-5) ABC correction from the Wave 5 high. Wave C has reached the 100% extension of Wave A near $88,500, a key confluence zone. RSI showing positive divergence on the 4H. Expecting a reversal here for a new impulse cycle targeting $98,400.',
+      chart: 'https://www.tradingview.com/chart/?symbol=BINANCE:BTCUSDT',
+      date: new Date(Date.now() - 86400000).toISOString(),
+      featured: false
+    },
+    {
+      id: Date.now() + 3,
+      title: 'EURUSD — Ending Diagonal Warning',
+      symbol: 'FX:EURUSD',
+      cat: 'forex',
+      wave: 'Ending Diagonal',
+      bias: 'bearish',
+      target: '1.0620',
+      sl: '1.0920',
+      body: 'EURUSD appears to be forming an ending diagonal in the Wave 5 position. Waves are overlapping and momentum is declining on each push higher. This is a classic exhaustion signal. A sharp reversal is expected once the diagonal completes above 1.0880. Short bias for a move toward 1.0620.',
+      chart: 'https://www.tradingview.com/chart/?symbol=FX:EURUSD',
+      date: new Date(Date.now() - 172800000).toISOString(),
+      featured: false
+    },
+    {
+      id: Date.now() + 4,
+      title: 'Elliott Wave Rule #2 — Why Wave 3 Is Never Shortest',
+      symbol: '',
+      cat: 'education',
+      wave: 'Wave ③ — Strongest move',
+      bias: 'neutral',
+      target: '',
+      sl: '',
+      body: 'One of the three absolute rules of Elliott Wave Theory: Wave 3 can never be the shortest impulse wave among Waves 1, 3 and 5. This rule exists because Wave 3 represents the strongest phase of trend — when the majority of market participants recognize and join the move. Extended Wave 3s of 161.8% to 261.8% of Wave 1 are common in trending markets. If your count shows Wave 3 as the shortest, recount from scratch.',
+      chart: '',
+      date: new Date(Date.now() - 259200000).toISOString(),
+      featured: false
+    }
+  ];
+  saveBlogPosts(samples);
+}
+
+function catStyle(cat) {
+  var map = {
+    nse:       {bg:'rgba(0,229,255,.1)',  color:'#00e5ff'},
+    crypto:    {bg:'rgba(255,202,40,.1)', color:'#ffca28'},
+    forex:     {bg:'rgba(179,136,255,.1)',color:'#b388ff'},
+    us:        {bg:'rgba(0,255,136,.1)',  color:'#00ff88'},
+    education: {bg:'rgba(255,109,0,.1)',  color:'#ff6d00'}
+  };
+  return map[cat] || map.education;
+}
+
+function biasColor(bias) {
+  if (bias==='bullish') return {icon:'🐂',color:'#00ff88'};
+  if (bias==='bearish') return {icon:'🐻',color:'#ff1744'};
+  return {icon:'⚖️',color:'#ffca28'};
+}
+
+function fmtDate(iso) {
+  var d = new Date(iso);
+  return d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+}
+
+function renderBlog() {
+  seedPosts();
+  var posts = getBlogPosts();
+  var cat = _blogFilter;
+  var filtered = cat==='all' ? posts : posts.filter(function(p){ return p.cat===cat; });
+
+  // Featured
+  var featured = posts.find(function(p){ return p.featured; });
+  var featDiv = document.getElementById('blog-featured');
+  if (featured && (cat==='all' || featured.cat===cat)) {
+    var cs = catStyle(featured.cat);
+    var bc = biasColor(featured.bias);
+    featDiv.innerHTML = '<div class="blog-featured">'
+      + '<div>'
+      + '<div class="blog-feat-badge"><div class="pulse" style="width:5px;height:5px;"></div>FEATURED — LATEST ANALYSIS</div>'
+      + '<div class="blog-title" style="font-size:22px;margin-bottom:10px;">' + featured.title + '</div>'
+      + (featured.symbol ? '<div class="blog-sym">' + featured.symbol + '</div>' : '')
+      + '<div class="blog-wave" style="color:#ffca28;margin-bottom:12px;">' + featured.wave + '</div>'
+      + '<div style="font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);line-height:1.8;margin-bottom:18px;">' + featured.body.substring(0,280) + '...</div>'
+      + '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">'
+      + (featured.chart ? '<a href="'+featured.chart+'" target="_blank" class="btn-cta" style="padding:9px 20px;font-size:13px;text-decoration:none;">View Chart ↗</a>' : '')
+      + '<span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">' + fmtDate(featured.date) + '</span>'
+      + '</div>'
+      + '</div>'
+      + '<div style="text-align:right;min-width:120px;">'
+      + '<div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:6px;">BIAS</div>'
+      + '<div style="font-size:28px;margin-bottom:4px;">' + bc.icon + '</div>'
+      + '<div style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:'+bc.color+';">' + featured.bias.toUpperCase() + '</div>'
+      + (featured.target ? '<div style="margin-top:12px;"><div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);">TARGET</div><div style="font-family:'Space Mono',monospace;font-size:13px;color:var(--gold);font-weight:700;">' + featured.target + '</div></div>' : '')
+      + (featured.sl ? '<div style="margin-top:8px;"><div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);">STOP LOSS</div><div style="font-family:'Space Mono',monospace;font-size:12px;color:var(--red);">' + featured.sl + '</div></div>' : '')
+      + '</div>'
+      + '</div>';
+    // Remove featured from grid
+    filtered = filtered.filter(function(p){ return p.id !== featured.id; });
+  } else {
+    featDiv.innerHTML = '';
+  }
+
+  var grid = document.getElementById('blog-grid');
+  var empty = document.getElementById('blog-empty');
+  if (filtered.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    grid.innerHTML = filtered.map(function(p) {
+      var cs = catStyle(p.cat);
+      var bc = biasColor(p.bias);
+      return '<div class="blog-card" onclick="openPost(' + p.id + ')">'
+        + '<div class="blog-card-img" style="background:' + (p.bias==='bullish' ? 'linear-gradient(90deg,var(--green),var(--cyan))' : p.bias==='bearish' ? 'linear-gradient(90deg,var(--red),var(--orange))' : 'linear-gradient(90deg,var(--gold),var(--cyan))') + '"></div>'
+        + '<div class="blog-card-body">'
+        + '<div class="blog-card-meta">'
+        + '<span class="blog-cat" style="background:'+cs.bg+';color:'+cs.color+';border:1px solid '+cs.color+'40">' + p.cat.toUpperCase() + '</span>'
+        + '<span class="blog-date">' + fmtDate(p.date) + '</span>'
+        + '</div>'
+        + '<div class="blog-title">' + p.title + '</div>'
+        + (p.symbol ? '<div class="blog-sym">' + p.symbol + '</div>' : '')
+        + '<div class="blog-wave" style="color:#ffca28;">' + p.wave + '</div>'
+        + '<div class="blog-excerpt">' + p.body + '</div>'
+        + '<div class="blog-footer">'
+        + '<div class="blog-bias" style="color:'+bc.color+';">' + bc.icon + ' ' + p.bias.toUpperCase() + '</div>'
+        + (p.target ? '<div class="blog-tgt">TGT: ' + p.target + '</div>' : '<div></div>')
+        + '</div>'
+        + '</div></div>';
+    }).join('');
+  }
+}
+
+function filterBlog(cat, el) {
+  _blogFilter = cat;
+  document.querySelectorAll('#blog-filters .f-btn').forEach(function(b){ b.classList.remove('active'); });
+  if (el) el.classList.add('active');
+  renderBlog();
+}
+
+function openPost(id) {
+  var posts = getBlogPosts();
+  var p = posts.find(function(x){ return x.id===id; });
+  if (!p) return;
+  var cs = catStyle(p.cat);
+  var bc = biasColor(p.bias);
+  var modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(2,12,20,.95);z-index:700;overflow-y:auto;padding:40px 20px;';
+  modal.innerHTML = '<div style="max-width:720px;margin:0 auto;background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:40px;position:relative;">'
+    + '<button onclick="this.closest('[style*=fixed]').remove()" style="position:absolute;top:16px;right:16px;background:transparent;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1;">✕</button>'
+    + '<span class="blog-cat" style="background:'+cs.bg+';color:'+cs.color+';border:1px solid '+cs.color+'40;margin-bottom:16px;display:inline-block;">' + p.cat.toUpperCase() + '</span>'
+    + '<h2 style="font-size:24px;font-weight:800;line-height:1.2;margin-bottom:10px;">' + p.title + '</h2>'
+    + (p.symbol ? '<div style="font-family:'Space Mono',monospace;font-size:12px;color:var(--cyan);margin-bottom:6px;">' + p.symbol + '</div>' : '')
+    + '<div style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#ffca28;margin-bottom:6px;">' + p.wave + '</div>'
+    + '<div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:24px;">' + fmtDate(p.date) + '</div>'
+    + '<div style="display:flex;gap:16px;margin-bottom:28px;flex-wrap:wrap;">'
+    + '<div style="background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:14px 18px;flex:1;min-width:120px;"><div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:4px;">BIAS</div><div style="font-size:15px;font-weight:700;color:'+bc.color+';">' + bc.icon + ' ' + p.bias.toUpperCase() + '</div></div>'
+    + (p.target ? '<div style="background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:14px 18px;flex:1;min-width:120px;"><div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:4px;">TARGET</div><div style="font-family:'Space Mono',monospace;font-size:15px;font-weight:700;color:var(--gold);">' + p.target + '</div></div>' : '')
+    + (p.sl ? '<div style="background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:14px 18px;flex:1;min-width:120px;"><div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:4px;">STOP LOSS</div><div style="font-family:'Space Mono',monospace;font-size:15px;font-weight:700;color:var(--red);">' + p.sl + '</div></div>' : '')
+    + '</div>'
+    + '<div style="font-family:'Space Mono',monospace;font-size:13px;color:var(--text);line-height:1.9;white-space:pre-wrap;margin-bottom:24px;">' + p.body + '</div>'
+    + (p.chart ? '<a href="'+p.chart+'" target="_blank" class="btn-cta" style="display:inline-block;padding:11px 24px;text-decoration:none;font-size:14px;">Open Chart on TradingView ↗</a>' : '')
+    + '</div>';
+  document.body.appendChild(modal);
+}
+
+// ── ADMIN ──
+function showAdminLogin() {
+  var m = document.getElementById('admin-modal');
+  m.style.display = 'flex';
+  document.getElementById('admin-login-wrap').style.display = 'block';
+  document.getElementById('admin-panel-wrap').style.display = 'none';
+  document.getElementById('admin-pw-err').style.display = 'none';
+  document.getElementById('admin-pw').value = '';
+}
+function closeAdmin() { document.getElementById('admin-modal').style.display = 'none'; }
+
+function checkAdminPw() {
+  var pw = document.getElementById('admin-pw').value;
+  if (pw === ADMIN_PW) {
+    document.getElementById('admin-login-wrap').style.display = 'none';
+    document.getElementById('admin-panel-wrap').style.display = 'block';
+    renderManageList();
+  } else {
+    document.getElementById('admin-pw-err').style.display = 'block';
+  }
+}
+
+function setBias(b) {
+  _blogBias = b;
+  ['bull','bear','neut'].forEach(function(k){
+    var el = document.getElementById('bias-'+k);
+    if (!el) return;
+    el.style.border = '1px solid var(--border)';
+    el.style.background = 'transparent';
+    el.style.color = 'var(--muted)';
+  });
+  var active = document.getElementById('bias-' + (b==='bullish'?'bull':b==='bearish'?'bear':'neut'));
+  if (active) {
+    var col = b==='bullish'?'var(--green)':b==='bearish'?'var(--red)':'var(--gold)';
+    var bg  = b==='bullish'?'rgba(0,255,136,.1)':b==='bearish'?'rgba(255,23,68,.1)':'rgba(255,202,40,.1)';
+    active.style.border = '2px solid ' + col;
+    active.style.background = bg;
+    active.style.color = col;
+  }
+}
+
+function savePost() {
+  var title = document.getElementById('p-title').value.trim();
+  var body  = document.getElementById('p-body').value.trim();
+  if (!title || !body) { showToast('⚠ Title and Analysis are required'); return; }
+  var posts = getBlogPosts();
+  var newPost = {
+    id:       Date.now(),
+    title:    title,
+    symbol:   document.getElementById('p-symbol').value.trim(),
+    cat:      document.getElementById('p-cat').value,
+    wave:     document.getElementById('p-wave').value,
+    bias:     _blogBias,
+    target:   document.getElementById('p-target').value.trim(),
+    sl:       document.getElementById('p-sl').value.trim(),
+    body:     body,
+    chart:    document.getElementById('p-chart').value.trim(),
+    date:     new Date().toISOString(),
+    featured: posts.length === 0
+  };
+  posts.unshift(newPost);
+  saveBlogPosts(posts);
+  // clear form
+  ['p-title','p-symbol','p-target','p-sl','p-body','p-chart'].forEach(function(id){ document.getElementById(id).value=''; });
+  renderBlog();
+  renderManageList();
+  showToast('✦ Post published successfully!');
+}
+
+function deletePost(id) {
+  if (!confirm('Delete this post?')) return;
+  var posts = getBlogPosts().filter(function(p){ return p.id !== id; });
+  saveBlogPosts(posts);
+  renderBlog();
+  renderManageList();
+  showToast('Post deleted.');
+}
+
+function toggleFeatured(id) {
+  var posts = getBlogPosts();
+  posts.forEach(function(p){ p.featured = (p.id===id); });
+  saveBlogPosts(posts);
+  renderBlog();
+  renderManageList();
+  showToast('✦ Featured post updated!');
+}
+
+function renderManageList() {
+  var posts = getBlogPosts();
+  var el = document.getElementById('manage-list');
+  if (!el) return;
+  if (posts.length === 0) { el.innerHTML = '<div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">No posts yet.</div>'; return; }
+  el.innerHTML = posts.map(function(p) {
+    return '<div style="background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;">'
+      + '<div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'
+      + (p.featured ? '⭐ ' : '') + p.title
+      + '</div>'
+      + '<div style="display:flex;gap:6px;flex-shrink:0;">'
+      + '<button onclick="toggleFeatured('+p.id+')" style="background:rgba(255,202,40,.1);border:1px solid rgba(255,202,40,.3);color:var(--gold);padding:3px 8px;border-radius:4px;font-size:10px;cursor:pointer;">★ Feature</button>'
+      + '<button onclick="deletePost('+p.id+')" style="background:rgba(255,23,68,.1);border:1px solid rgba(255,23,68,.3);color:var(--red);padding:3px 8px;border-radius:4px;font-size:10px;cursor:pointer;">✕ Del</button>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+</script>
+
+
+
+<!-- ═══════════════════
+     JAVASCRIPT
+═══════════════════ -->
+<script>
+// ─── SCANNER DATA ───
+const SCANNERS=[
+  {i:'⚡',n:'Wave 3 Breakout',d:'Completing Wave 2, entering powerful Wave 3.',t:'HIGH SIGNAL',tc:'rgba(0,255,136,.1)',tcc:'#00ff88'},
+  {i:'🔺',n:'Wave 5 Exhaustion',d:'Final Wave 5 — RSI divergence & fading momentum.',t:'REVERSAL',tc:'rgba(255,23,68,.1)',tcc:'#ff1744'},
+  {i:'📐',n:'ABC Correction Finder',d:'Zigzags, flats & triangles signaling trend resumption.',t:'TREND RESUME',tc:'rgba(0,229,255,.1)',tcc:'#00e5ff'},
+  {i:'🌊',n:'Impulse Detector',d:'Complete 5-wave impulse forming across timeframes.',t:'MULTI-TF',tc:'rgba(0,229,255,.1)',tcc:'#00e5ff'},
+  {i:'📊',n:'Fibonacci Clusters',d:'Confluence of retracements & extensions.',t:'CONFLUENCE',tc:'rgba(255,202,40,.1)',tcc:'#ffca28'},
+  {i:'🔷',n:'Ending Diagonal',d:'Wedge in Wave 5 or C — sharp reversal incoming.',t:'RARE',tc:'rgba(0,255,136,.1)',tcc:'#00ff88'},
+  {i:'🔄',n:'Flat Correction',d:'B-wave near Wave A high — 3-3-5 structure.',t:'COMPLEX',tc:'rgba(179,136,255,.1)',tcc:'#b388ff'},
+  {i:'📈',n:'Running Flat',d:'Expanded flat — Wave B exceeds Wave A.',t:'ADVANCED',tc:'rgba(255,202,40,.1)',tcc:'#ffca28'},
+  {i:'🔻',n:'Zigzag Scanner',d:'Clean 5-3-5 corrections with clear ABC termination.',t:'CORRECTION',tc:'rgba(255,23,68,.1)',tcc:'#ff1744'},
+  {i:'🔶',n:'Triangle Finder',d:'Contracting & expanding triangles in Wave 4 or B.',t:'TRIANGLE',tc:'rgba(255,202,40,.1)',tcc:'#ffca28'},
+  {i:'💎',n:'Leading Diagonal',d:'Rare diagonal in Wave 1 — early reversal detection.',t:'RARE',tc:'rgba(0,255,136,.1)',tcc:'#00ff88'},
+  {i:'🎯',n:'Double Three (WXY)',d:'W-X-Y complex corrections — two patterns linked.',t:'COMPLEX',tc:'rgba(179,136,255,.1)',tcc:'#b388ff'},
+  {i:'🚀',n:'Truncated 5th Wave',d:'Wave 5 fails to exceed Wave 3 — sharp reversal signal.',t:'REVERSAL',tc:'rgba(255,23,68,.1)',tcc:'#ff1744'},
+  {i:'🌐',n:'Multi-Degree Align',d:'Minor, Intermediate & Primary degree correlation.',t:'NEW',tc:'rgba(0,229,255,.1)',tcc:'#00e5ff'},
+];
+const SCAN_DATA=[
+  {s:'RELIANCE',n:'Reliance Inds.',m:'NSE',mc:'mb-nse',p:'Impulse 5-Wave',pc:'wp-i',w:'Wave ③',wc:'#00ff88',tgt:'₹3,240',tf:'4H',c:91,chg:'+2.34%',up:true,nw:false},
+  {s:'BTCUSDT',n:'Bitcoin',m:'CRYPTO',mc:'mb-cr',p:'Impulse 5-Wave',pc:'wp-i',w:'Wave ⑤',wc:'#ffca28',tgt:'$98,400',tf:'1W',c:88,chg:'+5.12%',up:true,nw:true},
+  {s:'EURUSD',n:'Euro / USD',m:'FOREX',mc:'mb-fx',p:'ABC Correction',pc:'wp-a',w:'Wave C',wc:'#b388ff',tgt:'1.0680',tf:'1D',c:84,chg:'−0.87%',up:false,nw:false},
+  {s:'AAPL',n:'Apple Inc.',m:'US',mc:'mb-us',p:'Wave 3 Breakout',pc:'wp-i',w:'Wave ③',wc:'#00ff88',tgt:'$215.40',tf:'4H',c:82,chg:'+1.67%',up:true,nw:true},
+  {s:'NIFTY50',n:'Nifty 50 Index',m:'NSE',mc:'mb-nse',p:'Ending Diagonal',pc:'wp-e',w:'Wave ⑤',wc:'#ffca28',tgt:'24,800',tf:'1H',c:76,chg:'+0.43%',up:true,nw:false},
+  {s:'ETHUSDT',n:'Ethereum',m:'CRYPTO',mc:'mb-cr',p:'ABC Correction',pc:'wp-a',w:'Wave A',wc:'#ff1744',tgt:'$3,120',tf:'1D',c:74,chg:'−2.31%',up:false,nw:true},
+  {s:'HDFCBANK',n:'HDFC Bank',m:'NSE',mc:'mb-nse',p:'ABC Correction',pc:'wp-a',w:'Wave B',wc:'#b388ff',tgt:'₹1,780',tf:'4H',c:70,chg:'+0.61%',up:true,nw:false},
+  {s:'GBPJPY',n:'GBP / JPY',m:'FOREX',mc:'mb-fx',p:'Impulse 5-Wave',pc:'wp-i',w:'Wave ①',wc:'#00e5ff',tgt:'196.40',tf:'1D',c:79,chg:'+0.38%',up:true,nw:true},
+  {s:'TSLA',n:'Tesla Inc.',m:'US',mc:'mb-us',p:'Triangle Pattern',pc:'wp-e',w:'Wave B',wc:'#ffca28',tgt:'$195.00',tf:'1D',c:68,chg:'−1.22%',up:false,nw:true},
+  {s:'GOLD',n:'Gold Spot',m:'FOREX',mc:'mb-fx',p:'Impulse 5-Wave',pc:'wp-i',w:'Wave ①',wc:'#00e5ff',tgt:'$2,340',tf:'1D',c:85,chg:'+1.89%',up:true,nw:false},
+  {s:'TCS',n:'Tata Consult.',m:'NSE',mc:'mb-nse',p:'Wave 3 Breakout',pc:'wp-i',w:'Wave ③',wc:'#00ff88',tgt:'₹4,120',tf:'1D',c:80,chg:'+1.04%',up:true,nw:true},
+  {s:'SOLUSDT',n:'Solana',m:'CRYPTO',mc:'mb-cr',p:'Zigzag Correction',pc:'wp-a',w:'Wave C',wc:'#b388ff',tgt:'$128',tf:'4H',c:65,chg:'−3.40%',up:false,nw:false},
+  {s:'NVDA',n:'Nvidia Corp.',m:'US',mc:'mb-us',p:'Impulse 5-Wave',pc:'wp-i',w:'Wave ③',wc:'#00ff88',tgt:'$920',tf:'1W',c:90,chg:'+3.55%',up:true,nw:true},
+  {s:'USDINR',n:'USD / INR',m:'FOREX',mc:'mb-fx',p:'Flat Correction',pc:'wp-a',w:'Wave B',wc:'#b388ff',tgt:'83.60',tf:'1D',c:72,chg:'+0.12%',up:true,nw:false},
+  {s:'SBIN',n:'State Bank India',m:'NSE',mc:'mb-nse',p:'Wave 5 Exhaustion',pc:'wp-e',w:'Wave ⑤',wc:'#ffca28',tgt:'₹822',tf:'4H',c:78,chg:'−0.54%',up:false,nw:true},
+  {s:'BNBUSDT',n:'BNB',m:'CRYPTO',mc:'mb-cr',p:'Ending Diagonal',pc:'wp-e',w:'Wave ⑤',wc:'#ffca28',tgt:'$480',tf:'1D',c:83,chg:'+2.10%',up:true,nw:true},
+  {s:'MSFT',n:'Microsoft Corp.',m:'US',mc:'mb-us',p:'Impulse 5-Wave',pc:'wp-i',w:'Wave ①',wc:'#00e5ff',tgt:'$430',tf:'1W',c:86,chg:'+1.32%',up:true,nw:false},
+  {s:'XAUUSD',n:'Gold Futures',m:'FOREX',mc:'mb-fx',p:'Wave 3 Breakout',pc:'wp-i',w:'Wave ③',wc:'#00ff88',tgt:'$2,440',tf:'4H',c:89,chg:'+2.22%',up:true,nw:true},
+];
+
+let mkt='all',conf='all',scIdx=null;
+
+// ─── PAGE NAVIGATION ───
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active-link'));
+  const el=document.getElementById('nav-'+id);
+  if(el) el.classList.add('active-link');
+  window.scrollTo({top:0});
+  if(id==='scanner') renderScCards();
+  if(id==='chart') { setTimeout(renderSymGrid, 50); }
+  if(id==='blog') { setTimeout(renderBlog, 50); }
+}
+
+function scrollTo_(id){
+  showPage('home');
+  setTimeout(()=>{const el=document.querySelector(id);if(el)el.scrollIntoView({behavior:'smooth'});},100);
+}
+
+// ─── SCANNER ───
+function renderScCards(){
+  const w=document.getElementById('sc-cards');
+  w.innerHTML=SCANNERS.map((s,i)=>`
+    <div class="sc-card${scIdx===i?' sel':''}" onclick="selSc(${i})">
+      <div class="sc-ico">${s.i}</div>
+      <div class="sc-nm">${s.n}</div>
+      <div class="sc-ds">${s.d}</div>
+      <span style="display:inline-block;padding:2px 9px;border-radius:100px;background:${s.tc};color:${s.tcc};font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:1px;border:1px solid ${s.tcc}40">${s.t}</span>
+    </div>`).join('');
+  renderResults();
+}
+
+function selSc(i){scIdx=scIdx===i?null:i;renderScCards();}
+function setMkt(m,el){mkt=m;document.querySelectorAll('.mkt-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderResults();}
+function setConf(c,el){conf=c;document.querySelectorAll('.f-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderResults();}
+
+// ── LIVE API INTEGRATION ──────────────────────────────
+// Once your backend is deployed, set this URL:
+var API_URL = ''; // e.g. 'https://waveedge-backend.up.railway.app'
+var _apiLoaded = false;
+
+async function fetchLiveData() {
+  if (!API_URL) return; // no backend set yet, use demo data
+  try {
+    document.getElementById('res-title').textContent = 'FETCHING LIVE DATA...';
+    var mkt = mkt === 'all' ? '' : '?market=' + mkt;
+    var res = await fetch(API_URL + '/scan' + mkt);
+    if (!res.ok) throw new Error('API error');
+    var data = await res.json();
+    if (data.results && data.results.length > 0) {
+      // Map API results to display format
+      var liveData = data.results.map(function(r) {
+        return {
+          s: r.symbol,
+          n: r.name,
+          m: r.market,
+          mc: 'mb-' + r.market.toLowerCase().replace('commo','forex'),
+          p: r.pattern,
+          pc: r.bias === 'bullish' ? 'wp-i' : r.type === 'abc' ? 'wp-a' : 'wp-e',
+          w: r.wave,
+          wc: r.wave_color || '#00e5ff',
+          tgt: String(r.target),
+          tf: '1D',
+          c: r.confidence,
+          chg: (r.change_pct >= 0 ? '+' : '') + r.change_pct + '%',
+          up: r.change_pct >= 0,
+          nw: true
+        };
+      });
+      renderResultsWithData(liveData);
+      _apiLoaded = true;
+      var ts = data.last_scan ? ' · Last scan: ' + new Date(data.last_scan).toLocaleTimeString() : '';
+      document.getElementById('res-title').textContent = 'LIVE DATA — ' + data.count + ' PATTERNS' + ts;
+      return;
+    }
+  } catch(e) {
+    console.log('API unavailable, using demo data:', e.message);
+  }
+  renderResults(); // fallback to demo
+}
+
+function renderResults(){renderResultsWithData(SCAN_DATA);}
+function renderResultsWithData(data){
+  let d=[...SCAN_DATA];
+  if(mkt==='nse') d=d.filter(r=>r.m==='NSE'||r.m==='BSE');
+  else if(mkt==='crypto') d=d.filter(r=>r.m==='CRYPTO');
+  else if(mkt==='forex') d=d.filter(r=>r.m==='FOREX');
+  else if(mkt==='us') d=d.filter(r=>r.m==='US');
+  if(conf==='high') d=d.filter(r=>r.c>=80);
+  else if(conf==='med') d=d.filter(r=>r.c>=60&&r.c<80);
+  else if(conf==='new') d=d.filter(r=>r.nw);
+
+  var lbl = _apiLoaded ? 'LIVE' : 'DEMO';
+  document.getElementById('res-title').textContent='SHOWING '+d.length+' RESULT'+(d.length!==1?'S':'')+' — '+lbl+' SCAN';
+  document.getElementById('sc-tbody').innerHTML=d.map(r=>`
+    <tr onclick="analyzeRow('${r.s}')">
+      <td><div class="sym">${r.s}</div><div class="sym-n">${r.n}</div></td>
+      <td><span class="mb ${r.mc}">${r.m}</span></td>
+      <td><span class="wp ${r.pc}">${r.p}</span></td>
+      <td style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:${r.wc}">${r.w}</td>
+      <td><span class="tgt">${r.tgt}</span></td>
+      <td style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted)">${r.tf}</td>
+      <td><div class="conf-w"><div class="c-track"><div class="c-fill" style="width:${r.c}%"></div></div><span class="c-pct">${r.c}%</span></div></td>
+      <td class="${r.up?'up':'dn'}">${r.chg}</td>
+      <td><button class="a-btn">Analyze →</button></td>
+    </tr>`).join('');
+}
+
+function runScan(){
+  if(API_URL){
+    fetchLiveData();
+    showToast('↻ Fetching live scan from backend...');
+  } else {
+    renderResults();
+    showToast('↻ Demo data refreshed. Set API_URL to connect live backend.');
+  }
+}
+function analyzeRow(s){if(!currentUser){showPage('auth');showToast('⚡ Log in to view full wave analysis');return;}showToast('📊 Loading '+s+' Elliott Wave analysis…');}
+
+// ─── AUTH ───
+let currentUser=null;
+let selPlanIdx=1;
+const rzpLinks=['https://rzp.io/rzp/uM8NL2F','https://rzp.io/rzp/VMsJmBwc','https://rzp.io/rzp/jhulNmN'];
+
+function switchTab(tab){
+  document.getElementById('login-form').style.display=tab==='login'?'flex':'none';
+  document.getElementById('signup-form').style.display=tab==='signup'?'flex':'none';
+  document.getElementById('tab-login').classList.toggle('active',tab==='login');
+  document.getElementById('tab-signup').classList.toggle('active',tab==='signup');
+}
+function selPlan(el,i){document.querySelectorAll('.plan-opt').forEach(p=>p.classList.remove('sel'));el.classList.add('sel');selPlanIdx=i;}
+
+function doLogin(){
+  const em=document.getElementById('l-email').value.trim();
+  const pw=document.getElementById('l-pass').value;
+  if(!em||!pw){showToast('⚠ Please fill all fields');return;}
+  currentUser={name:em.split('@')[0],email:em};
+  updateNav();showPage('scanner');showToast('✦ Welcome back to WaveEdge!');
+}
+function doSignup(){
+  const fn=document.getElementById('s-fn').value.trim();
+  const em=document.getElementById('s-em').value.trim();
+  const pw=document.getElementById('s-pw').value;
+  if(!fn||!em||!pw){showToast('⚠ Please fill required fields');return;}
+  currentUser={name:fn,email:em};
+  updateNav();showPage('scanner');showToast('✦ Welcome '+fn+'! 14-day trial started.');
+}
+function socialLogin(p){currentUser={name:'Trader',email:'trader@waveedge.in'};updateNav();showPage('scanner');showToast('✦ Signed in with '+p);}
+function logout(){currentUser=null;updateNav();showPage('home');showToast('Logged out. See you soon!');}
+
+function updateNav(){
+  const pill=document.getElementById('user-pill');
+  document.getElementById('nav-login').style.display=currentUser?'none':'';
+  document.getElementById('nav-signup').style.display=currentUser?'none':'';
+  pill.style.display=currentUser?'flex':'none';
+  if(currentUser){
+    document.getElementById('u-nm').textContent=currentUser.name;
+    document.getElementById('u-av').textContent=currentUser.name[0].toUpperCase();
+  }
+}
+
+// ─── TOAST ───
+function showToast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('t-msg').textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3400);
+}
+
+// ─── SCROLL ANIM ───
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.1});
+document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
+
+// ─── API INFO MODAL ───
+function showApiInfo(){
+  var deployed = API_URL ? true : false;
+  var msg = deployed
+    ? '✦ Connected to live backend: ' + API_URL
+    : '⚙ Backend not connected yet.\n\nTo connect live data:\n1. Deploy the Python backend (see waveedge_backend folder)\n2. Set API_URL in the scanner JS to your Railway/Render URL\n3. Click Refresh to load live wave data\n\nCurrently showing demo data.';
+  alert(msg);
+}
+
+// Update API status badge
+function updateApiStatus(){
+  var el = document.getElementById('api-status-txt');
+  if(!el) return;
+  if(API_URL){
+    el.textContent = 'Live API';
+    document.getElementById('api-status').style.color = 'var(--green)';
+  } else {
+    el.textContent = 'Demo Mode — click for info';
+  }
+}
+
+// ─── INIT ───
+updateApiStatus();
+renderResults();
+if(API_URL) fetchLiveData();
+</script>
 </body>
 </html>
