@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI Smart Signal | WaveEdge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060a10;--bg2:#0a1018;--bg3:#0d1520;
+  --border:#1a2a3a;--border2:#0f1e2d;
+  --green:#00e5a0;--green-dim:rgba(0,229,160,0.12);--green-border:rgba(0,229,160,0.25);
+  --red:#ff4060;--red-dim:rgba(255,60,80,0.12);--red-border:rgba(255,60,80,0.25);
+  --gold:#ffb900;--gold-dim:rgba(255,185,0,0.10);
+  --text:#c8d8e8;--text-dim:#5a7090;--text-muted:#2a4060;
+  --mono:'Share Tech Mono',monospace;--sans:'Exo 2',sans-serif;
+}
+html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--sans);}
+body{
+  background-image:
+    radial-gradient(ellipse at 15% 5%,rgba(0,200,120,0.05) 0%,transparent 45%),
+    radial-gradient(ellipse at 85% 90%,rgba(255,60,80,0.04) 0%,transparent 45%);
+}
+
+/* NAV */
+.nav{display:flex;align-items:center;gap:0;padding:0 20px;height:56px;
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:100;}
+.nav-logo{font-family:var(--mono);font-size:17px;letter-spacing:3px;color:var(--green);
+  text-shadow:0 0 16px rgba(0,229,160,0.35);margin-right:24px;white-space:nowrap;text-decoration:none;}
+.nav-logo span{color:var(--red);}
+.nav-links{display:flex;gap:2px;flex:1;}
+.nav-link{padding:6px 14px;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;
+  border-radius:6px;cursor:pointer;color:var(--text-dim);border:1px solid transparent;
+  background:none;font-family:var(--sans);transition:all 0.18s;white-space:nowrap;}
+.nav-link:hover{color:var(--text);background:rgba(255,255,255,0.04);}
+.nav-link.active{color:var(--green);border-color:var(--green-border);background:var(--green-dim);}
+.nav-link.pg-signals.active{color:var(--gold);border-color:rgba(255,185,0,0.3);background:var(--gold-dim);}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.live-chip{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:1px;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.25}}
+.tier-toggle{display:flex;border-radius:6px;overflow:hidden;border:1px solid var(--border);}
+.tier-btn{padding:6px 12px;font-family:var(--sans);font-weight:700;font-size:11px;
+  letter-spacing:1px;cursor:pointer;border:none;transition:all 0.18s;background:var(--bg3);color:var(--text-dim);}
+.tier-btn.free.active{background:var(--green-dim);color:var(--green);}
+.tier-btn.pro.active{background:var(--gold-dim);color:var(--gold);}
+
+/* PAGES */
+.page{display:none;animation:fadeIn 0.25s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* HOME */
+.home-hero{max-width:960px;margin:0 auto;padding:56px 24px 36px;
+  display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;}
+@media(max-width:700px){.home-hero{grid-template-columns:1fr;padding:36px 16px 20px;}}
+.hero-tag{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:3px;
+  color:var(--green);border:1px solid var(--green-border);padding:4px 10px;border-radius:3px;
+  margin-bottom:16px;background:var(--green-dim);}
+.hero-title{font-size:40px;font-weight:800;line-height:1.1;margin-bottom:14px;}
+.hero-title em{color:var(--green);font-style:normal;}
+.hero-sub{font-size:14px;color:var(--text-dim);line-height:1.7;margin-bottom:28px;}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;}
+.btn-primary{padding:11px 22px;border-radius:7px;border:none;cursor:pointer;
+  font-family:var(--sans);font-weight:700;font-size:14px;background:var(--green);color:#000;transition:opacity 0.18s;}
+.btn-primary:hover{opacity:0.85;}
+.btn-outline{padding:11px 22px;border-radius:7px;cursor:pointer;font-family:var(--sans);
+  font-weight:600;font-size:13px;background:transparent;color:var(--text);
+  border:1px solid var(--border);transition:all 0.18s;}
+.btn-outline:hover{border-color:var(--green);color:var(--green);}
+.hero-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;
+  padding:20px;font-family:var(--mono);font-size:12px;line-height:1.8;color:var(--text-dim);
+  position:relative;overflow:hidden;}
+.hero-card::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(0,229,160,0.04),transparent);pointer-events:none;}
+.hero-card-label{font-size:10px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;}
+.hcr{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border2);}
+.hcr:last-child{border-bottom:none;}
+.hcr-tf{color:var(--text-muted);font-size:11px;}
+.hcr-buy{color:var(--green);font-weight:700;}
+.hcr-sell{color:var(--red);font-weight:700;}
+.hcr-za{color:rgba(0,229,160,0.5);font-size:10px;}
+.hcr-zb{color:rgba(255,60,80,0.5);font-size:10px;}
+
+.features-grid{max-width:960px;margin:0 auto 60px;padding:0 24px;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+@media(max-width:700px){.features-grid{grid-template-columns:1fr;}}
+.feature-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;
+  padding:20px;transition:border-color 0.2s;}
+.feature-card:hover{border-color:rgba(0,229,160,0.2);}
+.fi{font-size:22px;margin-bottom:10px;}
+.ft{font-size:14px;font-weight:700;margin-bottom:6px;color:#e0f0ff;}
+.fd{font-size:12px;color:var(--text-dim);line-height:1.6;}
+
+/* SIGNAL PAGE */
+.sp-wrap{max-width:1020px;margin:0 auto;padding:28px 20px 60px;}
+.sp-title-row{display:flex;align-items:baseline;gap:12px;margin-bottom:6px;flex-wrap:wrap;}
+.sp-title{font-size:26px;font-weight:800;}
+.sp-title em{color:var(--green);font-style:normal;}
+.sp-badge{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--green);
+  border:1px solid var(--green-border);background:var(--green-dim);padding:3px 8px;border-radius:3px;}
+.sp-sub{font-size:11px;color:var(--text-muted);letter-spacing:1px;font-family:var(--mono);margin-bottom:18px;}
+
+/* Summary */
+.summary-strip{display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+  padding:10px 16px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:8px;margin-bottom:18px;}
+.ss-label{font-family:var(--mono);font-size:10px;color:var(--text-muted);letter-spacing:1px;}
+.ss-val{font-family:var(--mono);font-size:12px;font-weight:700;}
+.ss-val.buy{color:var(--green);}
+.ss-val.sell{color:var(--red);}
+.ss-divider{width:1px;height:18px;background:var(--border);}
+.ss-watch{font-family:var(--mono);font-size:14px;font-weight:700;color:#e0f0ff;}
+.update-stamp{font-family:var(--mono);font-size:10px;color:var(--text-muted);margin-left:auto;}
+
+/* Controls */
+.sp-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+.sp-input{background:var(--bg3);border:1px solid var(--border);color:var(--text);
+  padding:9px 12px;border-radius:7px;font-family:var(--mono);font-size:13px;
+  outline:none;width:170px;transition:border-color 0.18s;}
+.sp-input:focus{border-color:var(--green);}
+.sp-input::placeholder{color:var(--text-muted);}
+.sp-add-btn{background:var(--green);color:#000;border:none;padding:9px 14px;
+  border-radius:7px;font-family:var(--sans);font-weight:700;font-size:13px;cursor:pointer;transition:opacity 0.18s;}
+.sp-add-btn:hover{opacity:0.85;}
+.sp-refresh{background:var(--bg3);border:1px solid var(--border);color:var(--green);
+  padding:9px 12px;border-radius:7px;font-family:var(--sans);font-weight:700;
+  font-size:13px;cursor:pointer;transition:all 0.18s;}
+.sp-refresh:hover{border-color:var(--green);}
+
+/* Recent chips */
+.recent-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px;align-items:center;}
+.recent-label{font-family:var(--mono);font-size:10px;color:var(--text-muted);letter-spacing:1px;white-space:nowrap;}
+.recent-chip{font-family:var(--mono);font-size:11px;letter-spacing:1px;padding:3px 9px;
+  border-radius:4px;cursor:pointer;border:1px solid var(--border);background:var(--bg3);
+  color:var(--text-dim);transition:all 0.15s;}
+.recent-chip:hover{border-color:var(--green);color:var(--green);}
+
+/* Upgrade banner */
+.upgrade-banner{background:linear-gradient(135deg,#120e00,#0d0900);
+  border:1px solid #2a1e00;border-radius:10px;padding:14px 18px;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px;}
+.ub-icon{font-size:20px;}
+.ub-text{flex:1;}
+.ub-text strong{color:var(--gold);font-size:13px;}
+.ub-text p{font-size:11px;color:#5a4010;margin-top:2px;}
+.ub-btn{background:linear-gradient(135deg,#b88000,#ffb900);color:#000;border:none;
+  padding:9px 16px;border-radius:6px;font-family:var(--sans);font-weight:700;
+  font-size:12px;cursor:pointer;white-space:nowrap;transition:opacity 0.18s;}
+.ub-btn:hover{opacity:0.85;}
+
+/* Table */
+.main-table-wrap{border-radius:12px;overflow:hidden;border:1px solid var(--border);
+  box-shadow:0 8px 40px rgba(0,0,0,0.5);margin-bottom:18px;overflow-x:auto;}
+.main-table{width:100%;border-collapse:collapse;min-width:600px;}
+.main-table thead tr{background:#080f18;}
+.main-table th{padding:11px 6px;font-size:10px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:var(--text-muted);text-align:center;border-bottom:1px solid var(--border);}
+.main-table th.th-left{text-align:left;padding-left:16px;}
+.main-table th.th-paid{color:rgba(255,185,0,0.5);border-left:2px solid rgba(255,185,0,0.12);}
+.main-table tbody tr{border-bottom:1px solid var(--border2);transition:background 0.12s;}
+.main-table tbody tr:hover{background:rgba(0,229,160,0.025);}
+.main-table tbody tr:last-child{border-bottom:none;}
+.main-table td{padding:9px 5px;text-align:center;vertical-align:middle;}
+.main-table td.td-ticker{font-family:var(--mono);font-size:13px;font-weight:700;color:#e0f0ff;
+  letter-spacing:2px;text-align:left;padding-left:16px;background:var(--bg2);white-space:nowrap;}
+.main-table td.td-ticker small{display:block;font-size:9px;color:var(--text-muted);letter-spacing:1px;margin-top:1px;}
+.main-table td.td-paid{border-left:2px solid rgba(255,185,0,0.1);}
+.remove-btn{background:none;border:none;color:var(--text-muted);cursor:pointer;
+  font-size:16px;padding:2px 6px;border-radius:4px;transition:color 0.15s;line-height:1;}
+.remove-btn:hover{color:var(--red);}
+
+/* Signal cell */
+.sc{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.sc-sig{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:0.5px;
+  padding:2px 7px;border-radius:3px;white-space:nowrap;}
+.sc.buy .sc-sig{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+.sc.sell .sc-sig{background:var(--red-dim);color:var(--red);border:1px solid var(--red-border);}
+.sc.neutral .sc-sig{background:rgba(90,120,150,0.08);color:#3a5a7a;border:1px solid rgba(90,120,150,0.15);}
+.sc-zero{font-size:9px;letter-spacing:0.5px;}
+.sc-zero.above{color:rgba(0,229,160,0.5);}
+.sc-zero.below{color:rgba(255,60,80,0.45);}
+.sc-locked{display:flex;align-items:center;justify-content:center;gap:3px;
+  font-family:var(--mono);font-size:9px;color:rgba(255,185,0,0.4);letter-spacing:1px;}
+.mbar{width:30px;height:3px;background:#0d1520;border-radius:2px;overflow:hidden;margin-top:2px;}
+.mbar-fill{height:100%;border-radius:2px;}
+.mbar-fill.pos{background:var(--green);}
+.mbar-fill.neg{background:var(--red);}
+
+/* ABOUT */
+.about-wrap{max-width:760px;margin:0 auto;padding:48px 24px 60px;}
+.about-section{margin-bottom:36px;}
+.about-h{font-size:20px;font-weight:700;color:#e0f0ff;margin-bottom:12px;
+  padding-bottom:8px;border-bottom:1px solid var(--border);}
+.about-p{font-size:14px;color:var(--text-dim);line-height:1.8;margin-bottom:12px;}
+.about-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px;}
+.about-table th{text-align:left;padding:8px 12px;background:var(--bg2);
+  color:var(--text-muted);font-size:11px;letter-spacing:1px;border-bottom:1px solid var(--border);}
+.about-table td{padding:9px 12px;border-bottom:1px solid var(--border2);color:var(--text-dim);}
+.about-table td:first-child{font-family:var(--mono);color:#e0f0ff;}
+
+/* Footer */
+.sp-footer{font-family:var(--mono);font-size:10px;color:var(--text-muted);
+  text-align:center;letter-spacing:1px;padding-top:10px;}
+
+@media(max-width:640px){
+  .sp-title{font-size:20px;}
+  .main-table td.td-ticker{font-size:11px;}
+  .sc-sig{font-size:9px;}
+  .sp-input{width:130px;}
+  .nav-logo{font-size:14px;margin-right:12px;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a class="nav-logo" href="index.html">Wave<span>Edge</span></a>
+  <div class="nav-links">
+    <button class="nav-link" onclick="showPage('home')">Home</button>
+    <button class="nav-link pg-signals" onclick="showPage('signals')">⚡ Signal Table</button>
+    <button class="nav-link" onclick="showPage('about')">How It Works</button>
+  </div>
+  <div class="nav-right">
+    <div class="live-chip"><div class="live-dot"></div><span>LIVE</span></div>
+    <div class="tier-toggle">
+      <button class="tier-btn free active" id="btn-free" onclick="setTier(false)">FREE</button>
+      <button class="tier-btn pro" id="btn-pro" onclick="setTier(true)">⚡ PRO</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+  <div class="home-hero">
+    <div>
+      <div class="hero-tag">⚡ AI SMART SIGNAL</div>
+      <h1 class="hero-title">Trade with <em>Precision</em> Intelligence</h1>
+      <p class="hero-sub">Multi-timeframe MACD analysis — from monthly to 5-minute — giving you BUY/SELL signals and zero-line context across every horizon, in real time.</p>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="showPage('signals')">Launch Signal Table →</button>
+        <button class="btn-outline" onclick="showPage('about')">How It Works</button>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-label">NIFTY50 · PREVIEW</div>
+      <div class="hcr"><span class="hcr-tf">Monthly</span><span class="hcr-buy">BUY</span><span class="hcr-za">▲ zero</span></div>
+      <div class="hcr"><span class="hcr-tf">Weekly</span><span class="hcr-sell">SELL</span><span class="hcr-zb">▼ zero</span></div>
+      <div class="hcr"><span class="hcr-tf">Daily</span><span class="hcr-buy">BUY</span><span class="hcr-za">▲ zero</span></div>
+      <div class="hcr"><span class="hcr-tf">75 Min ⚡</span><span class="hcr-buy">BUY</span><span class="hcr-za">▲ zero</span></div>
+      <div class="hcr"><span class="hcr-tf">15 Min ⚡</span><span class="hcr-sell">SELL</span><span class="hcr-zb">▼ zero</span></div>
+      <div class="hcr"><span class="hcr-tf">5 Min ⚡</span><span class="hcr-buy">BUY</span><span class="hcr-za">▲ zero</span></div>
+    </div>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card"><div class="fi">📊</div><div class="ft">6 Timeframes</div><div class="fd">Monthly, Weekly, Daily for free. 75-min, 15-min, 5-min on Pro — full market coverage.</div></div>
+    <div class="feature-card"><div class="fi">🤖</div><div class="ft">AI Smart Signal</div><div class="fd">MACD crossover signals enriched with zero-line context for higher-conviction entries.</div></div>
+    <div class="feature-card"><div class="fi">🧾</div><div class="ft">Multi-Scrip Table</div><div class="fd">Watch up to 20 scrips simultaneously. Recent scrips auto-populate your watchlist.</div></div>
+    <div class="feature-card"><div class="fi">⚡</div><div class="ft">Intraday Pro</div><div class="fd">Unlock 5, 15, and 75-minute signals for scalping and intraday trading precision.</div></div>
+    <div class="feature-card"><div class="fi">🔁</div><div class="ft">Auto-Refresh</div><div class="fd">Table refreshes every 30 seconds so you're always looking at the latest signal state.</div></div>
+    <div class="feature-card"><div class="fi">🎯</div><div class="ft">Zero Line Context</div><div class="fd">Know whether MACD is above or below zero — crucial for momentum confirmation.</div></div>
+  </div>
+</div>
+
+<!-- SIGNAL PAGE -->
+<div class="page" id="page-signals">
+  <div class="sp-wrap">
+    <div>
+      <div class="sp-title-row">
+        <h1 class="sp-title">AI <em>Smart Signal</em></h1>
+        <span class="sp-badge">LIVE</span>
+      </div>
+      <div class="sp-sub">MACD (12, 26, 9) · Signal Line Crossover · Zero Line Position · Multi-Timeframe</div>
+    </div>
+
+    <div class="summary-strip">
+      <span class="ss-label">WATCHING</span>
+      <span class="ss-val ss-watch" id="ss-count">10 scrips</span>
+      <div class="ss-divider"></div>
+      <span class="ss-label">BUY</span>
+      <span class="ss-val buy" id="ss-buys">▲ 0</span>
+      <div class="ss-divider"></div>
+      <span class="ss-label">SELL</span>
+      <span class="ss-val sell" id="ss-sells">▼ 0</span>
+      <span class="update-stamp" id="update-stamp"></span>
+    </div>
+
+    <div class="sp-controls">
+      <input class="sp-input" id="scrip-input" placeholder="Add scrip (e.g. INFY)…" maxlength="10" onkeydown="if(event.key==='Enter')addScrip()"/>
+      <button class="sp-add-btn" onclick="addScrip()">+ ADD</button>
+      <button class="sp-refresh" onclick="refreshAll()">↻ REFRESH</button>
+    </div>
+
+    <div class="recent-row" id="recent-row">
+      <span class="recent-label">RECENT:</span>
+    </div>
+
+    <div class="upgrade-banner" id="upgrade-banner">
+      <div class="ub-icon">⚡</div>
+      <div class="ub-text">
+        <strong>Unlock Intraday Signals — 5, 15 &amp; 75-Min</strong>
+        <p>Get buy/sell signals across all 6 timeframes for precision entries and exits.</p>
+      </div>
+      <button class="ub-btn" onclick="setTier(true)">UPGRADE TO PRO</button>
+    </div>
+
+    <div class="main-table-wrap">
+      <table class="main-table">
+        <thead>
+          <tr>
+            <th class="th-left" style="width:130px">SCRIP</th>
+            <th>MONTHLY</th>
+            <th>WEEKLY</th>
+            <th>DAILY</th>
+            <th class="th-paid">75 MIN</th>
+            <th class="th-paid">15 MIN</th>
+            <th class="th-paid">5 MIN</th>
+            <th style="width:28px"></th>
+          </tr>
+        </thead>
+        <tbody id="signal-tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="sp-footer">
+      MACD (12, 26, 9) · BUY = MACD above Signal Line · SELL = MACD below Signal Line · Zero Line = MACD vs 0 · Simulated data for demo
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT PAGE -->
+<div class="page" id="page-about">
+  <div class="about-wrap">
+    <div class="about-section">
+      <h2 class="about-h">How AI Smart Signal Works</h2>
+      <p class="about-p">AI Smart Signal applies the classic MACD (12, 26, 9) indicator across six timeframes simultaneously, giving traders a complete picture from long-term trend to intraday momentum.</p>
+      <p class="about-p">The MACD line (EMA-12 minus EMA-26) is compared against its 9-period signal line. A crossover above generates a <strong style="color:var(--green)">BUY</strong> signal; below generates a <strong style="color:var(--red)">SELL</strong>. The zero line context indicates whether the overall momentum is bullish or bearish.</p>
+    </div>
+    <div class="about-section">
+      <h2 class="about-h">Timeframe Reference</h2>
+      <table class="about-table">
+        <thead><tr><th>Timeframe</th><th>Best For</th><th>Tier</th></tr></thead>
+        <tbody>
+          <tr><td>Monthly</td><td>Long-term position trades, macro trend</td><td style="color:var(--green);font-family:var(--mono);font-size:11px">FREE</td></tr>
+          <tr><td>Weekly</td><td>Swing trades, multi-week holds</td><td style="color:var(--green);font-family:var(--mono);font-size:11px">FREE</td></tr>
+          <tr><td>Daily</td><td>Positional trades, 1-5 day setups</td><td style="color:var(--green);font-family:var(--mono);font-size:11px">FREE</td></tr>
+          <tr><td>75 Min</td><td>Short-term swing, overnight positions</td><td style="color:var(--gold);font-family:var(--mono);font-size:11px">PRO ⚡</td></tr>
+          <tr><td>15 Min</td><td>Intraday trading, breakout entries</td><td style="color:var(--gold);font-family:var(--mono);font-size:11px">PRO ⚡</td></tr>
+          <tr><td>5 Min</td><td>Scalping, quick intraday moves</td><td style="color:var(--gold);font-family:var(--mono);font-size:11px">PRO ⚡</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="about-section">
+      <h2 class="about-h">Signal Interpretation</h2>
+      <p class="about-p">A <strong style="color:var(--green)">BUY</strong> signal above zero is the strongest bullish setup. A <strong style="color:var(--red)">SELL</strong> below zero is the strongest bearish signal. Crossovers near the zero line carry less conviction and require additional confirmation.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────────
+var isPaid = false;
+var scrips = ["AAPL","TSLA","NVDA","MSFT","RELIANCE","INFY","SBIN","TATAMOTORS","QQQ","SPY","AMZN","META"];
+var allData = {};
+var currentPage = 'home';
+
+var TIMEFRAMES = [
+  {id:"monthly",label:"Monthly",paid:false,bars:60, tfSeed:100},
+  {id:"weekly", label:"Weekly", paid:false,bars:80, tfSeed:200},
+  {id:"daily",  label:"Daily",  paid:false,bars:120,tfSeed:300},
+  {id:"tf75",   label:"75 Min",paid:true, bars:150,tfSeed:400},
+  {id:"tf15",   label:"15 Min",paid:true, bars:200,tfSeed:500},
+  {id:"tf5",    label:"5 Min", paid:true, bars:300,tfSeed:600}
+];
+
+// ── MACD Engine ───────────────────────────────────────────────────────────────
+function emaCalc(data, period) {
+  if (data.length < period) return [];
+  var k = 2 / (period + 1);
+  var val = 0;
+  for (var i = 0; i < period; i++) val += data[i];
+  val /= period;
+  var result = [val];
+  for (var i = period; i < data.length; i++) {
+    val = data[i] * k + val * (1 - k);
+    result.push(val);
+  }
+  return result;
+}
+
+function computeMACD(closes) {
+  if (closes.length < 35) return null;
+  var e12 = emaCalc(closes, 12);
+  var e26 = emaCalc(closes, 26);
+  var macdLine = [];
+  for (var i = 0; i < e26.length; i++) macdLine.push(e12[i + 11] - e26[i]);
+  var sigLine = emaCalc(macdLine, 9);
+  var mv = macdLine[macdLine.length - 1];
+  var sv = sigLine[sigLine.length - 1];
+  var pm = macdLine[macdLine.length - 2] !== undefined ? macdLine[macdLine.length - 2] : mv;
+  var ps = sigLine[sigLine.length - 2] !== undefined ? sigLine[sigLine.length - 2] : sv;
+  return {macdVal:mv, sigVal:sv, histogram:mv-sv, prevMacd:pm, prevSig:ps};
+}
+
+function getSignal(macd) {
+  if (!macd) return {signal:"—",zero:"—",histogram:0};
+  var zero = macd.macdVal > 0 ? "ABOVE" : "BELOW";
+  var signal = "NEUTRAL";
+  if (macd.macdVal > macd.sigVal) signal = "BUY";
+  if (macd.macdVal < macd.sigVal) signal = "SELL";
+  return {signal:signal, zero:zero, histogram:macd.histogram, macdVal:macd.macdVal, sigVal:macd.sigVal};
+}
+
+function rng(s) { var x = Math.sin(s * 9301 + 49297) * 233280; return x - Math.floor(x); }
+
+function generatePrices(tSeed, tfSeed, count) {
+  var prices = [];
+  var price = 450 + (tSeed % 80) - 40;
+  for (var i = 0; i < count; i++) {
+    var r1 = rng(tSeed * 0.37 + tfSeed * 0.13 + i * 0.079);
+    var r2 = rng(tSeed * 0.19 + tfSeed * 0.41 + i * 0.053 + 1);
+    var trend = Math.sin(i / (count * 0.18) + tSeed * 0.01) * 0.008;
+    price = price * (1 + (r1 - 0.48 + trend) * 0.013);
+    prices.push(price + (r2 - 0.5) * price * 0.003);
+  }
+  return prices;
+}
+
+function tickerHash(t) {
+  var h = 0;
+  for (var i = 0; i < t.length; i++) h = ((h * 31 + t.charCodeAt(i)) >>> 0);
+  return h;
+}
+
+function computeForTicker(ticker) {
+  var seed = tickerHash(ticker);
+  var result = {};
+  for (var i = 0; i < TIMEFRAMES.length; i++) {
+    var tf = TIMEFRAMES[i];
+    if (tf.paid && !isPaid) { result[tf.id] = null; continue; }
+    var prices = generatePrices(seed, tf.tfSeed, tf.bars);
+    result[tf.id] = getSignal(computeMACD(prices));
+  }
+  return result;
+}
+
+// ── Rendering ─────────────────────────────────────────────────────────────────
+function sigCellHTML(data, locked) {
+  if (locked) return '<div class="sc-locked">🔒 PRO</div>';
+  if (!data || data.signal === "—") return '<div class="sc neutral"><span class="sc-sig">—</span></div>';
+  var cls = data.signal === "BUY" ? "buy" : data.signal === "SELL" ? "sell" : "neutral";
+  var zeroCls = data.zero === "ABOVE" ? "above" : "below";
+  var zeroTxt = data.zero === "ABOVE" ? "▲ zero" : "▼ zero";
+  var hist = data.histogram || 0;
+  var pct = Math.min(Math.abs(hist) / (Math.abs(hist) * 3 || 1) * 100, 100);
+  var barDir = hist > 0 ? "pos" : "neg";
+  return '<div class="sc ' + cls + '">' +
+    '<span class="sc-sig">' + data.signal + '</span>' +
+    '<span class="sc-zero ' + zeroCls + '">' + zeroTxt + '</span>' +
+    '<div class="mbar"><div class="mbar-fill ' + barDir + '" style="width:' + pct + '%"></div></div>' +
+    '</div>';
+}
+
+function renderTable() {
+  var tbody = document.getElementById('signal-tbody');
+  var rows = '';
+  var totalBuys = 0, totalSells = 0;
+
+  for (var i = 0; i < scrips.length; i++) {
+    var ticker = scrips[i];
+    var d = allData[ticker] || {};
+    var buys = 0, sells = 0;
+    for (var j = 0; j < TIMEFRAMES.length; j++) {
+      var tf = TIMEFRAMES[j];
+      if (tf.paid && !isPaid) continue;
+      if (d[tf.id] && d[tf.id].signal === "BUY") buys++;
+      if (d[tf.id] && d[tf.id].signal === "SELL") sells++;
+    }
+    totalBuys += buys; totalSells += sells;
+    var smallTxt = buys > sells ? '▲ ' + buys + 'B' : sells > buys ? '▼ ' + sells + 'S' : '—';
+    if (buys > 0 && sells > 0) smallTxt = buys + 'B · ' + sells + 'S';
+
+    rows += '<tr>' +
+      '<td class="td-ticker">' + ticker + '<small>' + smallTxt + '</small></td>' +
+      '<td>' + sigCellHTML(d.monthly, false) + '</td>' +
+      '<td>' + sigCellHTML(d.weekly, false) + '</td>' +
+      '<td>' + sigCellHTML(d.daily, false) + '</td>' +
+      '<td class="td-paid">' + sigCellHTML(d.tf75, !isPaid) + '</td>' +
+      '<td class="td-paid">' + sigCellHTML(d.tf15, !isPaid) + '</td>' +
+      '<td class="td-paid">' + sigCellHTML(d.tf5, !isPaid) + '</td>' +
+      '<td><button class="remove-btn" onclick="removeScrip(\'' + ticker + '\')" title="Remove">×</button></td>' +
+      '</tr>';
+  }
+  tbody.innerHTML = rows;
+
+  document.getElementById('ss-count').textContent = scrips.length + ' scrips';
+  document.getElementById('ss-buys').textContent = '▲ ' + totalBuys;
+  document.getElementById('ss-sells').textContent = '▼ ' + totalSells;
+  document.getElementById('update-stamp').textContent = '↻ ' + new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+
+  renderRecentChips();
+  document.getElementById('upgrade-banner').style.display = isPaid ? 'none' : 'flex';
+}
+
+function renderRecentChips() {
+  var row = document.getElementById('recent-row');
+  var chips = scrips.slice(0, 6);
+  var html = '<span class="recent-label">RECENT:</span>';
+  for (var i = 0; i < chips.length; i++) {
+    html += '<span class="recent-chip" onclick="highlightScrip(\'' + chips[i] + '\')">' + chips[i] + '</span>';
+  }
+  row.innerHTML = html;
+}
+
+function highlightScrip(t) {
+  // Move to top when clicked
+  scrips = [t].concat(scrips.filter(function(x){ return x !== t; }));
+  refreshAll();
+}
+
+// ── Actions ───────────────────────────────────────────────────────────────────
+function refreshAll() {
+  for (var i = 0; i < scrips.length; i++) {
+    allData[scrips[i]] = computeForTicker(scrips[i]);
+  }
+  renderTable();
+}
+
+function addScrip() {
+  var input = document.getElementById('scrip-input');
+  var val = input.value.trim().toUpperCase();
+  if (!val) return;
+  if (scrips.indexOf(val) === -1) {
+    scrips.unshift(val);
+    if (scrips.length > 20) scrips = scrips.slice(0, 20);
+  } else {
+    // Move to top
+    scrips = [val].concat(scrips.filter(function(x){ return x !== val; }));
+  }
+  allData[val] = computeForTicker(val);
+  input.value = '';
+  renderTable();
+  input.focus();
+}
+
+function removeScrip(ticker) {
+  scrips = scrips.filter(function(x){ return x !== ticker; });
+  renderTable();
+}
+
+function setTier(paid) {
+  isPaid = paid;
+  document.getElementById('btn-free').className = 'tier-btn free' + (paid ? '' : ' active');
+  document.getElementById('btn-pro').className = 'tier-btn pro' + (paid ? ' active' : '');
+  refreshAll();
+}
+
+// ── Navigation ────────────────────────────────────────────────────────────────
+function showPage(id) {
+  currentPage = id;
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(function(l){ l.classList.remove('active'); });
+  var links = document.querySelectorAll('.nav-link');
+  var pages = ['home','signals','about'];
+  for (var i = 0; i < pages.length; i++) {
+    if (pages[i] === id) links[i].classList.add('active');
+  }
+  if (id === 'signals') renderTable();
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+refreshAll();
+setInterval(refreshAll, 30000);
+</script>
+</body>
+</html>
