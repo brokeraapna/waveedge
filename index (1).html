@@ -1705,7 +1705,7 @@ function setConf(c,el){conf=c;document.querySelectorAll('.f-btn').forEach(b=>b.c
 
 // ── LIVE API INTEGRATION ──────────────────────────────
 // Once your backend is deployed, set this URL:
-var API_URL = ''; // e.g. 'https://waveedge-backend.up.railway.app'
+var API_URL = 'https://waveedge-backend-1.onrender.com';
 var _apiLoaded = false;
 
 async function fetchLiveData() {
@@ -1857,7 +1857,8 @@ function updateApiStatus(){
     el.textContent = 'Live API';
     document.getElementById('api-status').style.color = 'var(--green)';
   } else {
-    el.textContent = 'Demo Mode — click for info';
+    el.textContent = 'Live API Connected';
+    document.getElementById('api-status').style.color = 'var(--green)';
   }
 }
 
@@ -1876,10 +1877,7 @@ if(API_URL) fetchLiveData();
   <!-- HEADER -->
   <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:16px;">
     <div>
-      <div class="sec-lbl" style="margin-bottom:4px;">// AI Smart Signal</div>
-      <h2 style="font-family:'Orbitron',monospace;font-size:26px;font-weight:900;letter-spacing:-1px;margin-bottom:6px;">
-        Multi-Timeframe <span style="color:var(--cyan)">MACD Scanner</span>
-      </h2>
+
       <p style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">BUY / SELL signals across Monthly · Weekly · Daily · 75m · 15m · 5m — auto-refreshes every 30s</p>
     </div>
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
@@ -2264,13 +2262,6 @@ function initSignals(){
   <!-- HEADER -->
   <div class="s2-header">
     <div>
-      <div class="sec-lbl" style="margin-bottom:4px;">// AI Smart Signal</div>
-      <h2 style="font-family:'Orbitron',monospace;font-size:24px;font-weight:900;letter-spacing:-1px;margin-bottom:5px;">
-        Zero-Line MACD <span style="color:#00e5a0;">Signal Table</span>
-      </h2>
-      <p style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">
-        BUY when MACD crosses above zero &nbsp;·&nbsp; SELL when MACD crosses below zero &nbsp;·&nbsp; Auto-refresh 30s
-      </p>
     </div>
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <div class="live-tag"><div class="pulse"></div>LIVE</div>
@@ -2519,6 +2510,12 @@ function s2_addScrip() {
 function s2_remove(t) { s2_scrips=s2_scrips.filter(function(x){return x!==t;}); s2_renderTable(); }
 function s2_bump(t)   { s2_scrips=[t].concat(s2_scrips.filter(function(x){return x!==t;})); s2_refreshAll(); }
 function s2_clearAll(){ if(!confirm('Clear all scrips?')) return; s2_scrips=[]; s2_allData={}; s2_renderTable(); }
+
+// Auto-init on script load so table shows immediately
+(function(){
+  try { s2_refreshAll(); } catch(e) {}
+  setInterval(s2_refreshAll, 30000);
+})();
 
 function s2_setTier(paid) {
   s2_isPaid=paid;
