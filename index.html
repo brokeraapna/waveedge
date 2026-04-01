@@ -2446,7 +2446,7 @@ function s2_cellHTML(data, locked) {
 
 function s2_renderTable() {
   var tbody=document.getElementById('s2-tbody');
-  if (!tbody) return;
+  if (!tbody) { setTimeout(s2_renderTable, 100); return; }
   var rows='', totalB=0, totalS=0, proAlerts=0, i, j, tf, d, ticker, buys, sells, small;
   for (i=0;i<s2_scrips.length;i++) {
     ticker=s2_scrips[i]; d=s2_allData[ticker]||{}; buys=0; sells=0;
@@ -2498,12 +2498,15 @@ function s2_refreshAll() {
 
 function s2_addScrip() {
   var inp=document.getElementById('s2-input');
+  if (!inp) return;
   var val=inp.value.trim().toUpperCase();
   if (!val) return;
   s2_scrips=[val].concat(s2_scrips.filter(function(x){return x!==val;}));
   if (s2_scrips.length>25) s2_scrips=s2_scrips.slice(0,25);
   s2_allData[val]=s2_compute(val);
-  inp.value=''; s2_renderTable(); inp.focus();
+  inp.value='';
+  s2_refreshAll();
+  setTimeout(function(){ if(inp) inp.focus(); }, 50);
   showToast('✦ '+val+' added to signal watchlist');
 }
 
@@ -2511,9 +2514,14 @@ function s2_remove(t) { s2_scrips=s2_scrips.filter(function(x){return x!==t;}); 
 function s2_bump(t)   { s2_scrips=[t].concat(s2_scrips.filter(function(x){return x!==t;})); s2_refreshAll(); }
 function s2_clearAll(){ if(!confirm('Clear all scrips?')) return; s2_scrips=[]; s2_allData={}; s2_renderTable(); }
 
-// Auto-init on script load so table shows immediately
+// Auto-init — run now and also after DOM ready
 (function(){
-  try { s2_refreshAll(); } catch(e) {}
+  function tryInit(){
+    var t = document.getElementById('s2-tbody');
+    if(t){ s2_refreshAll(); }
+    else { setTimeout(tryInit, 200); }
+  }
+  tryInit();
   setInterval(s2_refreshAll, 30000);
 })();
 
