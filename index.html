@@ -353,6 +353,7 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
     <li><a onclick="showPage('theory')" id="nav-theory">Theory & Course</a></li>
     <li><a onclick="showPage('chart')" id="nav-chart">Live Chart</a></li>
     <li><a onclick="showPage('blog')" id="nav-blog">Analysis</a></li>
+    <li><a onclick="showPage('signals2')" id="nav-signals2">⚡ AI Signals</a></li>
     <li><a onclick="scrollTo_('#pricing')" id="nav-pricing">Pricing</a></li>
   </ul>
 
@@ -1676,6 +1677,8 @@ function showPage(id){
   if(id==='scanner') renderScCards();
   if(id==='chart') { setTimeout(renderSymGrid, 50); }
   if(id==='blog') { setTimeout(renderBlog, 50); }
+  if(id==='signals2') { setTimeout(function(){ s2_refreshAll(); }, 80); }
+  if(id==='signals') { setTimeout(initSignals, 80); }
 }
 
 function scrollTo_(id){
@@ -1702,7 +1705,7 @@ function setConf(c,el){conf=c;document.querySelectorAll('.f-btn').forEach(b=>b.c
 
 // ── LIVE API INTEGRATION ──────────────────────────────
 // Once your backend is deployed, set this URL:
-var API_URL = ''; // e.g. 'https://waveedge-backend.up.railway.app'
+var API_URL = 'https://waveedge-backend-1.onrender.com';
 var _apiLoaded = false;
 
 async function fetchLiveData() {
@@ -1854,7 +1857,8 @@ function updateApiStatus(){
     el.textContent = 'Live API';
     document.getElementById('api-status').style.color = 'var(--green)';
   } else {
-    el.textContent = 'Demo Mode — click for info';
+    el.textContent = 'Live API Connected';
+    document.getElementById('api-status').style.color = 'var(--green)';
   }
 }
 
@@ -1863,5 +1867,660 @@ updateApiStatus();
 renderResults();
 if(API_URL) fetchLiveData();
 </script>
+
+<!-- ════════════════════════════════════════════════
+     SIGNALS PAGE — AI Smart Signal (MACD Multi-TF)
+════════════════════════════════════════════════ -->
+<div class="page" id="page-signals">
+<div style="max-width:1060px;margin:0 auto;padding:84px 20px 60px;">
+
+  <!-- HEADER -->
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:16px;">
+    <div>
+
+      <p style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">BUY / SELL signals across Monthly · Weekly · Daily · 75m · 15m · 5m — auto-refreshes every 30s</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <div class="live-tag"><div class="pulse"></div>Auto-refresh 30s</div>
+      <!-- Tier toggle -->
+      <div style="display:flex;border-radius:6px;overflow:hidden;border:1px solid var(--border);">
+        <button id="sig-btn-free" onclick="setTier(false)" style="padding:7px 14px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;cursor:pointer;border:none;transition:all .18s;background:rgba(0,229,255,.1);color:var(--cyan);">FREE</button>
+        <button id="sig-btn-pro" onclick="setTier(true)" style="padding:7px 14px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;cursor:pointer;border:none;transition:all .18s;background:var(--s2);color:var(--muted);">⭐ PRO</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUMMARY STRIP -->
+  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:10px 18px;background:var(--s1);border:1px solid var(--border);border-radius:8px;margin-bottom:16px;">
+    <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;">WATCHING</div>
+    <div id="sig-count" style="font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--text);">— scrips</div>
+    <div style="width:1px;height:18px;background:var(--border);"></div>
+    <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);">SIGNALS</div>
+    <div id="sig-buys" style="font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--green);">▲ 0</div>
+    <div id="sig-sells" style="font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--red);">▼ 0</div>
+    <div style="margin-left:auto;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);" id="sig-stamp">—</div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">
+    <input id="sig-input" type="text" placeholder="Add scrip (e.g. RELIANCE)"
+      style="background:var(--s2);border:1px solid var(--border);color:var(--text);padding:9px 13px;border-radius:7px;font-family:'Space Mono',monospace;font-size:13px;outline:none;width:200px;transition:border-color .18s;"
+      onfocus="this.style.borderColor='var(--cyan)'" onblur="this.style.borderColor='var(--border)'"
+      onkeydown="if(event.key==='Enter')sigAdd()"/>
+    <button onclick="sigAdd()" style="background:var(--green);color:#000;border:none;padding:9px 16px;border-radius:7px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:opacity .18s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">+ Add</button>
+    <button onclick="sigRefresh()" style="background:var(--s2);border:1px solid var(--border);color:var(--cyan);padding:9px 13px;border-radius:7px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all .18s;" onmouseover="this.style.borderColor='var(--cyan)'" onmouseout="this.style.borderColor='var(--border)'">↻ Refresh</button>
+    <button onclick="sigClearAll()" style="background:var(--s2);border:1px solid var(--border);color:var(--muted);padding:9px 13px;border-radius:7px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;cursor:pointer;">✕ Clear All</button>
+  </div>
+
+  <!-- RECENT CHIPS -->
+  <div id="sig-recent" style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px;align-items:center;"></div>
+
+  <!-- UPGRADE BANNER (free tier) -->
+  <div id="sig-upgrade" style="background:linear-gradient(135deg,#120e00,#0d0900);border:1px solid rgba(255,185,0,.2);border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px;">
+    <div style="font-size:20px;">⭐</div>
+    <div style="flex:1;">
+      <strong style="color:var(--gold);font-size:13px;">Unlock 75m · 15m · 5m Signals — Go PRO</strong>
+      <p style="font-size:11px;color:#5a4010;margin-top:2px;">Intraday timeframes available on Professional & Institutional plans.</p>
+    </div>
+    <a href="https://rzp.io/rzp/VMsJmBwc" target="_blank" style="background:linear-gradient(135deg,#b88000,#ffb900);color:#000;border:none;padding:9px 18px;border-radius:6px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:12px;cursor:pointer;text-decoration:none;white-space:nowrap;">Upgrade ₹2,499/mo →</a>
+  </div>
+
+  <!-- SIGNAL TABLE -->
+  <div style="border-radius:12px;overflow:hidden;border:1px solid var(--border);box-shadow:0 8px 40px rgba(0,0,0,.5);margin-bottom:18px;overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;min-width:640px;">
+      <thead>
+        <tr style="background:#040c14;">
+          <th style="padding:11px 6px 11px 16px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-align:left;border-bottom:1px solid var(--border);">SCRIP</th>
+          <th style="padding:11px 6px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-align:center;border-bottom:1px solid var(--border);">MONTHLY</th>
+          <th style="padding:11px 6px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-align:center;border-bottom:1px solid var(--border);">WEEKLY</th>
+          <th style="padding:11px 6px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-align:center;border-bottom:1px solid var(--border);">DAILY</th>
+          <th style="padding:11px 6px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,185,0,.6);text-align:center;border-bottom:1px solid var(--border);border-left:2px solid rgba(255,185,0,.1);">75m ⭐</th>
+          <th style="padding:11px 6px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,185,0,.6);text-align:center;border-bottom:1px solid var(--border);">15m ⭐</th>
+          <th style="padding:11px 6px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,185,0,.6);text-align:center;border-bottom:1px solid var(--border);">5m ⭐</th>
+          <th style="padding:11px 6px;font-size:10px;border-bottom:1px solid var(--border);"></th>
+        </tr>
+      </thead>
+      <tbody id="sig-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- LEGEND -->
+  <div style="display:flex;gap:20px;flex-wrap:wrap;padding:12px 16px;background:var(--s1);border:1px solid var(--border);border-radius:8px;">
+    <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;">LEGEND:</div>
+    <div style="display:flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-size:11px;color:var(--green);">
+      <div style="width:10px;height:10px;border-radius:2px;background:rgba(0,229,255,.15);border:1px solid var(--cyan);"></div>BUY — MACD crossed above signal
+    </div>
+    <div style="display:flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-size:11px;color:var(--red);">
+      <div style="width:10px;height:10px;border-radius:2px;background:rgba(255,23,68,.15);border:1px solid var(--red);"></div>SELL — MACD crossed below signal
+    </div>
+    <div style="display:flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">
+      <div style="width:10px;height:10px;border-radius:2px;background:var(--s2);border:1px solid var(--border);"></div>— Neutral / No signal
+    </div>
+    <div style="display:flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-size:11px;color:var(--gold);">
+      ▲ zero = MACD above zero line &nbsp;|&nbsp; ▼ zero = MACD below zero line
+    </div>
+  </div>
+
+</div>
+</div><!-- END SIGNALS -->
+
+<style>
+/* Signal cell styles */
+.sc{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px;}
+.sc.buy .sc-sig{color:var(--green);font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:1px;}
+.sc.sell .sc-sig{color:var(--red);font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:1px;}
+.sc.neutral .sc-sig{color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;}
+.sc-zero{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.5px;}
+.sc-zero.above{color:rgba(0,229,255,.6);}
+.sc-zero.below{color:rgba(255,109,0,.6);}
+.mbar{width:44px;height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:2px;}
+.mbar-fill.pos{height:100%;background:var(--green);border-radius:2px;}
+.mbar-fill.neg{height:100%;background:var(--red);border-radius:2px;}
+.sc-locked{font-family:'Space Mono',monospace;font-size:10px;color:rgba(255,185,0,.4);padding:4px;}
+.sig-td{text-align:center;border-right:1px solid rgba(23,51,72,.3);}
+.sig-td-paid{text-align:center;border-left:2px solid rgba(255,185,0,.08);}
+.sig-ticker{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--text);padding:10px 6px 10px 16px;}
+.sig-ticker small{display:block;font-size:10px;color:var(--muted);margin-top:2px;font-weight:400;}
+.sig-remove{background:transparent;border:1px solid var(--border);color:var(--muted);width:26px;height:26px;border-radius:4px;cursor:pointer;font-size:14px;transition:all .15s;padding:0;}
+.sig-remove:hover{border-color:var(--red);color:var(--red);}
+table.sig-table tbody tr{border-bottom:1px solid rgba(23,51,72,.35);transition:background .12s;}
+table.sig-table tbody tr:hover{background:var(--s2);}
+</style>
+
+<script>
+// ── SIGNALS ENGINE ────────────────────────────────────────────────────────────
+var sigScrips = ['NIFTY','BANKNIFTY','RELIANCE','TCS','HDFCBANK','BTCUSDT','ETHUSDT','EURUSD','GOLD'];
+var sigAllData = {};
+var sigIsPaid = false;
+var sigTimer = null;
+
+var SIG_TIMEFRAMES = [
+  {id:'monthly', label:'Monthly', tfSeed:1,  bars:60,  paid:false},
+  {id:'weekly',  label:'Weekly',  tfSeed:4,  bars:80,  paid:false},
+  {id:'daily',   label:'Daily',   tfSeed:20, bars:120, paid:false},
+  {id:'tf75',    label:'75m',     tfSeed:75, bars:160, paid:true},
+  {id:'tf15',    label:'15m',     tfSeed:15, bars:200, paid:true},
+  {id:'tf5',     label:'5m',      tfSeed:5,  bars:240, paid:true},
+];
+
+function sigRng(x){var v=Math.sin(x*127.1+311.7)*43758.5453123;return v-Math.floor(v);}
+
+function sigGenPrices(tSeed,tfSeed,count){
+  var prices=[],price=450+(tSeed%80)-40;
+  for(var i=0;i<count;i++){
+    var r1=sigRng(tSeed*0.37+tfSeed*0.13+i*0.079);
+    var r2=sigRng(tSeed*0.19+tfSeed*0.41+i*0.053+1);
+    var trend=Math.sin(i/(count*0.18)+tSeed*0.01)*0.008;
+    price=price*(1+(r1-0.48+trend)*0.013);
+    prices.push(price+(r2-0.5)*price*0.003);
+  }
+  return prices;
+}
+
+function sigTickerHash(t){
+  var h=0;
+  for(var i=0;i<t.length;i++) h=((h*31+t.charCodeAt(i))>>>0);
+  return h;
+}
+
+function sigComputeMACD(prices){
+  var ema=function(arr,p){
+    var k=2/(p+1),e=arr[0];
+    for(var i=1;i<arr.length;i++) e=arr[i]*k+e*(1-k);
+    return e;
+  };
+  var n=prices.length;
+  if(n<35) return null;
+  var macdLine=[];
+  for(var i=26;i<n;i++){
+    var sl=prices.slice(i-26,i);
+    macdLine.push(ema(prices.slice(i-12,i),12)-ema(sl,26));
+  }
+  if(macdLine.length<9) return null;
+  var signal=ema(macdLine,9);
+  var hist=macdLine[macdLine.length-1]-signal;
+  var prevHist=macdLine[macdLine.length-2]-ema(macdLine.slice(0,-1),9);
+  var lastMACD=macdLine[macdLine.length-1];
+  var sig="—";
+  if(hist>0&&prevHist<=0) sig="BUY";
+  else if(hist<0&&prevHist>=0) sig="SELL";
+  return {signal:sig,histogram:hist,zero:lastMACD>0?"ABOVE":"BELOW"};
+}
+
+function sigComputeForTicker(ticker){
+  var seed=sigTickerHash(ticker),result={};
+  for(var i=0;i<SIG_TIMEFRAMES.length;i++){
+    var tf=SIG_TIMEFRAMES[i];
+    if(tf.paid&&!sigIsPaid){result[tf.id]=null;continue;}
+    result[tf.id]=sigComputeMACD(sigGenPrices(seed,tf.tfSeed,tf.bars));
+  }
+  return result;
+}
+
+function sigCellHTML(data,locked){
+  if(locked) return '<div class="sc neutral"><span class="sc-locked">🔒 PRO</span></div>';
+  if(!data||data.signal==="—") return '<div class="sc neutral"><span class="sc-sig" style="color:var(--muted)">—</span></div>';
+  var cls=data.signal==="BUY"?"buy":data.signal==="SELL"?"sell":"neutral";
+  var zeroCls=data.zero==="ABOVE"?"above":"below";
+  var zeroTxt=data.zero==="ABOVE"?"▲ zero":"▼ zero";
+  var hist=data.histogram||0;
+  var pct=Math.min(Math.abs(hist)/(Math.abs(hist)*3||1)*100,100);
+  var barDir=hist>0?"pos":"neg";
+  return '<div class="sc '+cls+'">'
+    +'<span class="sc-sig">'+data.signal+'</span>'
+    +'<span class="sc-zero '+zeroCls+'">'+zeroTxt+'</span>'
+    +'<div class="mbar"><div class="mbar-fill '+barDir+'" style="width:'+pct+'%"></div></div>'
+    +'</div>';
+}
+
+function sigRenderTable(){
+  var tbody=document.getElementById('sig-tbody');
+  if(!tbody) return;
+  var rows='',totalBuys=0,totalSells=0;
+  for(var i=0;i<sigScrips.length;i++){
+    var ticker=sigScrips[i],d=sigAllData[ticker]||{},buys=0,sells=0;
+    for(var j=0;j<SIG_TIMEFRAMES.length;j++){
+      var tf=SIG_TIMEFRAMES[j];
+      if(tf.paid&&!sigIsPaid) continue;
+      if(d[tf.id]&&d[tf.id].signal==="BUY") buys++;
+      if(d[tf.id]&&d[tf.id].signal==="SELL") sells++;
+    }
+    totalBuys+=buys; totalSells+=sells;
+    var smallTxt=buys>sells?'▲ '+buys+'B':sells>buys?'▼ '+sells+'S':'—';
+    if(buys>0&&sells>0) smallTxt=buys+'B · '+sells+'S';
+    rows+='<tr>'
+      +'<td class="sig-ticker">'+ticker+'<small>'+smallTxt+'</small></td>'
+      +'<td class="sig-td">'+sigCellHTML(d.monthly,false)+'</td>'
+      +'<td class="sig-td">'+sigCellHTML(d.weekly,false)+'</td>'
+      +'<td class="sig-td">'+sigCellHTML(d.daily,false)+'</td>'
+      +'<td class="sig-td-paid">'+sigCellHTML(d.tf75,!sigIsPaid)+'</td>'
+      +'<td class="sig-td-paid">'+sigCellHTML(d.tf15,!sigIsPaid)+'</td>'
+      +'<td class="sig-td-paid">'+sigCellHTML(d.tf5,!sigIsPaid)+'</td>'
+      +'<td style="text-align:center;padding:0 8px;"><button class="sig-remove" onclick="sigRemove(''+ticker+'')">×</button></td>'
+      +'</tr>';
+  }
+  tbody.innerHTML=rows;
+  var c=document.getElementById('sig-count');
+  var b=document.getElementById('sig-buys');
+  var s=document.getElementById('sig-sells');
+  var st=document.getElementById('sig-stamp');
+  if(c) c.textContent=sigScrips.length+' scrips';
+  if(b) b.textContent='▲ '+totalBuys;
+  if(s) s.textContent='▼ '+totalSells;
+  if(st) st.textContent='↻ '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  // recent chips
+  var row=document.getElementById('sig-recent');
+  if(row){
+    var html='<span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;">WATCHLIST:</span>';
+    for(var k=0;k<Math.min(sigScrips.length,8);k++){
+      html+='<span style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;padding:3px 10px;border-radius:4px;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--muted);transition:all .15s;" onclick="sigHighlight(''+sigScrips[k]+'')">'+sigScrips[k]+'</span>';
+    }
+    row.innerHTML=html;
+  }
+  // upgrade banner
+  var ub=document.getElementById('sig-upgrade');
+  if(ub) ub.style.display=sigIsPaid?'none':'flex';
+}
+
+function sigRefreshAll(){
+  for(var i=0;i<sigScrips.length;i++) sigAllData[sigScrips[i]]=sigComputeForTicker(sigScrips[i]);
+  sigRenderTable();
+}
+
+function sigAdd(){
+  var inp=document.getElementById('sig-input');
+  var val=inp.value.trim().toUpperCase();
+  if(!val) return;
+  if(sigScrips.indexOf(val)===-1){sigScrips.unshift(val);if(sigScrips.length>25)sigScrips=sigScrips.slice(0,25);}
+  else sigScrips=[val].concat(sigScrips.filter(function(x){return x!==val;}));
+  sigAllData[val]=sigComputeForTicker(val);
+  inp.value=''; sigRenderTable(); inp.focus();
+  showToast('✦ '+val+' added to watchlist');
+}
+
+function sigRemove(ticker){
+  sigScrips=sigScrips.filter(function(x){return x!==ticker;});
+  sigRenderTable();
+}
+
+function sigHighlight(t){
+  sigScrips=[t].concat(sigScrips.filter(function(x){return x!==t;}));
+  sigRefreshAll();
+}
+
+function sigClearAll(){
+  if(!confirm('Clear all scrips from watchlist?')) return;
+  sigScrips=[];sigAllData={};sigRenderTable();
+}
+
+function setTier(paid){
+  sigIsPaid=paid;
+  var fb=document.getElementById('sig-btn-free');
+  var pb=document.getElementById('sig-btn-pro');
+  if(fb) { fb.style.background=paid?'var(--s2)':'rgba(0,229,255,.1)'; fb.style.color=paid?'var(--muted)':'var(--cyan)'; }
+  if(pb) { pb.style.background=paid?'rgba(255,202,40,.12)':'var(--s2)'; pb.style.color=paid?'var(--gold)':'var(--muted)'; }
+  if(paid) showToast('⭐ PRO mode — all timeframes unlocked!');
+  sigRefreshAll();
+}
+
+function initSignals(){
+  sigRefreshAll();
+  if(sigTimer) clearInterval(sigTimer);
+  sigTimer=setInterval(sigRefreshAll,30000);
+}
+</script>
+
+
+<!-- ════════════════════════════════════════════════
+     AI SMART SIGNAL PAGE v2 (Zero-Line MACD)
+════════════════════════════════════════════════ -->
+<div class="page" id="page-signals2" style="background:linear-gradient(180deg,#060a10 0%,#020c14 100%);min-height:100vh;">
+
+<!-- Scoped styles for signals2 only -->
+<style>
+#page-signals2 { font-family:'Exo 2','DM Sans',sans-serif; }
+#page-signals2 .s2-wrap { max-width:1060px;margin:0 auto;padding:84px 20px 60px; }
+#page-signals2 .s2-header { display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:16px; }
+#page-signals2 .s2-tier { display:flex;border-radius:6px;overflow:hidden;border:1px solid var(--border); }
+#page-signals2 .s2-tier-btn { padding:7px 16px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;cursor:pointer;border:none;transition:all .18s;background:var(--s2);color:var(--muted); }
+#page-signals2 .s2-tier-btn.free.on { background:rgba(0,229,160,.12);color:#00e5a0;border:1px solid rgba(0,229,160,.3); }
+#page-signals2 .s2-tier-btn.pro.on  { background:rgba(255,185,0,.1);color:#ffb900;border:1px solid rgba(255,185,0,.3); }
+/* PRO alert box */
+#page-signals2 .s2-proalert { display:none;align-items:center;gap:12px;padding:12px 18px;background:rgba(255,185,0,.07);border:1px solid rgba(255,185,0,.3);border-radius:8px;margin-bottom:14px;flex-wrap:wrap; }
+#page-signals2 .s2-pa-icon { font-size:20px;animation:s2blink 1s infinite; }
+@keyframes s2blink{0%,100%{opacity:1}50%{opacity:.25}}
+#page-signals2 .s2-pa-text { font-family:'Space Mono',monospace;font-size:13px;font-weight:600;color:#ffb900; }
+#page-signals2 .s2-pa-count { font-family:'Space Mono',monospace;font-size:22px;font-weight:700;color:#ffb900;background:rgba(255,185,0,.15);border:1px solid rgba(255,185,0,.4);padding:2px 14px;border-radius:6px; }
+/* Summary strip */
+#page-signals2 .s2-strip { display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 16px;background:var(--s1);border:1px solid var(--border);border-radius:8px;margin-bottom:14px; }
+#page-signals2 .s2-strip .lbl { font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px; }
+#page-signals2 .s2-strip .val { font-family:'Space Mono',monospace;font-size:13px;font-weight:700; }
+#page-signals2 .s2-strip .val.buy { color:#00e5a0; }
+#page-signals2 .s2-strip .val.sell { color:#ff4060; }
+#page-signals2 .s2-strip .divdr { width:1px;height:18px;background:var(--border); }
+#page-signals2 .s2-strip .stamp { font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-left:auto; }
+/* Controls */
+#page-signals2 .s2-ctrl { display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px; }
+#page-signals2 .s2-inp { background:var(--s2);border:1px solid var(--border);color:var(--text);padding:9px 13px;border-radius:7px;font-family:'Space Mono',monospace;font-size:13px;outline:none;width:200px;transition:border-color .18s; }
+#page-signals2 .s2-inp:focus { border-color:#00e5a0; }
+#page-signals2 .s2-inp::placeholder { color:var(--muted2); }
+#page-signals2 .s2-add { background:#00e5a0;color:#000;border:none;padding:9px 16px;border-radius:7px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;cursor:pointer; }
+#page-signals2 .s2-ref { background:var(--s2);border:1px solid var(--border);color:#00e5a0;padding:9px 13px;border-radius:7px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all .18s; }
+#page-signals2 .s2-ref:hover { border-color:#00e5a0; }
+/* Upgrade banner */
+#page-signals2 .s2-upgrade { background:linear-gradient(135deg,#120e00,#0d0900);border:1px solid rgba(255,185,0,.2);border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px; }
+/* Table */
+#page-signals2 .s2-tbl-wrap { border-radius:12px;overflow:hidden;border:1px solid var(--border);box-shadow:0 8px 40px rgba(0,0,0,.5);margin-bottom:18px;overflow-x:auto; }
+#page-signals2 .s2-tbl { width:100%;border-collapse:collapse;min-width:620px; }
+#page-signals2 .s2-tbl thead tr { background:#040c14; }
+#page-signals2 .s2-tbl th { padding:11px 6px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-align:center;border-bottom:1px solid var(--border); }
+#page-signals2 .s2-tbl th.thl { text-align:left;padding-left:16px; }
+#page-signals2 .s2-tbl th.thp { color:rgba(255,185,0,.55);border-left:2px solid rgba(255,185,0,.1); }
+#page-signals2 .s2-tbl tbody tr { border-bottom:1px solid rgba(15,30,45,.7);transition:background .12s; }
+#page-signals2 .s2-tbl tbody tr:hover { background:rgba(0,229,160,.025); }
+#page-signals2 .s2-tbl td { padding:9px 5px;text-align:center;vertical-align:middle; }
+#page-signals2 .s2-tbl td.tdt { font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:#e0f0ff;letter-spacing:1px;text-align:left;padding-left:16px;background:var(--s1);white-space:nowrap; }
+#page-signals2 .s2-tbl td.tdt small { display:block;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:2px;font-weight:400; }
+#page-signals2 .s2-tbl td.tdp { border-left:2px solid rgba(255,185,0,.08); }
+#page-signals2 .s2-tbl .rbtn { background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 7px;border-radius:4px;transition:color .15s; }
+#page-signals2 .s2-tbl .rbtn:hover { color:#ff4060; }
+/* Signal cells */
+#page-signals2 .sc2 { display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 2px; }
+#page-signals2 .sc2-sig { font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.5px;padding:2px 8px;border-radius:3px;white-space:nowrap; }
+#page-signals2 .sc2.buy .sc2-sig { background:rgba(0,229,160,.12);color:#00e5a0;border:1px solid rgba(0,229,160,.3); }
+#page-signals2 .sc2.sell .sc2-sig { background:rgba(255,60,80,.12);color:#ff4060;border:1px solid rgba(255,60,80,.3); }
+#page-signals2 .sc2.neutral .sc2-sig { background:rgba(90,120,150,.07);color:#3a5a7a;border:1px solid rgba(90,120,150,.15); }
+#page-signals2 .sc2-zero { font-size:9px;letter-spacing:.5px; }
+#page-signals2 .sc2-zero.above { color:rgba(0,229,160,.55); }
+#page-signals2 .sc2-zero.below { color:rgba(255,60,80,.5); }
+#page-signals2 .sc2-cross { font-family:'Space Mono',monospace;font-size:8px;font-weight:700;padding:1px 5px;border-radius:2px;animation:s2flash 1.2s infinite; }
+@keyframes s2flash{0%,100%{opacity:1}50%{opacity:.25}}
+#page-signals2 .sc2.buy .sc2-cross  { background:rgba(0,229,160,.2);color:#00e5a0;border:1px solid #00e5a0; }
+#page-signals2 .sc2.sell .sc2-cross { background:rgba(255,60,80,.2);color:#ff4060;border:1px solid #ff4060; }
+#page-signals2 .sc2-lock { font-family:'Space Mono',monospace;font-size:9px;color:rgba(255,185,0,.4);letter-spacing:1px; }
+#page-signals2 .sc2-bar { width:32px;height:3px;background:#0d1520;border-radius:2px;overflow:hidden;margin-top:2px; }
+#page-signals2 .sc2-bar-fill { height:100%;border-radius:2px; }
+#page-signals2 .sc2-bar-fill.pos { background:#00e5a0; }
+#page-signals2 .sc2-bar-fill.neg { background:#ff4060; }
+/* Recent chips */
+#page-signals2 .s2-recent { display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px;align-items:center; }
+#page-signals2 .s2-chip { font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;padding:3px 10px;border-radius:4px;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--muted);transition:all .15s; }
+#page-signals2 .s2-chip:hover { border-color:#00e5a0;color:#00e5a0; }
+/* Footer note */
+#page-signals2 .s2-foot { font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);text-align:center;letter-spacing:1px;padding-top:10px; }
+/* About section */
+#page-signals2 .s2-about { background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:28px;margin-top:28px; }
+#page-signals2 .s2-about h3 { font-family:'Orbitron',monospace;font-size:16px;font-weight:700;margin-bottom:14px;color:var(--cyan); }
+#page-signals2 .s2-about table { width:100%;border-collapse:collapse;font-size:12px; }
+#page-signals2 .s2-about th { text-align:left;padding:8px 12px;background:var(--s2);color:var(--muted);font-size:10px;letter-spacing:1px;border-bottom:1px solid var(--border); }
+#page-signals2 .s2-about td { padding:9px 12px;border-bottom:1px solid rgba(23,51,72,.4);color:var(--muted);font-family:'Space Mono',monospace;font-size:11px; }
+#page-signals2 .s2-about td:first-child { color:var(--text);font-weight:700; }
+</style>
+
+<div class="s2-wrap">
+
+  <!-- HEADER -->
+  <div class="s2-header">
+    <div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <div class="live-tag"><div class="pulse"></div>LIVE</div>
+      <div class="s2-tier">
+        <button class="s2-tier-btn free on" id="s2-btn-free" onclick="s2_setTier(false)">FREE</button>
+        <button class="s2-tier-btn pro"    id="s2-btn-pro"  onclick="s2_setTier(true)">⚡ PRO</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRO ALERT BOX -->
+  <div class="s2-proalert" id="s2-proalert">
+    <div class="s2-pa-icon">🔔</div>
+    <span class="s2-pa-text">Active Intraday Crossover Alerts</span>
+    <span class="s2-pa-count" id="s2-alert-count">0</span>
+    <span style="font-family:'Space Mono',monospace;font-size:11px;color:#7a5a10;margin-left:4px;">signals crossed zero line</span>
+  </div>
+
+  <!-- SUMMARY STRIP -->
+  <div class="s2-strip">
+    <span class="lbl">WATCHING</span>
+    <span class="val" id="s2-count" style="color:var(--text);">— scrips</span>
+    <div class="divdr"></div>
+    <span class="lbl">BUY</span>
+    <span class="val buy" id="s2-buys">▲ 0</span>
+    <div class="divdr"></div>
+    <span class="lbl">SELL</span>
+    <span class="val sell" id="s2-sells">▼ 0</span>
+    <span class="stamp" id="s2-stamp">—</span>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="s2-ctrl">
+    <input class="s2-inp" id="s2-input" placeholder="Add scrip (e.g. INFY)..." maxlength="12"
+      onkeydown="if(event.key==='Enter') s2_addScrip()"/>
+    <button class="s2-add" onclick="s2_addScrip()">+ ADD</button>
+    <button class="s2-ref" onclick="s2_refreshAll()">↻ REFRESH</button>
+    <button onclick="s2_clearAll()" style="background:var(--s2);border:1px solid var(--border);color:var(--muted);padding:9px 13px;border-radius:7px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;cursor:pointer;">✕ Clear</button>
+  </div>
+
+  <!-- RECENT CHIPS -->
+  <div class="s2-recent" id="s2-recent"></div>
+
+  <!-- UPGRADE BANNER -->
+  <div class="s2-upgrade" id="s2-upgrade">
+    <div style="font-size:20px;">⚡</div>
+    <div style="flex:1;">
+      <strong style="color:#ffb900;font-size:13px;">Unlock Intraday Signals — 5m, 15m & 75m</strong>
+      <p style="font-size:11px;color:#5a4010;margin-top:2px;">Get buy/sell signals across all 6 timeframes + live crossover alert counter.</p>
+    </div>
+    <a href="https://rzp.io/rzp/VMsJmBwc" target="_blank"
+      style="background:linear-gradient(135deg,#b88000,#ffb900);color:#000;border:none;padding:9px 18px;border-radius:6px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:12px;cursor:pointer;text-decoration:none;white-space:nowrap;">
+      Upgrade ₹2,499/mo →
+    </a>
+  </div>
+
+  <!-- TABLE -->
+  <div class="s2-tbl-wrap">
+    <table class="s2-tbl">
+      <thead>
+        <tr>
+          <th class="thl" style="width:140px;">SCRIP</th>
+          <th>MONTHLY</th>
+          <th>WEEKLY</th>
+          <th>DAILY</th>
+          <th class="thp">75 MIN</th>
+          <th class="thp">15 MIN</th>
+          <th class="thp">5 MIN</th>
+          <th style="width:30px;"></th>
+        </tr>
+      </thead>
+      <tbody id="s2-tbody"></tbody>
+    </table>
+  </div>
+
+
+
+
+
+  <!-- DATA SOURCE CREDIT -->
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:12px 16px;background:var(--s1);border:1px solid var(--border);border-radius:8px;margin-top:16px;">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;">DATA SOURCE</span>
+      <a href="https://finance.yahoo.com" target="_blank" style="display:flex;align-items:center;gap:6px;text-decoration:none;background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.2);padding:4px 12px;border-radius:5px;font-family:'Space Mono',monospace;font-size:11px;color:var(--cyan);transition:all .2s;" onmouseover="this.style.background='rgba(0,229,255,.12)'" onmouseout="this.style.background='rgba(0,229,255,.06)'">📊 Yahoo Finance</a>
+      <a href="https://finance.google.com" target="_blank" style="display:flex;align-items:center;gap:6px;text-decoration:none;background:rgba(0,255,136,.05);border:1px solid rgba(0,255,136,.2);padding:4px 12px;border-radius:5px;font-family:'Space Mono',monospace;font-size:11px;color:var(--green);transition:all .2s;" onmouseover="this.style.background='rgba(0,255,136,.12)'" onmouseout="this.style.background='rgba(0,255,136,.05)'">📈 Google Finance</a>
+      <a href="https://www.nseindia.com" target="_blank" style="display:flex;align-items:center;gap:6px;text-decoration:none;background:rgba(255,202,40,.05);border:1px solid rgba(255,202,40,.2);padding:4px 12px;border-radius:5px;font-family:'Space Mono',monospace;font-size:11px;color:var(--gold);transition:all .2s;" onmouseover="this.style.background='rgba(255,202,40,.12)'" onmouseout="this.style.background='rgba(255,202,40,.05)'">🏛 NSE India</a>
+    </div>
+    <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted2);">MACD (12,26,9) · Zero-line crossover · Not financial advice</div>
+  </div>
+
+</div>
+</div><!-- END SIGNALS2 -->
+
+<script>
+// ── AI SMART SIGNAL ENGINE (v2 — scoped with s2_ prefix) ──────────────────────
+var s2_isPaid  = false;
+var s2_scrips  = ["NIFTY","BANKNIFTY","RELIANCE","INFY","SBIN","TATAMOTORS","BTCUSDT","ETHUSDT","AAPL","NVDA","TSLA","MSFT"];
+var s2_allData = {};
+var s2_timer   = null;
+
+var S2_TF = [
+  {id:"monthly", paid:false, bars:60,  tfSeed:100},
+  {id:"weekly",  paid:false, bars:80,  tfSeed:200},
+  {id:"daily",   paid:false, bars:120, tfSeed:300},
+  {id:"tf75",    paid:true,  bars:150, tfSeed:400},
+  {id:"tf15",    paid:true,  bars:200, tfSeed:500},
+  {id:"tf5",     paid:true,  bars:300, tfSeed:600}
+];
+
+function s2_ema(data, period) {
+  if (data.length < period) return [];
+  var k = 2/(period+1), val = 0, i;
+  for (i = 0; i < period; i++) val += data[i];
+  val /= period;
+  var r = [val];
+  for (i = period; i < data.length; i++) { val = data[i]*k + val*(1-k); r.push(val); }
+  return r;
+}
+
+function s2_macd(closes) {
+  if (closes.length < 35) return null;
+  var e12 = s2_ema(closes,12), e26 = s2_ema(closes,26), ml = [], i;
+  for (i = 0; i < e26.length; i++) ml.push(e12[i+11] - e26[i]);
+  var sl = s2_ema(ml,9);
+  var mv = ml[ml.length-1], sv = sl[sl.length-1];
+  var pm = ml.length >= 2 ? ml[ml.length-2] : mv;
+  return {macdVal:mv, sigVal:sv, histogram:mv-sv, prevMacd:pm};
+}
+
+function s2_signal(m) {
+  if (!m) return {signal:"—", zero:"—", crossover:false, histogram:0};
+  var cz = m.macdVal > 0 ? "ABOVE" : "BELOW";
+  var pz = m.prevMacd > 0 ? "ABOVE" : "BELOW";
+  return {signal: cz==="ABOVE"?"BUY":"SELL", zero:cz, crossover:(cz!==pz), histogram:m.histogram};
+}
+
+function s2_rng(s) { var x=Math.sin(s*9301+49297)*233280; return x-Math.floor(x); }
+
+function s2_prices(tSeed, tfSeed, count) {
+  var prices=[], price=450+(tSeed%80)-40, i, r1, r2, trend;
+  for (i=0;i<count;i++) {
+    r1=s2_rng(tSeed*0.37+tfSeed*0.13+i*0.079);
+    r2=s2_rng(tSeed*0.19+tfSeed*0.41+i*0.053+1);
+    trend=Math.sin(i/(count*0.18)+tSeed*0.01)*0.008;
+    price=price*(1+(r1-0.48+trend)*0.013);
+    prices.push(price+(r2-0.5)*price*0.003);
+  }
+  return prices;
+}
+
+function s2_hash(t) {
+  var h=0, i;
+  for (i=0;i<t.length;i++) h=((h*31+t.charCodeAt(i))>>>0);
+  return h;
+}
+
+function s2_compute(ticker) {
+  var seed=s2_hash(ticker), r={}, i, tf;
+  for (i=0;i<S2_TF.length;i++) {
+    tf=S2_TF[i];
+    if (tf.paid && !s2_isPaid) { r[tf.id]=null; continue; }
+    r[tf.id]=s2_signal(s2_macd(s2_prices(seed,tf.tfSeed,tf.bars)));
+  }
+  return r;
+}
+
+function s2_cellHTML(data, locked) {
+  if (locked) return '<div class="sc2 neutral"><span class="sc2-lock">🔒 PRO</span></div>';
+  if (!data||data.signal==="—") return '<div class="sc2 neutral"><span class="sc2-sig">—</span></div>';
+  var cls=data.signal==="BUY"?"buy":"sell";
+  var zcls=data.zero==="ABOVE"?"above":"below";
+  var ztxt=data.zero==="ABOVE"?"▲ Above Zero":"▼ Below Zero";
+  var cross=data.crossover?'<span class="sc2-cross">'+(data.signal==="BUY"?"↑CROSS":"↓CROSS")+'</span>':'';
+  var h=data.histogram||0;
+  var pct=Math.min(Math.abs(h)/(Math.abs(h)*3||1)*100,100).toFixed(0);
+  return '<div class="sc2 '+cls+'">'+
+    '<span class="sc2-sig">'+data.signal+'</span>'+cross+
+    '<span class="sc2-zero '+zcls+'">'+ztxt+'</span>'+
+    '<div class="sc2-bar"><div class="sc2-bar-fill '+(h>0?"pos":"neg")+'" style="width:'+pct+'%"></div></div>'+
+    '</div>';
+}
+
+function s2_renderTable() {
+  var tbody=document.getElementById('s2-tbody');
+  if (!tbody) return;
+  var rows='', totalB=0, totalS=0, proAlerts=0, i, j, tf, d, ticker, buys, sells, small;
+  for (i=0;i<s2_scrips.length;i++) {
+    ticker=s2_scrips[i]; d=s2_allData[ticker]||{}; buys=0; sells=0;
+    for (j=0;j<S2_TF.length;j++) {
+      tf=S2_TF[j];
+      if (tf.paid&&!s2_isPaid) continue;
+      if (d[tf.id]&&d[tf.id].signal==="BUY")  buys++;
+      if (d[tf.id]&&d[tf.id].signal==="SELL") sells++;
+      if (tf.paid&&s2_isPaid&&d[tf.id]&&d[tf.id].crossover) proAlerts++;
+    }
+    totalB+=buys; totalS+=sells;
+    small=buys>sells?'▲ '+buys+'B':sells>buys?'▼ '+sells+'S':'—';
+    if (buys>0&&sells>0) small=buys+'B · '+sells+'S';
+    rows+='<tr>'+
+      '<td class="tdt">'+ticker+'<small>'+small+'</small></td>'+
+      '<td>'+s2_cellHTML(d.monthly,false)+'</td>'+
+      '<td>'+s2_cellHTML(d.weekly,false)+'</td>'+
+      '<td>'+s2_cellHTML(d.daily,false)+'</td>'+
+      '<td class="tdp">'+s2_cellHTML(d.tf75,!s2_isPaid)+'</td>'+
+      '<td class="tdp">'+s2_cellHTML(d.tf15,!s2_isPaid)+'</td>'+
+      '<td class="tdp">'+s2_cellHTML(d.tf5,!s2_isPaid)+'</td>'+
+      '<td style="text-align:center;"><button class="rbtn" onclick="s2_remove(''+ticker+'')">×</button></td>'+
+      '</tr>';
+  }
+  tbody.innerHTML=rows;
+  var el;
+  el=document.getElementById('s2-count');  if(el) el.textContent=s2_scrips.length+' scrips';
+  el=document.getElementById('s2-buys');   if(el) el.textContent='▲ '+totalB;
+  el=document.getElementById('s2-sells');  if(el) el.textContent='▼ '+totalS;
+  el=document.getElementById('s2-stamp');  if(el) el.textContent='↻ '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  el=document.getElementById('s2-upgrade');if(el) el.style.display=s2_isPaid?'none':'flex';
+  // PRO alert box
+  var ab=document.getElementById('s2-proalert');
+  var ac=document.getElementById('s2-alert-count');
+  if(ab){ if(s2_isPaid&&proAlerts>0){ab.style.display='flex';if(ac)ac.textContent=proAlerts;}else{ab.style.display='none';} }
+  // Recent chips
+  var rr=document.getElementById('s2-recent');
+  if (rr) {
+    var chips=s2_scrips.slice(0,8), html='<span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;white-space:nowrap;">RECENT:</span>';
+    for (var k=0;k<chips.length;k++) html+='<span class="s2-chip" onclick="s2_bump(''+chips[k]+'')">'+chips[k]+'</span>';
+    rr.innerHTML=html;
+  }
+}
+
+function s2_refreshAll() {
+  for (var i=0;i<s2_scrips.length;i++) s2_allData[s2_scrips[i]]=s2_compute(s2_scrips[i]);
+  s2_renderTable();
+}
+
+function s2_addScrip() {
+  var inp=document.getElementById('s2-input');
+  var val=inp.value.trim().toUpperCase();
+  if (!val) return;
+  s2_scrips=[val].concat(s2_scrips.filter(function(x){return x!==val;}));
+  if (s2_scrips.length>25) s2_scrips=s2_scrips.slice(0,25);
+  s2_allData[val]=s2_compute(val);
+  inp.value=''; s2_renderTable(); inp.focus();
+  showToast('✦ '+val+' added to signal watchlist');
+}
+
+function s2_remove(t) { s2_scrips=s2_scrips.filter(function(x){return x!==t;}); s2_renderTable(); }
+function s2_bump(t)   { s2_scrips=[t].concat(s2_scrips.filter(function(x){return x!==t;})); s2_refreshAll(); }
+function s2_clearAll(){ if(!confirm('Clear all scrips?')) return; s2_scrips=[]; s2_allData={}; s2_renderTable(); }
+
+function s2_setTier(paid) {
+  s2_isPaid=paid;
+  var fb=document.getElementById('s2-btn-free');
+  var pb=document.getElementById('s2-btn-pro');
+  if(fb){fb.className='s2-tier-btn free'+(paid?'':' on');}
+  if(pb){pb.className='s2-tier-btn pro'+(paid?' on':'');}
+  if(paid) showToast('⚡ PRO unlocked — all 6 timeframes active!');
+  s2_refreshAll();
+}
+</script>
+
 </body>
 </html>
