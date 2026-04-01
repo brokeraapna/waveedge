@@ -1676,9 +1676,8 @@ function showPage(id){
   window.scrollTo({top:0});
   if(id==='scanner') renderScCards();
   if(id==='chart') { setTimeout(renderSymGrid, 50); }
-  if(id==='signals2') { setTimeout(x_refreshAll, 50); }
   if(id==='blog') { setTimeout(renderBlog, 50); }
-  if(id==='signals2') { setTimeout(function(){ s2_refreshAll(); }, 80); }
+  if(id==='signals2') { setTimeout(x_refreshAll, 80); }
   if(id==='signals') { setTimeout(initSignals, 80); }
 }
 
@@ -2176,19 +2175,11 @@ function x_setTier(paid){
   x_refreshAll();
 }
 // Init — wait for DOM then render
-function x_init(){
-  if(document.getElementById('x-signal-tbody')){
-    x_refreshAll();
-    setInterval(x_refreshAll,30000);
-  } else {
-    setTimeout(x_init,50);
-  }
-}
-if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded',x_init);
-} else {
-  x_init();
-}
+// Direct init - runs after all HTML is parsed
+setTimeout(function(){
+  x_refreshAll();
+  setInterval(x_refreshAll,30000);
+},100);
 </script>
 
 <script>
@@ -2280,97 +2271,6 @@ function s2_cellHTML(data, locked) {
     '</div>';
 }
 
-function s2_renderTable() {
-  var tbody=document.getElementById('s2-tbody');
-  if (!tbody) { setTimeout(s2_renderTable, 100); return; }
-  var rows='', totalB=0, totalS=0, proAlerts=0, i, j, tf, d, ticker, buys, sells, small;
-  for (i=0;i<s2_scrips.length;i++) {
-    ticker=s2_scrips[i]; d=s2_allData[ticker]||{}; buys=0; sells=0;
-    for (j=0;j<S2_TF.length;j++) {
-      tf=S2_TF[j];
-      if (tf.paid&&!s2_isPaid) continue;
-      if (d[tf.id]&&d[tf.id].signal==="BUY")  buys++;
-      if (d[tf.id]&&d[tf.id].signal==="SELL") sells++;
-      if (tf.paid&&s2_isPaid&&d[tf.id]&&d[tf.id].crossover) proAlerts++;
-    }
-    totalB+=buys; totalS+=sells;
-    small=buys>sells?'▲ '+buys+'B':sells>buys?'▼ '+sells+'S':'—';
-    if (buys>0&&sells>0) small=buys+'B · '+sells+'S';
-    rows+='<tr>'+
-      '<td class="tdt">'+ticker+'<small>'+small+'</small></td>'+
-      '<td>'+s2_cellHTML(d.monthly,false)+'</td>'+
-      '<td>'+s2_cellHTML(d.weekly,false)+'</td>'+
-      '<td>'+s2_cellHTML(d.daily,false)+'</td>'+
-      '<td class="tdp">'+s2_cellHTML(d.tf75,!s2_isPaid)+'</td>'+
-      '<td class="tdp">'+s2_cellHTML(d.tf15,!s2_isPaid)+'</td>'+
-      '<td class="tdp">'+s2_cellHTML(d.tf5,!s2_isPaid)+'</td>'+
-      '<td style="text-align:center;"><button class="rbtn" onclick="s2_remove(''+ticker+'')">×</button></td>'+
-      '</tr>';
-  }
-  tbody.innerHTML=rows;
-  var el;
-  el=document.getElementById('s2-count');  if(el) el.textContent=s2_scrips.length+' scrips';
-  el=document.getElementById('s2-buys');   if(el) el.textContent='▲ '+totalB;
-  el=document.getElementById('s2-sells');  if(el) el.textContent='▼ '+totalS;
-  el=document.getElementById('s2-stamp');  if(el) el.textContent='↻ '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  el=document.getElementById('s2-upgrade');if(el) el.style.display=s2_isPaid?'none':'flex';
-  // PRO alert box
-  var ab=document.getElementById('s2-proalert');
-  var ac=document.getElementById('s2-alert-count');
-  if(ab){ if(s2_isPaid&&proAlerts>0){ab.style.display='flex';if(ac)ac.textContent=proAlerts;}else{ab.style.display='none';} }
-  // Recent chips
-  var rr=document.getElementById('s2-recent');
-  if (rr) {
-    var chips=s2_scrips.slice(0,8), html='<span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;white-space:nowrap;">RECENT:</span>';
-    for (var k=0;k<chips.length;k++) html+='<span class="s2-chip" onclick="s2_bump(''+chips[k]+'')">'+chips[k]+'</span>';
-    rr.innerHTML=html;
-  }
-}
-
-function s2_refreshAll() {
-  for (var i=0;i<s2_scrips.length;i++) s2_allData[s2_scrips[i]]=s2_compute(s2_scrips[i]);
-  s2_renderTable();
-}
-
-function s2_addScrip() {
-  var inp=document.getElementById('s2-input');
-  if (!inp) return;
-  var val=inp.value.trim().toUpperCase();
-  if (!val) return;
-  s2_scrips=[val].concat(s2_scrips.filter(function(x){return x!==val;}));
-  if (s2_scrips.length>25) s2_scrips=s2_scrips.slice(0,25);
-  s2_allData[val]=s2_compute(val);
-  inp.value='';
-  s2_refreshAll();
-  setTimeout(function(){ if(inp) inp.focus(); }, 50);
-  showToast('✦ '+val+' added to signal watchlist');
-}
-
-function s2_remove(t) { s2_scrips=s2_scrips.filter(function(x){return x!==t;}); s2_renderTable(); }
-function s2_bump(t)   { s2_scrips=[t].concat(s2_scrips.filter(function(x){return x!==t;})); s2_refreshAll(); }
-function s2_clearAll(){ if(!confirm('Clear all scrips?')) return; s2_scrips=[]; s2_allData={}; s2_renderTable(); }
-
-// Auto-init — run now and also after DOM ready
-(function(){
-  function tryInit(){
-    var t = document.getElementById('s2-tbody');
-    if(t){ s2_refreshAll(); }
-    else { setTimeout(tryInit, 200); }
-  }
-  tryInit();
-  setInterval(s2_refreshAll, 30000);
-})();
-
-function s2_setTier(paid) {
-  s2_isPaid=paid;
-  var fb=document.getElementById('s2-btn-free');
-  var pb=document.getElementById('s2-btn-pro');
-  if(fb){fb.className='s2-tier-btn free'+(paid?'':' on');}
-  if(pb){pb.className='s2-tier-btn pro'+(paid?' on':'');}
-  if(paid) showToast('⚡ PRO unlocked — all 6 timeframes active!');
-  s2_refreshAll();
-}
-</script>
 
 </body>
 </html>
