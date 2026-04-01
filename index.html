@@ -2511,6 +2511,12 @@ function s2_remove(t) { s2_scrips=s2_scrips.filter(function(x){return x!==t;}); 
 function s2_bump(t)   { s2_scrips=[t].concat(s2_scrips.filter(function(x){return x!==t;})); s2_refreshAll(); }
 function s2_clearAll(){ if(!confirm('Clear all scrips?')) return; s2_scrips=[]; s2_allData={}; s2_renderTable(); }
 
+// Auto-init on script load so table shows immediately
+(function(){
+  try { s2_refreshAll(); } catch(e) {}
+  setInterval(s2_refreshAll, 30000);
+})();
+
 function s2_setTier(paid) {
   s2_isPaid=paid;
   var fb=document.getElementById('s2-btn-free');
