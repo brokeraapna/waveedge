@@ -330,10 +330,72 @@ function renderRecent() {
 
 function bumpScrip(t) { scrips=[t].concat(scrips.filter(function(x){return x!==t;})); refreshAll(); }
 
+// ── REAL API CONFIG ──────────────────────────────────────
+var API_URL = 'https://waveedge-backend-1.onrender.com';
+var _apiLoading = false;
+
 function refreshAll() {
-  var i;
-  for (i = 0; i < scrips.length; i++) allData[scrips[i]] = computeForTicker(scrips[i]);
-  renderTable();
+  if (API_URL) {
+    fetchRealData();
+  } else {
+    // fallback to simulated
+    var i;
+    for (i = 0; i < scrips.length; i++) allData[scrips[i]] = computeForTicker(scrips[i]);
+    renderTable();
+  }
+}
+
+function fetchRealData() {
+  if (_apiLoading) return;
+  _apiLoading = true;
+  var stamp = document.getElementById('update-stamp');
+  if (stamp) stamp.textContent = '↻ Fetching live data...';
+
+  var url = API_URL + '/macd/batch?scrips=' + scrips.join(',') + '&paid=' + isPaid;
+
+  fetch(url)
+    .then(function(res) {
+      if (!res.ok) throw new Error('API error ' + res.status);
+      return res.json();
+    })
+    .then(function(data) {
+      _apiLoading = false;
+      // Map API response to allData format
+      var results = data.results || {};
+      Object.keys(results).forEach(function(ticker) {
+        var r = results[ticker];
+        if (!r.timeframes) return;
+        allData[ticker] = {};
+        Object.keys(r.timeframes).forEach(function(tf) {
+          var t = r.timeframes[tf];
+          if (!t || t.signal === '—') {
+            allData[ticker][tf] = {signal:'—', zero:'—', crossover:false, histogram:0};
+          } else {
+            allData[ticker][tf] = {
+              signal:    t.signal,
+              zero:      t.zero,
+              crossover: t.crossover,
+              histogram: t.histogram
+            };
+          }
+        });
+        // Fill missing paid TFs with null so they show locked
+        if (!isPaid) {
+          ['tf75','tf15','tf5'].forEach(function(tf) {
+            allData[ticker][tf] = null;
+          });
+        }
+      });
+      renderTable();
+    })
+    .catch(function(err) {
+      _apiLoading = false;
+      console.log('API unavailable, using simulated data:', err.message);
+      // Fallback to simulated
+      var i;
+      for (i = 0; i < scrips.length; i++) allData[scrips[i]] = computeForTicker(scrips[i]);
+      renderTable();
+    });
 }
 
 function addScrip() {
@@ -341,8 +403,11 @@ function addScrip() {
   if (!val) return;
   scrips = [val].concat(scrips.filter(function(x){return x!==val;}));
   if (scrips.length > 20) scrips = scrips.slice(0,20);
+  // Compute simulated immediately for instant feedback
   allData[val] = computeForTicker(val);
   inp.value = ''; renderTable(); inp.focus();
+  // Then fetch real data in background
+  if (API_URL) fetchRealData();
 }
 
 function removeScrip(t) { scrips=scrips.filter(function(x){return x!==t;}); renderTable(); }
