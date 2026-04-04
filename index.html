@@ -1240,22 +1240,16 @@ var _origShowPage = window.showPage;
       </div>
       <!-- Telegram widget -->
       <div style="padding:0;min-height:500px;">
-        <script async src="https://telegram.org/js/telegram-widget.js?22"
-          data-telegram-post="ewagaurav/1"
-          data-width="100%"
-          data-color="0088cc"
-          data-dark-color="00e5ff"
-          data-dark="1"
-          data-userpic="true"
-          data-author-photo="true"
-          data-allow-scripts="true">
-        </script>
-        <!-- Fallback if widget doesn't load -->
-        <div id="tg-fallback" style="padding:40px;text-align:center;">
-          <div style="font-size:48px;margin-bottom:16px;">✈</div>
-          <div style="font-size:18px;font-weight:700;margin-bottom:8px;">Live Telegram Feed</div>
-          <div style="font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);margin-bottom:24px;">Join @ewagaurav on Telegram to see live Elliott Wave analysis posts, daily market updates and trade setups.</div>
-          <a href="https://t.me/ewagaurav" target="_blank" style="background:#0088cc;color:#fff;padding:12px 28px;border-radius:7px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:15px;text-decoration:none;display:inline-block;">Open Telegram Channel →</a>
+        <!-- Telegram channel embed via iframe - most reliable method -->
+        <iframe
+          src="https://t.me/ewagaurav?embed=1&mode=tme"
+          style="width:100%;height:500px;border:none;background:#060a10;"
+          allowtransparency="true"
+          allowfullscreen="true"
+          id="tg-embed-frame">
+        </iframe>
+        <div style="padding:20px;text-align:center;border-top:1px solid var(--border);">
+          <a href="https://t.me/ewagaurav" target="_blank" style="background:#0088cc;color:#fff;padding:10px 24px;border-radius:7px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;">✈ Open Full Channel on Telegram →</a>
         </div>
       </div>
     </div>
@@ -1826,7 +1820,7 @@ function showPage(id){
   window.scrollTo({top:0});
   if(id==='scanner') renderScCards();
   if(id==='chart') { setTimeout(renderSymGrid, 50); }
-  if(id==='blog') { setTimeout(renderBlog, 50); }
+  if(id==='blog') { setTimeout(function(){ seedPosts(); switchBlogView('blog'); renderBlog(); }, 50); }
   if(id==='signals2') { setTimeout(x_refreshAll, 80); }
   if(id==='signals') { setTimeout(initSignals, 80); }
 }
