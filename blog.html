@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Analysis | WaveEdge</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Orbitron:wght@700;900&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#020c14;--s1:#061525;--s2:#0a1f30;--border:#173348;--cyan:#00e5ff;--green:#00ff88;--gold:#ffc940;--red:#ff1744;--orange:#ff6d00;--purple:#b388ff;--text:#dff0f8;--muted:#4d8099;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.015) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;}
+.wrap{max-width:1060px;margin:0 auto;padding:24px 20px 60px;position:relative;}
+.hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:14px;}
+.lbl{font-family:'Space Mono',monospace;font-size:10px;color:var(--cyan);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;}
+h1{font-family:'Orbitron',monospace;font-size:26px;font-weight:900;letter-spacing:-1px;margin-bottom:6px;}
+h1 em{font-style:normal;color:var(--cyan);}
+.sub{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);}
+.hdr-btns{display:flex;gap:10px;flex-wrap:wrap;}
+.btn-admin{background:linear-gradient(135deg,var(--cyan),var(--green));color:#000;border:none;padding:10px 20px;border-radius:7px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;cursor:pointer;}
+.btn-tg{background:#0088cc;color:#fff;padding:10px 20px;border-radius:7px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+.tabs{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;width:fit-content;margin-bottom:22px;}
+.tab{background:var(--s1);border:none;color:var(--muted);padding:10px 22px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;border-right:1px solid var(--border);}
+.tab:last-child{border-right:none;}
+.tab.active{background:rgba(0,229,255,.1);color:var(--cyan);}
+.filters{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
+.fbtn{background:var(--s1);border:1px solid var(--border);color:var(--muted);padding:7px 16px;border-radius:6px;font-family:'Space Mono',monospace;font-size:11px;cursor:pointer;}
+.fbtn.active,.fbtn:hover{background:rgba(0,229,255,.1);border-color:var(--cyan);color:var(--cyan);}
+.blog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:11px;overflow:hidden;cursor:pointer;transition:all .22s;}
+.card:hover{border-color:rgba(0,229,255,.3);transform:translateY(-3px);}
+.card-bar{height:7px;}
+.card-body{padding:20px;}
+.cat-tag{font-family:'Space Mono',monospace;font-size:9px;padding:2px 9px;border-radius:100px;font-weight:700;letter-spacing:1px;}
+.card-date{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);}
+.card-title{font-size:15px;font-weight:700;line-height:1.35;margin-bottom:6px;margin-top:8px;}
+.card-sym{font-family:'Space Mono',monospace;font-size:11px;color:var(--cyan);margin-bottom:6px;}
+.card-wave{font-family:'Space Mono',monospace;font-size:11px;color:var(--gold);margin-bottom:10px;}
+.card-excerpt{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);line-height:1.7;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.card-foot{display:flex;align-items:center;justify-content:space-between;}
+.card-bias{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;}
+.card-tgt{font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);}
+.featured{background:linear-gradient(135deg,var(--s1),var(--s2));border:1px solid rgba(0,229,255,.2);border-radius:12px;padding:26px;margin-bottom:24px;cursor:pointer;}
+.feat-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.2);color:var(--cyan);padding:4px 12px;border-radius:100px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;margin-bottom:12px;}
+.fdot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.empty{text-align:center;padding:60px 20px;}
+.tg-bar{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border);background:var(--s2);}
+.tg-icon{width:42px;height:42px;border-radius:50%;background:#0088cc;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.finp{background:var(--s2);border:1px solid var(--border);color:var(--text);padding:11px 14px;border-radius:7px;font-family:'Space Mono',monospace;font-size:12px;outline:none;width:100%;}
+.finp:focus{border-color:var(--cyan);}
+.flbl{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;display:block;}
+.fgrp{margin-bottom:12px;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(2,12,20,.92);z-index:600;align-items:center;justify-content:center;padding:20px;}
+.overlay.open{display:flex;}
+.modal{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:32px;width:100%;max-width:460px;position:relative;max-height:88vh;overflow-y:auto;}
+.mcls{position:absolute;top:14px;right:14px;background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;}
+.post-overlay{display:none;position:fixed;inset:0;background:rgba(2,12,20,.95);z-index:700;overflow-y:auto;padding:40px 20px;}
+.post-overlay.open{display:block;}
+.post-box{max-width:680px;margin:0 auto;background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:36px;position:relative;}
+.btn-p{background:linear-gradient(135deg,var(--cyan),var(--green));color:#000;border:none;padding:11px 22px;border-radius:7px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;cursor:pointer;}
+.btn-o{background:transparent;border:1px solid var(--border);color:var(--muted);padding:10px 18px;border-radius:7px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;}
+.bias-row{display:flex;gap:8px;margin-bottom:12px;}
+.bbtn{flex:1;padding:8px;border-radius:5px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:12px;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--s2);border:1px solid var(--cyan);color:var(--text);padding:12px 18px;border-radius:8px;font-family:'Space Mono',monospace;font-size:12px;z-index:999;transform:translateY(60px);opacity:0;transition:all .3s;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+.mi{background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:9px 12px;display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.mi-t{font-family:'Space Mono',monospace;font-size:11px;color:var(--text);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hdr">
+    <div>
+      <div class="lbl">// Daily Wave Analysis</div>
+      <h1>Market <em>Analysis</em><br>&amp; Wave Counts</h1>
+      <p class="sub">Updated daily by Gaurav &mdash; Elliott Wave counts, trade setups &amp; market outlook.</p>
+    </div>
+    <div class="hdr-btns">
+      <button class="btn-admin" onclick="openAdmin()">&#128272; Admin</button>
+      <a href="https://t.me/ewagaurav" target="_blank" class="btn-tg">&#9992; Follow on Telegram</a>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" id="tab-posts" onclick="switchTab('posts')">&#128221; Analysis Posts</button>
+    <button class="tab" id="tab-tg" onclick="switchTab('tg')">&#9992; Telegram Live Feed</button>
+  </div>
+
+  <div id="view-posts">
+    <div class="filters">
+      <button class="fbtn active" onclick="setFilter('all',this)">All</button>
+      <button class="fbtn" onclick="setFilter('nse',this)">NSE/BSE</button>
+      <button class="fbtn" onclick="setFilter('crypto',this)">Crypto</button>
+      <button class="fbtn" onclick="setFilter('forex',this)">Forex</button>
+      <button class="fbtn" onclick="setFilter('us',this)">US Markets</button>
+      <button class="fbtn" onclick="setFilter('education',this)">Education</button>
+    </div>
+    <div id="feat-area"></div>
+    <div class="blog-grid" id="grid-area"></div>
+    <div class="empty" id="empty-area" style="display:none;">
+      <div style="font-size:48px;margin-bottom:14px;">&#128235;</div>
+      <div style="font-size:18px;font-weight:700;margin-bottom:8px;">No posts yet</div>
+      <div class="sub">Click Admin above to add your first post.</div>
+    </div>
+  </div>
+
+  <div id="view-tg" style="display:none;">
+    <div style="background:var(--s1);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;">
+      <div class="tg-bar">
+        <div class="tg-icon">&#9992;</div>
+        <div><div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;">@ewagaurav</div><div class="sub">Elliott Wave Analysis</div></div>
+        <a href="https://t.me/ewagaurav" target="_blank" style="margin-left:auto;background:#0088cc;color:#fff;padding:8px 16px;border-radius:6px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;text-decoration:none;">Join &#8594;</a>
+      </div>
+      <div style="padding:28px;text-align:center;">
+        <a href="https://t.me/ewagaurav" target="_blank" style="display:inline-flex;align-items:center;gap:10px;background:#0088cc;color:#fff;padding:14px 32px;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:16px;text-decoration:none;">&#9992; Open @ewagaurav on Telegram</a>
+        <div class="sub" style="margin-top:10px;">Tap to see all daily wave analysis posts</div>
+      </div>
+    </div>
+    <div style="background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px;">
+      <div style="font-size:16px;font-weight:700;margin-bottom:6px;">&#128203; Paste Telegram Post to Blog</div>
+      <div class="sub" style="margin-bottom:14px;">Copy any post from Telegram, paste below, click Add to Blog.</div>
+      <textarea class="finp" id="tg-paste" rows="6" placeholder="Paste your Telegram post here..." style="resize:vertical;line-height:1.7;margin-bottom:12px;"></textarea>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <button class="btn-p" onclick="addFromTg()">&#128221; Add to Blog</button>
+        <button class="btn-o" onclick="document.getElementById('tg-paste').value=''">Clear</button>
+        <span class="sub">Admin password required</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:24px 28px;display:flex;align-items:center;justify-content:space-between;margin-top:40px;flex-wrap:wrap;gap:14px;">
+    <div><div style="font-size:17px;font-weight:700;margin-bottom:5px;">Get daily wave analysis free.</div><div class="sub">Join Gaurav on Telegram &amp; WhatsApp.</div></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <a href="https://wa.me/917715858526" target="_blank" style="background:#25D366;color:#fff;padding:11px 20px;border-radius:7px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;text-decoration:none;">&#128172; +91-7715858526</a>
+      <a href="https://t.me/ewagaurav" target="_blank" style="background:#0088cc;color:#fff;padding:11px 20px;border-radius:7px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;text-decoration:none;">&#9992; @ewagaurav</a>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN MODAL -->
+<div class="overlay" id="admin-modal">
+  <div class="modal">
+    <button class="mcls" onclick="closeAdmin()">&#x2715;</button>
+    <div style="font-family:'Orbitron',monospace;font-size:16px;font-weight:700;margin-bottom:4px;">Admin Panel</div>
+    <div class="sub" style="margin-bottom:20px;">Password: waveedge2024</div>
+    <div id="a-login">
+      <div class="fgrp"><label class="flbl">Password</label><input class="finp" id="pw-inp" type="password" placeholder="Enter password"/></div>
+      <button class="btn-p" onclick="checkPw()" style="width:100%;">Unlock &#8594;</button>
+      <div id="pw-err" style="display:none;font-family:'Space Mono',monospace;font-size:11px;color:var(--red);margin-top:10px;text-align:center;">&#10060; Wrong password</div>
+    </div>
+    <div id="a-panel" style="display:none;">
+      <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--green);margin-bottom:16px;">&#10022; Admin access granted</div>
+      <div class="fgrp"><label class="flbl">Title *</label><input class="finp" id="f-title" type="text" placeholder="NIFTY Wave Analysis"/></div>
+      <div class="fgrp"><label class="flbl">Symbol</label><input class="finp" id="f-symbol" type="text" placeholder="NSE:NIFTY"/></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+        <div><label class="flbl">Category</label><select class="finp" id="f-cat"><option value="nse">NSE/BSE</option><option value="crypto">Crypto</option><option value="forex">Forex</option><option value="us">US Markets</option><option value="education">Education</option></select></div>
+        <div><label class="flbl">Wave</label><select class="finp" id="f-wave"><option>Wave &#9312; Starting</option><option>Wave &#9313; Correcting</option><option>Wave &#9314; Strongest</option><option>Wave &#9315; Consolidating</option><option>Wave &#9316; Final push</option><option>Wave A Correction</option><option>Wave B Bounce</option><option>Wave C Completion</option><option>Ending Diagonal</option><option>Triangle</option></select></div>
+      </div>
+      <div class="fgrp"><label class="flbl">Bias</label>
+        <div class="bias-row">
+          <button class="bbtn" id="b-bull" onclick="setBias('bullish')" style="border-color:var(--green);background:rgba(0,255,136,.1);color:var(--green);">&#128002; Bullish</button>
+          <button class="bbtn" id="b-bear" onclick="setBias('bearish')">&#128059; Bearish</button>
+          <button class="bbtn" id="b-neut" onclick="setBias('neutral')">&#9878;&#65039; Neutral</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+        <div><label class="flbl">Target</label><input class="finp" id="f-target" type="text" placeholder="24800"/></div>
+        <div><label class="flbl">Stop Loss</label><input class="finp" id="f-sl" type="text" placeholder="23200"/></div>
+      </div>
+      <div class="fgrp"><label class="flbl">Analysis *</label><textarea class="finp" id="f-body" rows="5" placeholder="Write full wave analysis..." style="resize:vertical;line-height:1.6;"></textarea></div>
+      <div class="fgrp"><label class="flbl">Chart URL</label><input class="finp" id="f-chart" type="text" placeholder="https://www.tradingview.com/chart/"/></div>
+      <button class="btn-p" onclick="savePost()" style="width:100%;margin-bottom:18px;">&#128221; Publish Post</button>
+      <div style="border-top:1px solid var(--border);padding-top:14px;">
+        <div class="sub" style="margin-bottom:10px;letter-spacing:1px;">MANAGE POSTS</div>
+        <div id="manage-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- POST DETAIL -->
+<div class="post-overlay" id="post-overlay">
+  <div class="post-box">
+    <button class="mcls" onclick="closePost()">&#x2715;</button>
+    <div id="post-content"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var PW='waveedge2024', _cat='all', _bias='bullish';
+
+function getP(){try{return JSON.parse(localStorage.getItem('weBlog3')||'[]');}catch(e){return[];}}
+function saveP(p){try{localStorage.setItem('weBlog3',JSON.stringify(p));}catch(e){}}
+
+function seed(){
+  if(getP().length>0)return;
+  saveP([
+    {id:1,title:'NIFTY — Wave 3 Breakout Setting Up',symbol:'NSE:NIFTY',cat:'nse',wave:'Wave 3 Strongest move',bias:'bullish',target:'24,800',sl:'23,200',body:'NIFTY has completed a textbook Wave 2 correction at the 61.8% Fibonacci retracement of Wave 1. Volume contracting at lows — classic sign of corrective exhaustion. Watch for breakout above 24,100 with volume. Target: 24,800. Invalidation below 23,200.',chart:'https://www.tradingview.com/chart/?symbol=NSE:NIFTY',date:new Date().toISOString(),featured:true},
+    {id:2,title:'BTCUSDT — ABC Correction Complete',symbol:'BINANCE:BTCUSDT',cat:'crypto',wave:'Wave C Completion',bias:'bullish',target:'$98,400',sl:'$85,000',body:'Bitcoin tracing clean zigzag ABC correction. Wave C reached 100% extension near $88,500. RSI positive divergence on 4H. Expecting reversal for new impulse.',chart:'https://www.tradingview.com/chart/?symbol=BINANCE:BTCUSDT',date:new Date(Date.now()-86400000).toISOString(),featured:false},
+    {id:3,title:'EURUSD — Ending Diagonal Warning',symbol:'FX:EURUSD',cat:'forex',wave:'Ending Diagonal',bias:'bearish',target:'1.0620',sl:'1.0920',body:'EURUSD forming ending diagonal in Wave 5. Waves overlapping, momentum declining. Classic exhaustion signal. Short bias targeting 1.0620.',chart:'https://www.tradingview.com/chart/?symbol=FX:EURUSD',date:new Date(Date.now()-172800000).toISOString(),featured:false}
+  ]);
+}
+
+function cc(cat){var m={nse:'00e5ff',crypto:'ffc940',forex:'b388ff',us:'00ff88',education:'ff6d00'};var h=m[cat]||'ff6d00';var r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);return{hex:'#'+h,bg:'rgba('+r+','+g+','+b+',.12)'};}
+function bc(b){if(b==='bullish')return{i:'🐂',c:'#00ff88'};if(b==='bearish')return{i:'🐻',c:'#ff1744'};return{i:'⚖️',c:'#ffc940'};}
+function fd(iso){return new Date(iso).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});}
+
+function render(){
+  seed();
+  var posts=getP(), filtered=_cat==='all'?posts:posts.filter(function(p){return p.cat===_cat;});
+  var fa=document.getElementById('feat-area'),ga=document.getElementById('grid-area'),ea=document.getElementById('empty-area');
+  var feat=posts.find(function(p){return p.featured;});
+  fa.innerHTML='';
+  if(feat&&(_cat==='all'||feat.cat===_cat)){fa.appendChild(mkFeat(feat));filtered=filtered.filter(function(p){return p.id!==feat.id;});}
+  ga.innerHTML='';
+  if(filtered.length===0){ea.style.display='block';}
+  else{ea.style.display='none';filtered.forEach(function(p){ga.appendChild(mkCard(p));});}
+}
+
+function mkCard(p){
+  var el=document.createElement('div');el.className='card';el.onclick=function(){openPost(p.id);};
+  var cs=cc(p.cat),bi=bc(p.bias);
+  var g=p.bias==='bullish'?'#00ff88,#00e5ff':p.bias==='bearish'?'#ff1744,#ff6d00':'#ffc940,#00e5ff';
+  el.innerHTML='<div class="card-bar" style="background:linear-gradient(90deg,'+g+')"></div>'
+    +'<div class="card-body">'
+    +'<div style="display:flex;align-items:center;gap:8px;"><span class="cat-tag" style="color:'+cs.hex+';background:'+cs.bg+';border:1px solid '+cs.hex+'33">'+p.cat.toUpperCase()+'</span><span class="card-date">'+fd(p.date)+'</span></div>'
+    +'<div class="card-title">'+p.title+'</div>'
+    +(p.symbol?'<div class="card-sym">'+p.symbol+'</div>':'')
+    +'<div class="card-wave">'+p.wave+'</div>'
+    +'<div class="card-excerpt">'+p.body+'</div>'
+    +'<div class="card-foot"><span class="card-bias" style="color:'+bi.c+'">'+bi.i+' '+(p.bias||'').toUpperCase()+'</span>'+(p.target?'<span class="card-tgt">TGT: '+p.target+'</span>':'')+'</div>'
+    +'</div>';
+  return el;
+}
+
+function mkFeat(p){
+  var el=document.createElement('div');el.className='featured';el.onclick=function(){openPost(p.id);};
+  var bi=bc(p.bias);
+  var th=p.target?'<div style="margin-top:10px"><div class="sub">TARGET</div><div style="font-family:Space Mono,monospace;font-size:13px;color:var(--gold);font-weight:700">'+p.target+'</div></div>':'';
+  var sh=p.sl?'<div style="margin-top:6px"><div class="sub">STOP LOSS</div><div style="font-family:Space Mono,monospace;font-size:11px;color:var(--red)">'+p.sl+'</div></div>':'';
+  var ch=p.chart?'<a href="'+p.chart+'" target="_blank" onclick="event.stopPropagation()" style="display:inline-block;background:linear-gradient(135deg,var(--cyan),var(--green));color:#000;padding:9px 18px;border-radius:6px;font-family:DM Sans,sans-serif;font-weight:700;font-size:13px;text-decoration:none">View Chart</a>':'';
+  el.innerHTML='<div class="feat-badge"><div class="fdot"></div>FEATURED</div>'
+    +'<div style="display:grid;grid-template-columns:1fr auto;gap:18px;align-items:start">'
+    +'<div><div class="card-title" style="font-size:19px;margin-bottom:8px">'+p.title+'</div>'
+    +(p.symbol?'<div class="card-sym">'+p.symbol+'</div>':'')
+    +'<div class="card-wave" style="margin-bottom:10px">'+p.wave+'</div>'
+    +'<div class="sub" style="line-height:1.8;margin-bottom:14px">'+p.body.substring(0,220)+'...</div>'
+    +'<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">'+ch+'<span class="sub">'+fd(p.date)+'</span></div></div>'
+    +'<div style="text-align:right;min-width:80px"><div class="sub">BIAS</div><div style="font-size:24px;margin:4px 0">'+bi.i+'</div>'
+    +'<div style="font-family:Space Mono,monospace;font-size:11px;font-weight:700;color:'+bi.c+'">'+(p.bias||'').toUpperCase()+'</div>'+th+sh+'</div></div>';
+  return el;
+}
+
+function openPost(id){
+  var p=getP().find(function(x){return x.id===id;});if(!p)return;
+  var bi=bc(p.bias),cs=cc(p.cat);
+  var ch=p.chart?'<a href="'+p.chart+'" target="_blank" style="display:inline-block;background:linear-gradient(135deg,var(--cyan),var(--green));color:#000;padding:11px 22px;border-radius:7px;font-family:DM Sans,sans-serif;font-weight:700;font-size:14px;text-decoration:none">Open Chart on TradingView</a>':'';
+  var tb=function(lbl,val,col){return '<div style="background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;flex:1;min-width:80px"><div class="sub" style="margin-bottom:4px">'+lbl+'</div><div style="font-family:Space Mono,monospace;font-size:14px;font-weight:700;color:'+col+'">'+val+'</div></div>';};
+  document.getElementById('post-content').innerHTML=
+    '<span class="cat-tag" style="color:'+cs.hex+';background:'+cs.bg+';border:1px solid '+cs.hex+'33;margin-bottom:14px;display:inline-block">'+p.cat.toUpperCase()+'</span>'
+    +'<h2 style="font-size:22px;font-weight:800;margin-bottom:10px">'+p.title+'</h2>'
+    +(p.symbol?'<div class="card-sym" style="margin-bottom:4px">'+p.symbol+'</div>':'')
+    +'<div class="card-wave" style="margin-bottom:4px">'+p.wave+'</div>'
+    +'<div class="sub" style="margin-bottom:22px">'+fd(p.date)+'</div>'
+    +'<div style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap">'
+    +tb('BIAS',bi.i+' '+(p.bias||'').toUpperCase(),bi.c)
+    +(p.target?tb('TARGET',p.target,'var(--gold)'):'')
+    +(p.sl?tb('STOP LOSS',p.sl,'var(--red)'):'')
+    +'</div>'
+    +'<div style="font-family:Space Mono,monospace;font-size:13px;color:var(--text);line-height:1.9;white-space:pre-wrap;margin-bottom:22px">'+p.body+'</div>'
+    +ch;
+  document.getElementById('post-overlay').classList.add('open');
+}
+function closePost(){document.getElementById('post-overlay').classList.remove('open');}
+
+function setFilter(cat,el){_cat=cat;document.querySelectorAll('.fbtn').forEach(function(b){b.classList.remove('active');});if(el)el.classList.add('active');render();}
+
+function switchTab(tab){
+  var pv=document.getElementById('view-posts'),tv=document.getElementById('view-tg');
+  var pb=document.getElementById('tab-posts'),tb=document.getElementById('tab-tg');
+  if(tab==='posts'){pv.style.display='block';tv.style.display='none';pb.classList.add('active');tb.classList.remove('active');render();}
+  else{pv.style.display='none';tv.style.display='block';pb.classList.remove('active');tb.classList.add('active');}
+}
+
+function openAdmin(){
+  document.getElementById('admin-modal').classList.add('open');
+  document.getElementById('a-login').style.display='block';
+  document.getElementById('a-panel').style.display='none';
+  document.getElementById('pw-err').style.display='none';
+  var inp=document.getElementById('pw-inp');inp.value='';
+  inp.onkeydown=function(e){if(e.key==='Enter')checkPw();};
+  setTimeout(function(){inp.focus();},100);
+}
+function closeAdmin(){document.getElementById('admin-modal').classList.remove('open');}
+function checkPw(){
+  if(document.getElementById('pw-inp').value===PW){
+    document.getElementById('a-login').style.display='none';
+    document.getElementById('a-panel').style.display='block';
+    renderManage();
+  }else{document.getElementById('pw-err').style.display='block';}
+}
+function setBias(b){
+  _bias=b;
+  ['bull','bear','neut'].forEach(function(k){var el=document.getElementById('b-'+k);el.style.border='1px solid var(--border)';el.style.background='transparent';el.style.color='var(--muted)';});
+  var m={bullish:'bull',bearish:'bear',neutral:'neut'};
+  var act=document.getElementById('b-'+m[b]);
+  var c=b==='bullish'?'var(--green)':b==='bearish'?'var(--red)':'var(--gold)';
+  var bg=b==='bullish'?'rgba(0,255,136,.1)':b==='bearish'?'rgba(255,23,68,.1)':'rgba(255,202,40,.1)';
+  act.style.border='2px solid '+c;act.style.background=bg;act.style.color=c;
+}
+function savePost(){
+  var title=document.getElementById('f-title').value.trim();
+  var body=document.getElementById('f-body').value.trim();
+  if(!title||!body){toast('Title and Analysis required');return;}
+  var posts=getP();
+  posts.unshift({id:Date.now(),title:title,symbol:document.getElementById('f-symbol').value.trim(),cat:document.getElementById('f-cat').value,wave:document.getElementById('f-wave').value,bias:_bias,target:document.getElementById('f-target').value.trim(),sl:document.getElementById('f-sl').value.trim(),body:body,chart:document.getElementById('f-chart').value.trim(),date:new Date().toISOString(),featured:posts.length===0});
+  saveP(posts);
+  ['f-title','f-symbol','f-target','f-sl','f-body','f-chart'].forEach(function(id){document.getElementById(id).value='';});
+  renderManage();render();toast('Post published!');
+}
+function delPost(id){if(!confirm('Delete?'))return;saveP(getP().filter(function(p){return p.id!==id;}));renderManage();render();toast('Deleted.');}
+function featPost(id){var posts=getP();posts.forEach(function(p){p.featured=(p.id===id);});saveP(posts);renderManage();render();toast('Featured updated!');}
+function renderManage(){
+  var el=document.getElementById('manage-list');
+  var posts=getP();
+  if(posts.length===0){el.innerHTML='<div class="sub">No posts yet.</div>';return;}
+  el.innerHTML=posts.map(function(p){
+    return '<div class="mi"><div class="mi-t">'+(p.featured?'&#11088; ':'')+p.title+'</div>'
+      +'<button onclick="featPost('+p.id+')" style="background:rgba(255,202,40,.1);border:1px solid rgba(255,202,40,.3);color:var(--gold);padding:3px 8px;border-radius:4px;font-size:10px;cursor:pointer;flex-shrink:0;">&#9733;</button>'
+      +'<button onclick="delPost('+p.id+')" style="background:rgba(255,23,68,.1);border:1px solid rgba(255,23,68,.3);color:var(--red);padding:3px 8px;border-radius:4px;font-size:10px;cursor:pointer;flex-shrink:0;">&#x2715;</button>'
+      +'</div>';
+  }).join('');
+}
+function addFromTg(){
+  var text=document.getElementById('tg-paste').value.trim();
+  if(!text){toast('Paste your post first');return;}
+  var pw=prompt('Admin password:');
+  if(pw!==PW){toast('Wrong password');return;}
+  var lines=text.split('\n').filter(function(l){return l.trim();});
+  var title=lines[0]||'Market Analysis';
+  var bias='neutral';
+  if(/bullish|buy|long/i.test(text))bias='bullish';
+  if(/bearish|sell|short/i.test(text))bias='bearish';
+  var sym='',sm=title.match(/(NIFTY50|BANKNIFTY|NIFTY|BTCUSDT|ETHUSDT|RELIANCE|GOLD|EURUSD)/i);
+  if(sm)sym=sm[1].toUpperCase();
+  var posts=getP();
+  posts.unshift({id:Date.now(),title:title,symbol:sym,cat:'nse',wave:'Wave Analysis',bias:bias,target:'',sl:'',body:text,chart:'',date:new Date().toISOString(),featured:posts.length===0,source:'telegram'});
+  saveP(posts);document.getElementById('tg-paste').value='';switchTab('posts');render();toast('Post added to blog!');
+}
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},3000);}
+
+seed();render();
+</script>
+</body>
+</html>
