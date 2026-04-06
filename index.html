@@ -1446,7 +1446,34 @@ function updateApiStatus(){
 // ─── INIT ───
 updateApiStatus();
 renderResults();
-if(API_URL) fetchLiveData();
+
+// Wake up Render backend then fetch live data
+if(API_URL) {
+  // First ping to wake up Render (free tier sleeps after 15 min)
+  var statusEl = document.getElementById('api-status-txt');
+  if(statusEl) statusEl.textContent = 'Waking up API...';
+  
+  fetch(API_URL + '/health')
+    .then(function(r){ 
+      if(r.ok) {
+        if(statusEl) statusEl.textContent = 'Live API Connected';
+        fetchLiveData();
+      }
+    })
+    .catch(function(){
+      // Backend sleeping - wait 55 sec then try
+      if(statusEl) statusEl.textContent = 'API starting (~60s)...';
+      setTimeout(function(){
+        if(statusEl) statusEl.textContent = 'Live API Connected';
+        fetchLiveData();
+      }, 55000);
+    });
+
+  // Keep-alive: ping backend every 8 minutes to prevent sleep
+  setInterval(function(){
+    fetch(API_URL + '/health').catch(function(){});
+  }, 480000);
+}
 </script>
 
 <!-- ════════════════════════════════════════════════
