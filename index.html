@@ -364,6 +364,16 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
     </div>
     <button class="btn-ghost" id="nav-login" onclick="showPage('auth')">Log In</button>
     <button class="btn-cta" id="nav-signup" onclick="showPage('auth');switchTab('signup')">Free Trial</button>
+    <!-- Upstox Status + Reconnect -->
+    <div id="upstox-nav-status" style="display:flex;align-items:center;gap:8px;margin-left:4px;">
+      <div id="upstox-dot" style="width:8px;height:8px;border-radius:50%;background:#ff1744;flex-shrink:0;"></div>
+      <span id="upstox-txt" style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);white-space:nowrap;">API Offline</span>
+      <a id="upstox-reconnect-btn" href="https://waveedge-backend-1.onrender.com/upstox/login" target="_blank"
+        style="background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.3);color:var(--cyan);padding:4px 10px;border-radius:5px;font-family:'Space Mono',monospace;font-size:10px;text-decoration:none;white-space:nowrap;transition:all .2s;"
+        onmouseover="this.style.background='rgba(0,229,255,.2)'" onmouseout="this.style.background='rgba(0,229,255,.1)'">
+        ⚡ Reconnect
+      </a>
+    </div>
   </div>
 </nav>
 
@@ -1447,6 +1457,46 @@ function updateApiStatus(){
 updateApiStatus();
 renderResults();
 
+// Check Upstox API status
+function checkUpstoxStatus() {
+  fetch('https://waveedge-backend-1.onrender.com/upstox/status')
+    .then(function(r){ return r.json(); })
+    .then(function(data) {
+      var connected = data.connected;
+      // Nav dot
+      var dot = document.getElementById('upstox-dot');
+      var txt = document.getElementById('upstox-txt');
+      var btn = document.getElementById('upstox-reconnect-btn');
+      // Banner
+      var banner = document.getElementById('upstox-banner');
+      var bdot   = document.getElementById('upstox-banner-dot');
+      var btxt   = document.getElementById('upstox-banner-txt');
+
+      if (connected) {
+        if(dot){ dot.style.background='#00ff88'; }
+        if(txt){ txt.textContent='Upstox Live'; txt.style.color='#00ff88'; }
+        if(btn){ btn.textContent='✓ Connected'; btn.style.borderColor='rgba(0,255,136,.3)'; btn.style.color='#00ff88'; btn.style.background='rgba(0,255,136,.1)'; }
+        if(banner){ banner.style.background='rgba(0,255,136,.04)'; banner.style.borderColor='rgba(0,255,136,.15)'; }
+        if(bdot){ bdot.style.background='#00ff88'; bdot.style.animation='none'; }
+        if(btxt){ btxt.textContent='Upstox API connected — live NSE data active'; btxt.style.color='#00ff88'; }
+      } else {
+        if(dot){ dot.style.background='#ff1744'; }
+        if(txt){ txt.textContent='API Offline'; txt.style.color='var(--muted)'; }
+        if(btn){ btn.textContent='⚡ Reconnect'; }
+      }
+    })
+    .catch(function() {
+      // Backend sleeping
+      var txt = document.getElementById('upstox-txt');
+      if(txt){ txt.textContent='Backend sleeping...'; }
+    });
+}
+
+// Check on load
+setTimeout(checkUpstoxStatus, 2000);
+// Check every 5 min
+setInterval(checkUpstoxStatus, 300000);
+
 // Wake up Render backend then fetch live data
 if(API_URL) {
   // First ping to wake up Render (free tier sleeps after 15 min)
@@ -1481,166 +1531,13 @@ if(API_URL) {
 ════════════════════════════════════════════════ -->
 <div class="page" id="page-signals2" style="min-height:100vh;background:#060a10;">
   <iframe
-    src="/signals.html"
+    src="https://www.waveedge.in/scanner.html?connected=true"
     style="width:100%;height:calc(100vh - 64px);border:none;margin-top:0;display:block;"
     allowtransparency="true"
     id="signals-iframe">
   </iframe>
 </div><!-- END SIGNALS2 -->
 
-<script>
-var x_isPaid = false;
-var x_scrips = ["NIFTY","BANKNIFTY","RELIANCE","INFY","SBIN","TATAMOTORS","AAPL","NVDA","TSLA","BTCUSDT","ETHUSDT","EURUSD"];
-var x_allData = {};
-
-var X_TF = [
-  {id:"monthly",paid:false,bars:60, tfSeed:100},
-  {id:"weekly", paid:false,bars:80, tfSeed:200},
-  {id:"daily",  paid:false,bars:120,tfSeed:300},
-  {id:"tf75",   paid:true, bars:150,tfSeed:400},
-  {id:"tf15",   paid:true, bars:200,tfSeed:500},
-  {id:"tf5",    paid:true, bars:300,tfSeed:600}
-];
-
-function x_ema(data,period){
-  if(data.length<period)return[];
-  var k=2/(period+1),val=0,i;
-  for(i=0;i<period;i++)val+=data[i];
-  val/=period;
-  var r=[val];
-  for(i=period;i<data.length;i++){val=data[i]*k+val*(1-k);r.push(val);}
-  return r;
-}
-function x_macd(closes){
-  if(closes.length<35)return null;
-  var e12=x_ema(closes,12),e26=x_ema(closes,26),ml=[],i;
-  for(i=0;i<e26.length;i++)ml.push(e12[i+11]-e26[i]);
-  var sl=x_ema(ml,9);
-  var mv=ml[ml.length-1],sv=sl[sl.length-1],pm=ml.length>=2?ml[ml.length-2]:mv;
-  return{macdVal:mv,sigVal:sv,histogram:mv-sv,prevMacd:pm};
-}
-function x_signal(m){
-  if(!m)return{signal:"—",zero:"—",crossover:false,histogram:0};
-  var cz=m.macdVal>0?"ABOVE":"BELOW",pz=m.prevMacd>0?"ABOVE":"BELOW";
-  return{signal:cz==="ABOVE"?"BUY":"SELL",zero:cz,crossover:(cz!==pz),histogram:m.histogram};
-}
-function x_rng(s){var x=Math.sin(s*9301+49297)*233280;return x-Math.floor(x);}
-function x_prices(tSeed,tfSeed,count){
-  var prices=[],price=450+(tSeed%80)-40,i,r1,r2,trend;
-  for(i=0;i<count;i++){
-    r1=x_rng(tSeed*0.37+tfSeed*0.13+i*0.079);
-    r2=x_rng(tSeed*0.19+tfSeed*0.41+i*0.053+1);
-    trend=Math.sin(i/(count*0.18)+tSeed*0.01)*0.008;
-    price=price*(1+(r1-0.48+trend)*0.013);
-    prices.push(price+(r2-0.5)*price*0.003);
-  }
-  return prices;
-}
-function x_hash(t){var h=0,i;for(i=0;i<t.length;i++)h=((h*31+t.charCodeAt(i))>>>0);return h;}
-function x_compute(ticker){
-  var seed=x_hash(ticker),r={},i,tf;
-  for(i=0;i<X_TF.length;i++){
-    tf=X_TF[i];
-    if(tf.paid&&!x_isPaid){r[tf.id]=null;continue;}
-    r[tf.id]=x_signal(x_macd(x_prices(seed,tf.tfSeed,tf.bars)));
-  }
-  return r;
-}
-function x_cellHTML(data,locked){
-  if(locked)return'<div class="sc2 neutral"><span class="sc2-locked">&#128274; PRO</span></div>';
-  if(!data||data.signal==="—")return'<div class="sc2 neutral"><span class="sc2-sig">—</span></div>';
-  var cls=data.signal==="BUY"?"buy":"sell";
-  var zcls=data.zero==="ABOVE"?"above":"below";
-  var ztxt=data.zero==="ABOVE"?"&#9650; Above Zero":"&#9660; Below Zero";
-  var cross=data.crossover?'<span class="sc2-cross">'+(data.signal==="BUY"?"&#8593;CROSS":"&#8595;CROSS")+'</span>':'';
-  var h=data.histogram||0;
-  var pct=Math.min(Math.abs(h)/(Math.abs(h)*3||1)*100,100).toFixed(0);
-  return'<div class="sc2 '+cls+'">'+
-    '<span class="sc2-sig">'+data.signal+'</span>'+cross+
-    '<span class="sc2-zero '+zcls+'">'+ztxt+'</span>'+
-    '<div class="mbar2"><div class="mbar2-fill '+(h>0?"pos":"neg")+'" style="width:'+pct+'%"></div></div>'+
-    '</div>';
-}
-function x_renderTable(){
-  var tbody=document.getElementById('x-signal-tbody');
-  if(!tbody)return;
-  var rows='',totalB=0,totalS=0,proAlerts=0,i,j,tf,d,ticker,buys,sells,small;
-  for(i=0;i<x_scrips.length;i++){
-    ticker=x_scrips[i];d=x_allData[ticker]||{};buys=0;sells=0;
-    for(j=0;j<X_TF.length;j++){
-      tf=X_TF[j];
-      if(tf.paid&&!x_isPaid)continue;
-      if(d[tf.id]&&d[tf.id].signal==="BUY")buys++;
-      if(d[tf.id]&&d[tf.id].signal==="SELL")sells++;
-      if(tf.paid&&x_isPaid&&d[tf.id]&&d[tf.id].crossover)proAlerts++;
-    }
-    totalB+=buys;totalS+=sells;
-    small=buys>sells?'&#9650; '+buys+'B':sells>buys?'&#9660; '+sells+'S':'—';
-    if(buys>0&&sells>0)small=buys+'B &middot; '+sells+'S';
-    rows+='<tr>'+
-      '<td class="tdt">'+ticker+'<small>'+small+'</small></td>'+
-      '<td>'+x_cellHTML(d.monthly,false)+'</td>'+
-      '<td>'+x_cellHTML(d.weekly,false)+'</td>'+
-      '<td>'+x_cellHTML(d.daily,false)+'</td>'+
-      '<td class="tdp">'+x_cellHTML(d.tf75,!x_isPaid)+'</td>'+
-      '<td class="tdp">'+x_cellHTML(d.tf15,!x_isPaid)+'</td>'+
-      '<td class="tdp">'+x_cellHTML(d.tf5,!x_isPaid)+'</td>'+
-      '<td><button class="rm-btn" onclick="x_remove(''+ticker+'')">&#215;</button></td>'+
-      '</tr>';
-  }
-  tbody.innerHTML=rows;
-  var el;
-  el=document.getElementById('x-ss-count');if(el)el.textContent=x_scrips.length+' scrips';
-  el=document.getElementById('x-ss-buys');if(el)el.textContent='&#9650; '+totalB;
-  el=document.getElementById('x-ss-sells');if(el)el.textContent='&#9660; '+totalS;
-  el=document.getElementById('x-upd-stamp');if(el)el.textContent='&#8635; '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  var ab=document.getElementById('x-pro-alert-box');
-  var ac=document.getElementById('x-pro-alert-count');
-  if(ab){if(x_isPaid&&proAlerts>0){ab.style.display='flex';if(ac)ac.textContent=proAlerts;}else{ab.style.display='none';}}
-  var ub=document.getElementById('x-upgrade-banner');
-  if(ub)ub.style.display=x_isPaid?'none':'flex';
-  var rr=document.getElementById('x-recent-row');
-  if(rr){
-    var chips=x_scrips.slice(0,6),html='<span class="recent-lbl2">RECENT:</span>';
-    for(var k=0;k<chips.length;k++)html+='<span class="recent-chip2" onclick="x_bump(''+chips[k]+'')">'+chips[k]+'</span>';
-    rr.innerHTML=html;
-  }
-}
-function x_refreshAll(){
-  for(var i=0;i<x_scrips.length;i++)x_allData[x_scrips[i]]=x_compute(x_scrips[i]);
-  x_renderTable();
-}
-function x_addScrip(){
-  var inp=document.getElementById('x-scrip-input');
-  if(!inp)return;
-  var val=inp.value.trim().toUpperCase();
-  if(!val)return;
-  x_scrips=[val].concat(x_scrips.filter(function(s){return s!==val;}));
-  if(x_scrips.length>20)x_scrips=x_scrips.slice(0,20);
-  x_allData[val]=x_compute(val);
-  inp.value='';
-  x_renderTable();
-  inp.focus();
-  showToast('&#10022; '+val+' added');
-}
-function x_remove(t){x_scrips=x_scrips.filter(function(s){return s!==t;});x_renderTable();}
-function x_bump(t){x_scrips=[t].concat(x_scrips.filter(function(s){return s!==t;}));x_refreshAll();}
-function x_setTier(paid){
-  x_isPaid=paid;
-  var fb=document.getElementById('x-btn-free');
-  var pb=document.getElementById('x-btn-pro');
-  if(fb){fb.style.background=paid?'#0d1520':'rgba(0,229,160,0.12)';fb.style.color=paid?'#5a7090':'#00e5a0';}
-  if(pb){pb.style.background=paid?'rgba(255,185,0,0.10)':'#0d1520';pb.style.color=paid?'#ffb900':'#5a7090';}
-  if(paid)showToast('&#9889; PRO unlocked — all timeframes active!');
-  x_refreshAll();
-}
-// Init — wait for DOM then render
-// Direct init - runs after all HTML is parsed
-setTimeout(function(){
-  x_refreshAll();
-  setInterval(x_refreshAll,30000);
-},100);
-</script>
 
 <script>
 // ── AI SMART SIGNAL ENGINE (v2 — scoped with s2_ prefix) ──────────────────────
@@ -1729,58 +1626,8 @@ function s2_cellHTML(data, locked) {
     '<span class="sc2-zero '+zcls+'">'+ztxt+'</span>'+
     '<div class="sc2-bar"><div class="sc2-bar-fill '+(h>0?"pos":"neg")+'" style="width:'+pct+'%"></div></div>'+
     '</div>';
-  <html>
-  <head>...</head>
-  <body>
-
-    <!-- ✅ BUTTON SHOULD BE HERE -->
-    <a href="https://waveedge-backend-1.onrender.com/login">
-      <button>🔐 Connect Upstox</button>
-    </a>
-
-  </body>
-</html>
-  <script src="config.js"></script>
-<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-
-<script>
-  // Point to Render backend
-  const BACKEND = (window.WAVEEDGE_CONFIG && window.WAVEEDGE_CONFIG.backendUrl) || window.location.origin;
-
-  // 1. Sends you to the Upstox Login Page
-  async function connectUpstox() {
-    try {
-      const r = await fetch(`${BACKEND}/api/upstox/login-url`);
-      const d = await r.json();
-      window.location.href = d.url;
-    } catch { 
-      alert('Cannot reach Upstox backend server. Check config.js or Render.'); 
-    }
-  }
-
-  // 2. Runs the background scanner
-  async function runUpstoxScanner() {
-    try {
-      alert("Scanner starting... scanning Nifty 50. Please wait ~30 seconds!");
-      const r = await fetch(`${BACKEND}/api/scanner/run`);
-      const d = await r.json();
-      
-      if (d.running) {
-         alert("Scanner is already running. Please refresh in 30 seconds.");
-         return;
-      }
-      
-      alert(`✅ Scanner finished! Found ${d.signals.length} total signals.`);
-      
-      // Automatically send the user to the Signals page to see the results
-      window.location.href = 'signals.html';
-      
-    } catch (e) {
-      alert('❌ Scanner failed. Please click "Connect Upstox" to log in first.');
-    }
-  }
-</script>
-
 }
 
 
+</body>
+</html>
