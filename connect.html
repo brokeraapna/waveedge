@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upstox Connect - WaveEdge</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 420px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+    }
+    .logo { font-size: 2rem; font-weight: 800; color: #00d4ff; margin-bottom: 8px; }
+    .subtitle { color: #8b949e; margin-bottom: 32px; font-size: 0.9rem; }
+    
+    #status-box {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 24px;
+      font-size: 0.85rem;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+    .dot.connected { background: #3fb950; box-shadow: 0 0 8px #3fb950; }
+    .dot.disconnected { background: #f85149; }
+    
+    #connect-btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #6e40c9, #00d4ff);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.1s;
+      margin-bottom: 12px;
+    }
+    #connect-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    
+    .note { color: #8b949e; font-size: 0.78rem; margin-top: 16px; line-height: 1.5; }
+    .expires { color: #e3b341; font-size: 0.8rem; margin-top: 4px; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">🌊 WaveEdge</div>
+  <div class="subtitle">Upstox Market Data Connection</div>
+
+  <div id="status-box">
+    <span class="dot disconnected" id="dot"></span>
+    <span id="status-text">Checking status...</span>
+    <div class="expires" id="expires-text"></div>
+  </div>
+
+  <button id="connect-btn" onclick="connectUpstox()">🔗 Connect to Upstox</button>
+
+  <p class="note">
+    ⚡ Click above to login with Upstox.<br/>
+    Your token is valid for the trading day (expires at 3:30 AM IST).<br/>
+    You only need to reconnect once per day.
+  </p>
+</div>
+
+<script>
+  const BACKEND = 'http://localhost:3001'; // Change to your backend URL in production
+
+  // Check if already connected
+  async function checkStatus() {
+    try {
+      const res = await fetch(`${BACKEND}/api/upstox/status`);
+      const data = await res.json();
+      const dot = document.getElementById('dot');
+      const statusText = document.getElementById('status-text');
+      const expiresText = document.getElementById('expires-text');
+      const btn = document.getElementById('connect-btn');
+
+      if (data.connected) {
+        dot.className = 'dot connected';
+        statusText.textContent = '✅ Connected to Upstox';
+        expiresText.textContent = `Token expires in ~${data.expires_in_hours} hours`;
+        btn.textContent = '🔄 Reconnect Upstox';
+      } else {
+        dot.className = 'dot disconnected';
+        statusText.textContent = '❌ Not connected to Upstox';
+        expiresText.textContent = '';
+      }
+    } catch (e) {
+      document.getElementById('status-text').textContent = 'Backend not reachable';
+    }
+  }
+
+  // Redirect to Upstox login
+  async function connectUpstox() {
+    try {
+      const res = await fetch(`${BACKEND}/api/upstox/login-url`);
+      const data = await res.json();
+      window.location.href = data.url; // Open Upstox login
+    } catch (e) {
+      alert('Could not reach backend. Make sure your server is running.');
+    }
+  }
+
+  checkStatus();
+</script>
+</body>
+</html>

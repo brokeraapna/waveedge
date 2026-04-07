@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WaveEdge — Charts</title>
+  <meta name="description" content="Professional candlestick charts with RSI and MACD indicators for Nifty 50 stocks."/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="config.js"></script>
+  <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <style>
+    :root {
+      --bg:#070b14; --surface:#0e1524; --border:#1a2540;
+      --text:#e2e8f0; --muted:#64748b;
+      --green:#00ff88; --red:#ff3869; --blue:#38bdf8; --yellow:#fbbf24;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; display:flex; flex-direction:column; }
+
+    nav {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px 28px; background:rgba(14,21,36,0.95);
+      border-bottom:1px solid var(--border); backdrop-filter:blur(12px);
+      position:sticky; top:0; z-index:100; flex-shrink:0;
+    }
+    .logo { font-size:1.4rem; font-weight:800; background:linear-gradient(135deg,#38bdf8,#a855f7); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .nav-links { display:flex; gap:8px; }
+    .nav-links a { padding:8px 18px; border-radius:8px; text-decoration:none; color:var(--muted); font-size:0.85rem; font-weight:500; transition:all 0.2s; }
+    .nav-links a:hover { background:var(--border); color:var(--text); }
+    .nav-links a.active { background:linear-gradient(135deg,#1e3a5f,#2d1b4e); color:var(--blue); }
+    #conn-btn { padding:8px 16px; background:var(--border); border-radius:20px; font-size:0.8rem; cursor:pointer; border:none; color:var(--text); }
+
+    /* ── CHART TOOLBAR ── */
+    .toolbar {
+      display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+      padding:16px 24px; background:var(--surface); border-bottom:1px solid var(--border);
+    }
+    .search-wrap { position:relative; flex:1; max-width:280px; }
+    .search-wrap input {
+      width:100%; padding:10px 16px 10px 36px; background:var(--bg);
+      border:1px solid var(--border); border-radius:8px; color:var(--text);
+      font-family:'Inter',sans-serif; font-size:0.88rem; outline:none;
+      transition:border-color 0.2s;
+    }
+    .search-wrap input:focus { border-color:var(--blue); }
+    .search-wrap::before { content:'🔍'; position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:0.8rem; }
+    .search-results {
+      position:absolute; top:calc(100% + 4px); left:0; right:0;
+      background:#1a2540; border:1px solid var(--border); border-radius:8px;
+      z-index:50; max-height:200px; overflow-y:auto;
+    }
+    .search-result-item { padding:10px 14px; cursor:pointer; font-size:0.85rem; transition:background 0.15s; }
+    .search-result-item:hover { background:rgba(56,189,248,0.1); }
+    .search-result-item .sym { font-weight:700; color:var(--text); }
+    .search-result-item .nm  { font-size:0.75rem; color:var(--muted); }
+
+    .interval-btns { display:flex; gap:4px; }
+    .iv-btn {
+      padding:6px 14px; border-radius:6px; border:1px solid var(--border);
+      background:transparent; color:var(--muted); cursor:pointer;
+      font-size:0.82rem; font-family:'Inter',sans-serif; transition:all 0.2s;
+    }
+    .iv-btn:hover  { border-color:var(--blue); color:var(--blue); }
+    .iv-btn.active { background:#1e3a5f; border-color:var(--blue); color:var(--blue); }
+
+    .quick-stocks { display:flex; gap:6px; flex-wrap:wrap; }
+    .qs-btn {
+      padding:6px 12px; border-radius:6px; border:1px solid var(--border);
+      background:transparent; color:var(--muted); cursor:pointer;
+      font-size:0.78rem; font-family:'Inter',sans-serif; transition:all 0.2s;
+    }
+    .qs-btn:hover  { border-color:var(--purple); color:#a855f7; }
+    .qs-btn.active { background:#2d1b4e; border-color:#a855f7; color:#a855f7; }
+
+    /* ── INFO BAR ── */
+    .info-bar {
+      display:flex; align-items:center; gap:20px; flex-wrap:wrap;
+      padding:12px 24px; background:var(--surface); border-bottom:1px solid var(--border);
+    }
+    .info-sym   { font-size:1.3rem; font-weight:800; }
+    .info-name  { font-size:0.8rem; color:var(--muted); }
+    .info-price { font-size:1.5rem; font-weight:700; }
+    .info-change.up { color:var(--green); font-weight:500; }
+    .info-change.dn { color:var(--red);   font-weight:500; }
+    .ohlc-row { display:flex; gap:16px; font-size:0.8rem; }
+    .ohlc-item { color:var(--muted); }
+    .ohlc-item span { color:var(--text); font-weight:500; }
+
+    /* ── CHARTS ── */
+    .charts-area { flex:1; display:flex; flex-direction:column; min-height:0; }
+    .chart-section { position:relative; }
+    .chart-label {
+      position:absolute; top:8px; left:12px; z-index:10;
+      font-size:0.72rem; color:var(--muted); text-transform:uppercase;
+      letter-spacing:0.08em; font-weight:600; background:rgba(7,11,20,0.7);
+      padding:3px 8px; border-radius:4px;
+    }
+    #main-chart  { width:100%; height:400px; }
+    .divider     { height:1px; background:var(--border); }
+    #rsi-chart   { width:100%; height:120px; }
+    #macd-chart  { width:100%; height:120px; }
+
+    /* ── SIGNAL OVERLAY ── */
+    .signal-overlay {
+      display:none; /* Chart library handles markers */
+    }
+
+    /* ── LOADING ── */
+    .chart-loading {
+      display:flex; align-items:center; justify-content:center;
+      height:400px; flex-direction:column; gap:12px; color:var(--muted);
+    }
+    .spinner { width:36px; height:36px; border:3px solid var(--border); border-top-color:var(--blue); border-radius:50%; animation:spin 0.8s linear infinite; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+
+    #toast { position:fixed; bottom:24px; right:24px; padding:12px 24px; background:#1e3a5f; border:1px solid var(--blue); border-radius:10px; font-size:0.85rem; color:var(--text); opacity:0; transition:opacity 0.3s; z-index:200; }
+    #toast.show { opacity:1; }
+
+    @media(max-width:768px) {
+      .toolbar, .info-bar { padding:12px 16px; }
+      .quick-stocks { display:none; }
+      #main-chart { height:280px; }
+      #rsi-chart, #macd-chart { height:90px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">🌊 WaveEdge</div>
+  <div class="nav-links">
+    <a href="scanner.html">Scanner</a>
+    <a href="signals.html">Signals</a>
+    <a href="charts.html" class="active">Charts</a>
+  </div>
+  <button id="conn-btn" onclick="connectUpstox()">Connect Upstox</button>
+</nav>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="search-wrap">
+    <input type="text" id="sym-input" placeholder="Search symbol..." oninput="searchSymbol(this.value)" onblur="setTimeout(()=>document.getElementById('search-results').innerHTML='',200)"/>
+    <div class="search-results" id="search-results"></div>
+  </div>
+
+  <div class="interval-btns">
+    <button class="iv-btn" onclick="setInterval2('1minute')">1m</button>
+    <button class="iv-btn" onclick="setInterval2('30minute')">30m</button>
+    <button class="iv-btn active" onclick="setInterval2('day')">D</button>
+    <button class="iv-btn" onclick="setInterval2('week')">W</button>
+    <button class="iv-btn" onclick="setInterval2('month')">M</button>
+  </div>
+
+  <div class="quick-stocks">
+    <button class="qs-btn active" onclick="loadStock('NSE_EQ|INE002A01018','RELIANCE')">RELIANCE</button>
+    <button class="qs-btn" onclick="loadStock('NSE_EQ|INE467B01029','TCS')">TCS</button>
+    <button class="qs-btn" onclick="loadStock('NSE_EQ|INE040A01034','HDFCBANK')">HDFC</button>
+    <button class="qs-btn" onclick="loadStock('NSE_EQ|INE009A01021','INFOSYS')">INFY</button>
+    <button class="qs-btn" onclick="loadStock('NSE_EQ|INE090A01021','ICICIBANK')">ICICI</button>
+    <button class="qs-btn" onclick="loadStock('NSE_EQ|INE062A01020','SBIN')">SBIN</button>
+  </div>
+</div>
+
+<!-- INFO BAR -->
+<div class="info-bar" id="info-bar">
+  <div>
+    <div class="info-sym" id="info-sym">RELIANCE</div>
+    <div class="info-name" id="info-name">Reliance Industries · NSE</div>
+  </div>
+  <div>
+    <div class="info-price" id="info-price">—</div>
+    <div class="info-change" id="info-change">Loading...</div>
+  </div>
+  <div class="ohlc-row" id="ohlc-row" style="display:none">
+    <div class="ohlc-item">O <span id="ohlc-o">—</span></div>
+    <div class="ohlc-item">H <span id="ohlc-h">—</span></div>
+    <div class="ohlc-item">L <span id="ohlc-l">—</span></div>
+    <div class="ohlc-item">C <span id="ohlc-c">—</span></div>
+    <div class="ohlc-item">V <span id="ohlc-v">—</span></div>
+  </div>
+</div>
+
+<!-- CHARTS AREA -->
+<div class="charts-area">
+  <div class="chart-section" id="main-section">
+    <div class="chart-label">CANDLESTICK · <span id="lbl-interval">Daily</span></div>
+    <div id="main-chart">
+      <div class="chart-loading"><div class="spinner"></div><div>Loading chart data...</div></div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="chart-section">
+    <div class="chart-label">RSI (14)</div>
+    <div id="rsi-chart"></div>
+  </div>
+  <div class="divider"></div>
+  <div class="chart-section">
+    <div class="chart-label">MACD (12,26,9)</div>
+    <div id="macd-chart"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  const BACKEND = (window.WAVEEDGE_CONFIG && window.WAVEEDGE_CONFIG.backendUrl) || window.location.origin;
+  let currentKey = 'NSE_EQ|INE002A01018';
+  let currentSym = 'RELIANCE';
+  let currentInterval = 'day';
+
+  // Chart instances
+  let mainChart, candleSeries, volumeSeries;
+  let rsiChart, rsiSeries, rsiOBLine, rsiOSLine;
+  let macdChart, macdLineSeries, signalSeries, histSeries;
+
+  const INTERVALS = { '1minute':'1 Min','30minute':'30 Min','day':'Daily','week':'Weekly','month':'Monthly' };
+
+  // ── Instruments list for search ──
+  let instruments = [];
+  (async () => {
+    try {
+      const r = await fetch(`${BACKEND}/api/instruments`);
+      const d = await r.json();
+      instruments = d.instruments || [];
+    } catch {}
+  })();
+
+  // ── Socket.IO ──
+  const socket = io(BACKEND);
+  socket.on('ltp_update', (data) => {
+    if (data[currentKey]) updateInfoBar(data[currentKey]);
+  });
+
+  // ── Init Charts ──
+  function initCharts() {
+    const chartOpts = {
+      layout: { background: { color: '#070b14' }, textColor: '#64748b' },
+      grid:   { vertLines: { color: '#0e1524' }, horzLines: { color: '#0e1524' } },
+      crosshair: { mode: 1 },
+      rightPriceScale: { borderColor: '#1a2540' },
+      timeScale: { borderColor: '#1a2540', timeVisible: true, secondsVisible: false },
+      handleScroll: true, handleScale: true,
+    };
+
+    // Main chart (Candlestick + Volume)
+    mainChart = LightweightCharts.createChart(document.getElementById('main-chart'), { ...chartOpts, height: 400 });
+    candleSeries = mainChart.addCandlestickSeries({
+      upColor: '#00ff88', downColor: '#ff3869',
+      borderUpColor: '#00ff88', borderDownColor: '#ff3869',
+      wickUpColor: '#00ff88', wickDownColor: '#ff3869',
+    });
+    volumeSeries = mainChart.addHistogramSeries({
+      color: '#26a69a', priceFormat: { type: 'volume' },
+      priceScaleId: 'vol', scaleMargins: { top: 0.8, bottom: 0 },
+    });
+
+    // RSI chart
+    rsiChart = LightweightCharts.createChart(document.getElementById('rsi-chart'), { ...chartOpts, height: 120 });
+    rsiSeries = rsiChart.addLineSeries({ color: '#a855f7', lineWidth: 2 });
+    // RSI overbought/oversold lines
+    rsiOBLine = rsiChart.addLineSeries({ color: 'rgba(255,56,105,0.4)', lineWidth: 1, lineStyle: 2 });
+    rsiOSLine = rsiChart.addLineSeries({ color: 'rgba(0,255,136,0.4)', lineWidth: 1, lineStyle: 2 });
+
+    // MACD chart
+    macdChart = LightweightCharts.createChart(document.getElementById('macd-chart'), { ...chartOpts, height: 120 });
+    macdLineSeries = macdChart.addLineSeries({ color: '#38bdf8', lineWidth: 2 });
+    signalSeries   = macdChart.addLineSeries({ color: '#fbbf24', lineWidth: 1 });
+    histSeries     = macdChart.addHistogramSeries({ color: '#00ff88' });
+
+    // Sync crosshairs
+    function syncCrosshair(srcChart, ...targets) {
+      srcChart.subscribeCrosshairMove(({ time, point }) => {
+        targets.forEach(c => time ? c.setCrosshairPosition(point?.x ?? 0, point?.y ?? 0, c.series?.[0]) : c.clearCrosshairPosition());
+      });
+    }
+    syncCrosshair(mainChart, rsiChart, macdChart);
+    syncCrosshair(rsiChart, mainChart, macdChart);
+
+    mainChart.subscribeCrosshairMove(({ seriesData }) => {
+      const candle = seriesData?.get(candleSeries);
+      if (candle) {
+        document.getElementById('ohlc-row').style.display = 'flex';
+        document.getElementById('ohlc-o').textContent = '₹' + Number(candle.open).toLocaleString('en-IN');
+        document.getElementById('ohlc-h').textContent = '₹' + Number(candle.high).toLocaleString('en-IN');
+        document.getElementById('ohlc-l').textContent = '₹' + Number(candle.low).toLocaleString('en-IN');
+        document.getElementById('ohlc-c').textContent = '₹' + Number(candle.close).toLocaleString('en-IN');
+      }
+    });
+  }
+
+  // ── Load Stock Data ──
+  async function loadStock(key, sym) {
+    currentKey = key;
+    currentSym = sym;
+
+    document.getElementById('info-sym').textContent   = sym;
+    document.getElementById('info-price').textContent  = '...';
+    document.getElementById('info-change').textContent = 'Loading...';
+    document.getElementById('info-name').textContent   = sym + ' · NSE';
+
+    // Update quick buttons
+    document.querySelectorAll('.qs-btn').forEach(b => b.classList.remove('active'));
+    event?.target?.classList.add('active');
+
+    await fetchAndRender();
+  }
+
+  async function fetchAndRender() {
+    try {
+      const toDate   = new Date().toISOString().slice(0, 10);
+      const fromDate = new Date(Date.now() - 365 * 86400000).toISOString().slice(0, 10);
+      let url;
+
+      if (currentInterval === '1minute' || currentInterval === '30minute') {
+        url = `${BACKEND}/api/market/intraday?instrument=${encodeURIComponent(currentKey)}&interval=${currentInterval}`;
+      } else {
+        url = `${BACKEND}/api/market/historical?instrument=${encodeURIComponent(currentKey)}&interval=${currentInterval}&from=${fromDate}&to=${toDate}`;
+      }
+
+      const r = await fetch(url);
+      const d = await r.json();
+      if (d.error) { showToast('❌ ' + JSON.stringify(d.error)); return; }
+
+      const candles = d.data?.candles || [];
+      if (!candles.length) { showToast('⚠️ No data returned for this instrument'); return; }
+
+      // Upstox candle format: [timestamp, open, high, low, close, volume, oi?]
+      const ohlcData   = candles.map(c => ({ time: Math.floor(new Date(c[0]).getTime() / 1000), open: c[1], high: c[2], low: c[3], close: c[4] })).reverse();
+      const volData    = candles.map(c => ({ time: Math.floor(new Date(c[0]).getTime() / 1000), value: c[5], color: c[4] >= c[1] ? 'rgba(0,255,136,0.4)' : 'rgba(255,56,105,0.4)' })).reverse();
+      const closes     = [...candles].reverse().map(c => c[4]);
+      const timestamps = ohlcData.map(c => c.time);
+
+      candleSeries.setData(ohlcData);
+      volumeSeries.setData(volData);
+
+      // RSI
+      const rsiData = computeRSIData(closes, timestamps, 14);
+      rsiSeries.setData(rsiData);
+      rsiOBLine.setData(timestamps.map(t => ({ time: t, value: 70 })));
+      rsiOSLine.setData(timestamps.map(t => ({ time: t, value: 30 })));
+
+      // MACD
+      const macdData = computeMACDData(closes, timestamps);
+      macdLineSeries.setData(macdData.macdLine);
+      signalSeries.setData(macdData.signalLine);
+      histSeries.setData(macdData.histogram);
+
+      // Update info bar with last close
+      const last = ohlcData[ohlcData.length - 1];
+      const prev = ohlcData[ohlcData.length - 2];
+      if (last && prev) {
+        const ch   = last.close - prev.close;
+        const chPct = ((ch / prev.close) * 100).toFixed(2);
+        updateInfoBar({ ltp: last.close, change: ch, changePct: chPct, open: last.open, high: last.high, low: last.low });
+      }
+
+      mainChart.timeScale().fitContent();
+      rsiChart.timeScale().fitContent();
+      macdChart.timeScale().fitContent();
+    } catch (e) {
+      showToast('❌ Error: ' + e.message);
+    }
+  }
+
+  // ── RSI Computation for Chart ──
+  function computeRSIData(closes, times, period = 14) {
+    const result = [];
+    if (closes.length < period + 1) return result;
+    let gains = 0, losses = 0;
+    for (let i = 1; i <= period; i++) {
+      const d = closes[i] - closes[i - 1];
+      if (d > 0) gains += d; else losses += Math.abs(d);
+    }
+    let avgG = gains / period, avgL = losses / period;
+    const startIdx = period;
+    for (let i = period; i < closes.length; i++) {
+      if (i > period) {
+        const d = closes[i] - closes[i - 1];
+        avgG = (avgG * (period - 1) + (d > 0 ? d : 0)) / period;
+        avgL = (avgL * (period - 1) + (d < 0 ? Math.abs(d) : 0)) / period;
+      }
+      const rs  = avgL === 0 ? 100 : avgG / avgL;
+      const rsi = 100 - (100 / (1 + rs));
+      result.push({ time: times[i], value: parseFloat(rsi.toFixed(2)) });
+    }
+    return result;
+  }
+
+  // ── MACD Computation for Chart ──
+  function emaArr(data, period) {
+    const k = 2 / (period + 1);
+    let val = data.slice(0, period).reduce((a, b) => a + b, 0) / period;
+    const res = new Array(period - 1).fill(null);
+    res.push(val);
+    for (let i = period; i < data.length; i++) { val = data[i] * k + val * (1 - k); res.push(val); }
+    return res;
+  }
+
+  function computeMACDData(closes, times) {
+    const fast  = emaArr(closes, 12);
+    const slow  = emaArr(closes, 26);
+    const macdL = fast.map((f, i) => (f !== null && slow[i] !== null) ? f - slow[i] : null);
+    const validMacd = macdL.filter(v => v !== null);
+    const signalRaw = emaArr(validMacd, 9);
+
+    let sigIdx = 0;
+    const macdLine  = [], signalLine = [], histogram = [];
+    let started = false;
+
+    for (let i = 0; i < macdL.length; i++) {
+      if (macdL[i] === null) continue;
+      if (!started && macdL.slice(0, i).filter(v => v !== null).length >= 25) started = true;
+      const sig = signalRaw[sigIdx] ?? null;
+      sigIdx++;
+      if (macdL[i] !== null) macdLine.push({ time: times[i], value: parseFloat(macdL[i].toFixed(4)) });
+      if (sig !== null) {
+        signalLine.push({ time: times[i], value: parseFloat(sig.toFixed(4)) });
+        histogram.push({ time: times[i], value: parseFloat((macdL[i] - sig).toFixed(4)), color: (macdL[i] - sig) >= 0 ? 'rgba(0,255,136,0.6)' : 'rgba(255,56,105,0.6)' });
+      }
+    }
+    return { macdLine, signalLine, histogram };
+  }
+
+  function updateInfoBar(d) {
+    document.getElementById('info-price').textContent = '₹' + Number(d.ltp).toLocaleString('en-IN');
+    const sign = d.changePct >= 0 ? '+' : '';
+    const el   = document.getElementById('info-change');
+    el.textContent = `${sign}${d.changePct}% (${sign}₹${Number(Math.abs(d.change)||0).toFixed(2)})`;
+    el.className   = 'info-change ' + (d.changePct >= 0 ? 'up' : 'dn');
+    if (d.open) {
+      document.getElementById('ohlc-row').style.display = 'flex';
+      document.getElementById('ohlc-o').textContent = '₹' + Number(d.open).toLocaleString('en-IN');
+      document.getElementById('ohlc-h').textContent = '₹' + Number(d.high).toLocaleString('en-IN');
+      document.getElementById('ohlc-l').textContent = '₹' + Number(d.low).toLocaleString('en-IN');
+      document.getElementById('ohlc-c').textContent = '₹' + Number(d.ltp).toLocaleString('en-IN');
+    }
+  }
+
+  function setInterval2(iv) {
+    currentInterval = iv;
+    document.querySelectorAll('.iv-btn').forEach(b => b.classList.remove('active'));
+    event?.target?.classList.add('active');
+    document.getElementById('lbl-interval').textContent = INTERVALS[iv];
+    fetchAndRender();
+  }
+
+  function searchSymbol(q) {
+    const res = document.getElementById('search-results');
+    if (!q.trim()) { res.innerHTML = ''; return; }
+    const matches = instruments.filter(i => i.symbol.includes(q.toUpperCase()) || i.name.toLowerCase().includes(q.toLowerCase())).slice(0, 8);
+    res.innerHTML = matches.map(i => `<div class="search-result-item" onmousedown="loadStock('${i.key}','${i.symbol}')">
+      <div class="sym">${i.symbol}</div><div class="nm">${i.name} · ${i.sector}</div>
+    </div>`).join('') || '<div class="search-result-item" style="color:var(--muted)">No results</div>';
+  }
+
+  async function connectUpstox() {
+    const r = await fetch(`${BACKEND}/api/upstox/login-url`);
+    const d = await r.json();
+    window.location.href = d.url;
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 4000);
+  }
+
+  // ── Init ──
+  initCharts();
+
+  // Load stock from URL params (coming from Scanner/Signals links)
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('key') && params.get('sym')) {
+    currentKey = params.get('key');
+    currentSym = params.get('sym');
+    document.getElementById('info-sym').textContent  = currentSym;
+    document.getElementById('sym-input').value       = currentSym;
+  }
+  fetchAndRender();
+</script>
+</body>
+</html>

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WaveEdge — Stock Scanner</title>
+  <meta name="description" content="Real-time Nifty 50 stock scanner with RSI, MACD, Bollinger Bands and Breakout signals."/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="config.js"></script>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <style>
+    :root {
+      --bg:       #070b14;
+      --surface:  #0e1524;
+      --border:   #1a2540;
+      --text:     #e2e8f0;
+      --muted:    #64748b;
+      --green:    #00ff88;
+      --red:      #ff3869;
+      --blue:     #38bdf8;
+      --yellow:   #fbbf24;
+      --purple:   #a855f7;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; }
+
+    /* ── NAV ── */
+    nav {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px 28px; background:rgba(14,21,36,0.95);
+      border-bottom:1px solid var(--border); backdrop-filter:blur(12px);
+      position:sticky; top:0; z-index:100;
+    }
+    .logo { font-size:1.4rem; font-weight:800; background:linear-gradient(135deg,#38bdf8,#a855f7); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .nav-links { display:flex; gap:8px; }
+    .nav-links a { padding:8px 18px; border-radius:8px; text-decoration:none; color:var(--muted); font-size:0.85rem; font-weight:500; transition:all 0.2s; }
+    .nav-links a:hover { background:var(--border); color:var(--text); }
+    .nav-links a.active { background:linear-gradient(135deg,#1e3a5f,#2d1b4e); color:var(--blue); }
+    #connect-pill {
+      display:flex; align-items:center; gap:8px; padding:8px 16px;
+      background:var(--border); border-radius:20px; font-size:0.8rem; cursor:pointer;
+      border:none; color:var(--text); transition:all 0.2s;
+    }
+    #connect-pill:hover { background:#1e3a5f; }
+    .dot { width:8px; height:8px; border-radius:50%; background:var(--red); transition:background 0.3s; }
+    .dot.on { background:var(--green); box-shadow:0 0 8px var(--green); animation:pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+    /* ── HEADER ── */
+    .page-header { padding:32px 28px 20px; }
+    .page-header h1 { font-size:2rem; font-weight:800; margin-bottom:6px; }
+    .page-header p { color:var(--muted); font-size:0.9rem; }
+    .scan-time { color:var(--blue); font-size:0.8rem; margin-top:4px; }
+
+    /* ── CONTROLS ── */
+    .controls {
+      display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+      padding:0 28px 20px;
+    }
+    .filter-btn {
+      padding:8px 20px; border-radius:8px; border:1px solid var(--border);
+      background:transparent; color:var(--muted); cursor:pointer; font-size:0.85rem;
+      font-family:'Inter',sans-serif; transition:all 0.2s;
+    }
+    .filter-btn:hover { border-color:var(--blue); color:var(--blue); }
+    .filter-btn.active-buy  { background:#0a2a1a; border-color:var(--green); color:var(--green); }
+    .filter-btn.active-sell { background:#2a0a1a; border-color:var(--red); color:var(--red); }
+    .filter-btn.active-all  { background:#1e3a5f; border-color:var(--blue); color:var(--blue); }
+    #run-scan-btn {
+      margin-left:auto; padding:10px 24px; border-radius:8px;
+      background:linear-gradient(135deg,#1e3a8a,#4c1d95); color:#fff;
+      border:none; cursor:pointer; font-size:0.9rem; font-weight:600;
+      font-family:'Inter',sans-serif; transition:all 0.2s;
+      display:flex; align-items:center; gap:8px;
+    }
+    #run-scan-btn:hover { opacity:0.85; transform:translateY(-1px); }
+    #run-scan-btn:disabled { opacity:0.5; cursor:not-allowed; }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      display:flex; gap:16px; flex-wrap:wrap; padding:0 28px 24px;
+    }
+    .stat-card {
+      background:var(--surface); border:1px solid var(--border); border-radius:12px;
+      padding:16px 24px; min-width:140px; flex:1; max-width:200px;
+    }
+    .stat-label { font-size:0.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px; }
+    .stat-value { font-size:1.6rem; font-weight:700; }
+    .stat-value.green { color:var(--green); }
+    .stat-value.red   { color:var(--red); }
+    .stat-value.blue  { color:var(--blue); }
+
+    /* ── SCANNER TABLE ── */
+    .table-wrap { padding:0 28px 40px; overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; min-width:900px; }
+    thead th {
+      text-align:left; padding:12px 16px; font-size:0.75rem;
+      color:var(--muted); text-transform:uppercase; letter-spacing:0.05em;
+      border-bottom:1px solid var(--border); cursor:pointer; user-select:none;
+      white-space:nowrap;
+    }
+    thead th:hover { color:var(--text); }
+    tbody tr {
+      border-bottom:1px solid rgba(26,37,64,0.5);
+      transition:background 0.15s;
+    }
+    tbody tr:hover { background:rgba(30,58,95,0.2); }
+    tbody td { padding:14px 16px; font-size:0.88rem; vertical-align:middle; }
+
+    .symbol { font-weight:700; font-size:0.95rem; }
+    .name   { color:var(--muted); font-size:0.8rem; }
+    .sector-badge {
+      display:inline-block; padding:2px 8px; border-radius:4px;
+      background:rgba(56,189,248,0.1); color:var(--blue); font-size:0.72rem;
+      font-weight:500;
+    }
+    .price { font-weight:600; font-size:0.95rem; }
+    .change-pos { color:var(--green); font-weight:500; }
+    .change-neg { color:var(--red); font-weight:500; }
+    .change-neu { color:var(--muted); }
+
+    .signal-badge {
+      display:inline-flex; align-items:center; gap:5px;
+      padding:5px 14px; border-radius:6px; font-size:0.8rem; font-weight:700;
+      letter-spacing:0.03em; white-space:nowrap;
+    }
+    .signal-BUY     { background:rgba(0,255,136,0.12); color:var(--green); border:1px solid rgba(0,255,136,0.25); }
+    .signal-SELL    { background:rgba(255,56,105,0.12); color:var(--red);   border:1px solid rgba(255,56,105,0.25); }
+    .signal-NEUTRAL { background:rgba(100,116,139,0.12); color:var(--muted); border:1px solid rgba(100,116,139,0.2); }
+
+    .conf-bar { background:var(--border); border-radius:4px; height:5px; width:80px; overflow:hidden; }
+    .conf-fill { height:100%; border-radius:4px; transition:width 0.4s; }
+    .conf-fill.green { background:var(--green); }
+    .conf-fill.red   { background:var(--red); }
+    .conf-fill.gray  { background:var(--muted); }
+
+    .rsi-val { font-weight:600; }
+    .rsi-ob { color:var(--red); }
+    .rsi-os { color:var(--green); }
+    .rsi-n  { color:var(--muted); }
+
+    .reasons-tooltip { position:relative; cursor:help; }
+    .reasons-tooltip .tip {
+      display:none; position:absolute; bottom:110%; left:50%; transform:translateX(-50%);
+      background:#1e2d4a; border:1px solid var(--border); border-radius:8px;
+      padding:10px 14px; width:260px; z-index:50; font-size:0.78rem;
+      line-height:1.6; color:var(--text); pointer-events:none;
+    }
+    .reasons-tooltip:hover .tip { display:block; }
+
+    /* ── LOADING ── */
+    .loading { text-align:center; padding:60px; color:var(--muted); }
+    .spinner { width:40px; height:40px; border:3px solid var(--border); border-top-color:var(--blue); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 16px; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* ── TOAST ── */
+    #toast {
+      position:fixed; bottom:24px; right:24px; padding:12px 24px;
+      background:#1e3a5f; border:1px solid var(--blue); border-radius:10px;
+      font-size:0.85rem; color:var(--text); opacity:0; transition:opacity 0.3s;
+      z-index:200; max-width:320px;
+    }
+    #toast.show { opacity:1; }
+
+    @media(max-width:768px) {
+      nav { padding:12px 16px; }
+      .page-header, .controls, .stats-bar, .table-wrap { padding-left:16px; padding-right:16px; }
+      #run-scan-btn { margin-left:0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">🌊 WaveEdge</div>
+  <div class="nav-links">
+    <a href="scanner.html" class="active">Scanner</a>
+    <a href="signals.html">Signals</a>
+    <a href="charts.html">Charts</a>
+  </div>
+  <button id="connect-pill" onclick="connectUpstox()">
+    <span class="dot" id="status-dot"></span>
+    <span id="status-label">Connecting...</span>
+  </button>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <h1>📡 Stock Scanner</h1>
+  <p>Real-time Nifty 50 analysis — RSI · MACD · Bollinger Bands · Breakout</p>
+  <div class="scan-time" id="scan-time">Last scan: —</div>
+</div>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <button class="filter-btn active-all" id="btn-all"     onclick="setFilter('ALL')">All Stocks</button>
+  <button class="filter-btn"            id="btn-buy"     onclick="setFilter('BUY')">🟢 Buy Signals</button>
+  <button class="filter-btn"            id="btn-sell"    onclick="setFilter('SELL')">🔴 Sell Signals</button>
+  <button class="filter-btn"            id="btn-neutral" onclick="setFilter('NEUTRAL')">⚪ Neutral</button>
+  <button id="run-scan-btn" onclick="runScan()">
+    <span id="scan-icon">🔍</span> Run Scanner
+  </button>
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-card"><div class="stat-label">Total Scanned</div><div class="stat-value blue" id="stat-total">—</div></div>
+  <div class="stat-card"><div class="stat-label">Buy Signals</div><div class="stat-value green" id="stat-buy">—</div></div>
+  <div class="stat-card"><div class="stat-label">Sell Signals</div><div class="stat-value red" id="stat-sell">—</div></div>
+  <div class="stat-card"><div class="stat-label">Live Feed</div><div class="stat-value blue" id="stat-live">—</div></div>
+</div>
+
+<!-- TABLE -->
+<div class="table-wrap">
+  <div class="loading" id="loading-state">
+    <div>📊 Click <strong>"Run Scanner"</strong> to analyze Nifty 50 stocks</div>
+    <div style="margin-top:8px;color:#38bdf8;font-size:0.8rem;">First scan takes ~30 seconds</div>
+  </div>
+  <table id="scanner-table" style="display:none">
+    <thead>
+      <tr>
+        <th onclick="sortBy('symbol')">Symbol ↕</th>
+        <th>Sector</th>
+        <th onclick="sortBy('ltp')">LTP ↕</th>
+        <th onclick="sortBy('changePct')">Change ↕</th>
+        <th onclick="sortBy('rsi')">RSI ↕</th>
+        <th>MACD</th>
+        <th>BB</th>
+        <th onclick="sortBy('signal')">Signal ↕</th>
+        <th onclick="sortBy('confidence')">Confidence ↕</th>
+        <th>Reasons</th>
+      </tr>
+    </thead>
+    <tbody id="scanner-tbody"></tbody>
+  </table>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  const BACKEND = (window.WAVEEDGE_CONFIG && window.WAVEEDGE_CONFIG.backendUrl) || window.location.origin;
+  let allSignals = [];
+  let currentFilter = 'ALL';
+  let sortKey = 'signal';
+  let sortDir = 1;
+
+  // ── Socket.IO ──
+  const socket = io(BACKEND);
+  socket.on('connect',        () => console.log('🔌 Socket connected'));
+  socket.on('ltp_update',     updateLivePrices);
+  socket.on('scanner_complete', (data) => {
+    allSignals = data.signals;
+    renderTable();
+    updateStats();
+    showToast(`✅ Scanner complete — ${data.count} stocks analyzed`);
+  });
+
+  // ── Status Check ──
+  async function checkStatus() {
+    try {
+      const r = await fetch(`${BACKEND}/api/upstox/status`);
+      const d = await r.json();
+      document.getElementById('status-dot').className = 'dot' + (d.connected ? ' on' : '');
+      document.getElementById('status-label').textContent = d.connected
+        ? `Connected (${d.expires_in_hours}h left)` : 'Connect Upstox';
+    } catch { document.getElementById('status-label').textContent = 'Server offline'; }
+  }
+
+  async function connectUpstox() {
+    try {
+      const r = await fetch(`${BACKEND}/api/upstox/login-url`);
+      const d = await r.json();
+      window.location.href = d.url;
+    } catch { showToast('❌ Cannot reach backend server'); }
+  }
+
+  // ── Run Scanner ──
+  async function runScan() {
+    const btn = document.getElementById('run-scan-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:6px"></span> Scanning...';
+    document.getElementById('loading-state').innerHTML = '<div class="spinner"></div><div>Scanning Nifty 50... analyzing RSI, MACD, Bollinger Bands & Breakouts</div><div style="color:var(--muted);font-size:0.8rem;margin-top:8px">This takes ~30 seconds on first run</div>';
+    document.getElementById('loading-state').style.display = 'block';
+    document.getElementById('scanner-table').style.display = 'none';
+
+    try {
+      const r = await fetch(`${BACKEND}/api/scanner/run`);
+      const d = await r.json();
+      if (d.running) { showToast('⏳ Scanner already running. Refresh in 30s.'); return; }
+      allSignals = d.signals || [];
+      document.getElementById('scan-time').textContent = `Last scan: ${new Date().toLocaleTimeString('en-IN')} ${d.cached ? '(cached)' : '(fresh)'}`;
+      renderTable();
+      updateStats();
+    } catch (e) {
+      showToast('❌ Scanner failed. Are you connected?');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<span>🔍</span> Run Scanner';
+      document.getElementById('loading-state').style.display = 'none';
+    }
+  }
+
+  // ── Filter ──
+  function setFilter(f) {
+    currentFilter = f;
+    ['all','buy','sell','neutral'].forEach(b => {
+      document.getElementById(`btn-${b}`).className = 'filter-btn';
+    });
+    document.getElementById(`btn-${f.toLowerCase()}`).className = `filter-btn active-${f.toLowerCase()}`;
+    renderTable();
+  }
+
+  // ── Sort ──
+  function sortBy(key) {
+    if (sortKey === key) sortDir *= -1;
+    sortKey = key;
+    renderTable();
+  }
+
+  // ── Render Table ──
+  function renderTable() {
+    let data = currentFilter === 'ALL' ? [...allSignals] : allSignals.filter(s => s.signal === currentFilter);
+
+    data.sort((a, b) => {
+      let va = a[sortKey], vb = b[sortKey];
+      if (sortKey === 'signal') {
+        const o = { BUY:0, SELL:1, NEUTRAL:2 };
+        return sortDir * ((o[va]||2) - (o[vb]||2));
+      }
+      if (typeof va === 'string') va = va.toLowerCase();
+      if (typeof vb === 'string') vb = vb.toLowerCase();
+      return sortDir * (va > vb ? 1 : va < vb ? -1 : 0);
+    });
+
+    const tbody = document.getElementById('scanner-tbody');
+    tbody.innerHTML = data.map(s => {
+      const chgClass = s.changePct > 0 ? 'change-pos' : s.changePct < 0 ? 'change-neg' : 'change-neu';
+      const chgSign  = s.changePct > 0 ? '+' : '';
+      const rsiClass = s.rsi < 35 ? 'rsi-os' : s.rsi > 70 ? 'rsi-ob' : 'rsi-n';
+      const confFill = s.signal === 'BUY' ? 'green' : s.signal === 'SELL' ? 'red' : 'gray';
+      const sigIcon  = s.signal === 'BUY' ? '📈' : s.signal === 'SELL' ? '📉' : '➡️';
+      const macdStr  = s.macd === 'BULLISH_CROSS' ? '<span style="color:var(--green)">▲ Bull</span>'
+                     : s.macd === 'BEARISH_CROSS' ? '<span style="color:var(--red)">▼ Bear</span>'
+                     : '<span style="color:var(--muted)">Neutral</span>';
+      const bbStr    = s.bb === 'OVERSOLD' ? '<span style="color:var(--green)">Oversold</span>'
+                     : s.bb === 'OVERBOUGHT' ? '<span style="color:var(--red)">Overbought</span>'
+                     : '<span style="color:var(--muted)">Normal</span>';
+
+      return `<tr>
+        <td>
+          <div class="symbol"><a href="charts.html?key=${encodeURIComponent(s.key)}&sym=${s.symbol}" style="color:inherit;text-decoration:none">${s.symbol}</a></div>
+          <div class="name">${s.name}</div>
+        </td>
+        <td><span class="sector-badge">${s.sector}</span></td>
+        <td class="price" id="ltp-${s.key.replace(/[|]/g,'-')}">₹${(s.ltp||0).toLocaleString('en-IN')}</td>
+        <td class="${chgClass}" id="chg-${s.key.replace(/[|]/g,'-')}">${chgSign}${s.changePct}%</td>
+        <td><span class="rsi-val ${rsiClass}">${s.rsi ?? '—'}</span></td>
+        <td>${macdStr}</td>
+        <td>${bbStr}</td>
+        <td><span class="signal-badge signal-${s.signal}">${sigIcon} ${s.signal}</span></td>
+        <td>
+          <div style="display:flex;align-items:center;gap:6px">
+            <div class="conf-bar"><div class="conf-fill ${confFill}" style="width:${s.confidence}%"></div></div>
+            <span style="font-size:0.8rem;color:var(--muted)">${s.confidence}%</span>
+          </div>
+        </td>
+        <td>
+          <div class="reasons-tooltip">
+            <span style="font-size:0.8rem;color:var(--blue);cursor:help">ℹ️ ${s.reasons?.length || 0} signals</span>
+            <div class="tip">${(s.reasons||[]).join('<br>') || 'No signals'}</div>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+
+    document.getElementById('scanner-table').style.display = data.length > 0 ? 'table' : 'none';
+    if (data.length === 0) document.getElementById('loading-state').innerHTML = `<div>No ${currentFilter !== 'ALL' ? currentFilter + ' ' : ''}signals found in cached results.</div>`;
+    document.getElementById('loading-state').style.display = data.length === 0 ? 'block' : 'none';
+  }
+
+  // ── Update Live Prices ──
+  function updateLivePrices(update) {
+    const count = Object.keys(update).length;
+    document.getElementById('stat-live').textContent = count + ' live';
+
+    for (const [key, d] of Object.entries(update)) {
+      const safeKey = key.replace(/[|]/g, '-');
+      const ltpEl = document.getElementById(`ltp-${safeKey}`);
+      const chgEl = document.getElementById(`chg-${safeKey}`);
+      if (ltpEl && d.ltp) ltpEl.textContent = '₹' + Number(d.ltp).toLocaleString('en-IN');
+      if (chgEl && d.changePct !== undefined) {
+        const sign = d.changePct > 0 ? '+' : '';
+        chgEl.textContent = sign + d.changePct + '%';
+        chgEl.className = d.changePct > 0 ? 'change-pos' : d.changePct < 0 ? 'change-neg' : 'change-neu';
+      }
+      // Update in allSignals cache too
+      const s = allSignals.find(x => x.key === key);
+      if (s && d.ltp) { s.ltp = d.ltp; s.changePct = d.changePct; }
+    }
+  }
+
+  function updateStats() {
+    document.getElementById('stat-total').textContent = allSignals.length;
+    document.getElementById('stat-buy').textContent  = allSignals.filter(s => s.signal === 'BUY').length;
+    document.getElementById('stat-sell').textContent = allSignals.filter(s => s.signal === 'SELL').length;
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 4000);
+  }
+
+  // ── Init ──
+  checkStatus();
+  setInterval(checkStatus, 30000);
+
+  // Auto-load cached signals if available
+  (async () => {
+    try {
+      const r = await fetch(`${BACKEND}/api/scanner/signals`);
+      const d = await r.json();
+      if (d.signals?.length > 0) {
+        allSignals = d.signals;
+        renderTable(); updateStats();
+        document.getElementById('scan-time').textContent = `Last scan: ${new Date(d.ts).toLocaleString('en-IN')} (cached)`;
+      }
+    } catch {}
+  })();
+</script>
+</body>
+</html>
