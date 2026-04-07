@@ -431,6 +431,18 @@
       }
     } catch {}
   })();
+</script></script>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const connected = params.get("connected");
+
+  if (connected === "true") {
+    document.body.insertAdjacentHTML(
+      "afterbegin",
+      "<div style='background:green;color:white;padding:10px;text-align:center;'>✅ Upstox Connected Successfully</div>"
+    );
+  }
 </script>
 </body>
 </html>
