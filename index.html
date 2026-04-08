@@ -368,7 +368,7 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
     <div id="upstox-nav-status" style="display:flex;align-items:center;gap:8px;margin-left:4px;">
       <div id="upstox-dot" style="width:8px;height:8px;border-radius:50%;background:#ff1744;flex-shrink:0;"></div>
       <span id="upstox-txt" style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);white-space:nowrap;">API Offline</span>
-      <a id="upstox-reconnect-btn" href="https://waveedge-backend-1.onrender.com/upstox/login" target="_blank"
+      <a id="upstox-reconnect-btn" href="https://waveedgejava.onrender.com/callback" target="_blank"
         style="background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.3);color:var(--cyan);padding:4px 10px;border-radius:5px;font-family:'Space Mono',monospace;font-size:10px;text-decoration:none;white-space:nowrap;transition:all .2s;"
         onmouseover="this.style.background='rgba(0,229,255,.2)'" onmouseout="this.style.background='rgba(0,229,255,.1)'">
         ⚡ Reconnect
@@ -1459,7 +1459,7 @@ renderResults();
 
 // Check Upstox API status
 function checkUpstoxStatus() {
-  fetch('https://waveedge-backend-1.onrender.com/upstox/status')
+  fetch('https://waveedgejava.onrender.com/upstox/status')
     .then(function(r){ return r.json(); })
     .then(function(data) {
       var connected = data.connected;
