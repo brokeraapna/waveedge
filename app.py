@@ -17,11 +17,11 @@ app = Flask(__name__)
 CORS(app)
 
 # ── CONFIG ────────────────────────────────────────────────
-CLIENT_ID     = os.environ.get("UPSTOX_CLIENT_ID",     "0993c447-0d76-44dc-9fd2-aef1c19a9695")
-CLIENT_SECRET = os.environ.get("UPSTOX_CLIENT_SECRET", "")
-REDIRECT_URI  = os.environ.get("UPSTOX_REDIRECT_URI",  "https://waveedge-backend-1.onrender.com/upstox/callback")
+CLIENT_ID     = os.environ.get("UPSTOX_API_KEY",       "952b375b-2750-4bd0-827d-ffe1cd44a8b8")
+CLIENT_SECRET = os.environ.get("UPSTOX_API_SECRET",    "")
+REDIRECT_URI  = os.environ.get("REDIRECT_URL",         "https://waveedgebackflask-2.onrender.com/upstox/callback")
 ADMIN_KEY     = os.environ.get("ADMIN_KEY",             "waveedge2024")
-SELF_URL      = os.environ.get("SELF_URL",              "https://waveedge-backend-1.onrender.com")
+SELF_URL      = os.environ.get("FRONTEND_URL",          "https://waveedgebackflask-2.onrender.com")
 TOKEN_FILE    = "upstox_token.json"
 POSTS_FILE    = "blog_posts.json"
 
