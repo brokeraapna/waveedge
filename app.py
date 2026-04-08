@@ -440,6 +440,46 @@ def health():
         "cached":    len(_cache),
     })
 
+@app.route("/upstox/token", methods=["GET","POST"])
+def manual_token():
+    """Manually set access token — use when OAuth redirect fails."""
+    if request.method == "POST":
+        data  = request.get_json() or {}
+        token = data.get("access_token","").strip()
+        key   = data.get("admin_key","")
+        if key != ADMIN_KEY:
+            return jsonify({"error":"unauthorized"}), 401
+        if not token:
+            return jsonify({"error":"access_token required"}), 400
+        save_token({"access_token": token, "expires_at": date.today().isoformat()})
+        return jsonify({"success": True, "message": "Token saved!"})
+
+    # GET — show a simple form to paste token
+    return """<!DOCTYPE html><html><head><meta charset=UTF-8>
+    <title>Set Upstox Token | WaveEdge</title>
+    <style>*{box-sizing:border-box;margin:0;padding:0}body{background:#020c14;color:#dff0f8;font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}.box{background:#061525;border:1px solid #00e5ff;border-radius:14px;padding:36px;width:100%;max-width:500px}h2{color:#00e5ff;margin-bottom:8px}p{color:#4d8099;font-size:13px;margin-bottom:20px;line-height:1.6}label{display:block;font-size:11px;color:#4d8099;letter-spacing:1px;margin-bottom:5px;text-transform:uppercase}input,textarea{width:100%;background:#0a1f30;border:1px solid #173348;color:#dff0f8;padding:11px;border-radius:7px;font-size:13px;margin-bottom:14px;font-family:monospace}button{width:100%;background:linear-gradient(135deg,#00e5ff,#00ff88);color:#000;border:none;padding:13px;border-radius:7px;font-weight:700;font-size:15px;cursor:pointer}#msg{margin-top:12px;text-align:center;font-size:13px}</style>
+    </head><body><div class=box>
+    <h2>&#9889; Set Upstox Access Token</h2>
+    <p>Go to <b>account.upstox.com/developer/apps</b> → your app → click <b>Generate</b> next to Access Token → copy and paste below.</p>
+    <label>Access Token</label>
+    <textarea id=tok rows=4 placeholder="Paste your Upstox access token here..."></textarea>
+    <label>Admin Key</label>
+    <input id=key type=password placeholder="waveedge2024"/>
+    <button onclick=save()>Save Token &#8594;</button>
+    <div id=msg></div>
+    </div>
+    <script>
+    async function save(){
+      var tok=document.getElementById('tok').value.trim();
+      var key=document.getElementById('key').value.trim();
+      if(!tok){document.getElementById('msg').innerHTML='<span style=color:#ff1744>Paste your token first</span>';return;}
+      var r=await fetch('/upstox/token',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:tok,admin_key:key})});
+      var d=await r.json();
+      if(d.success){document.getElementById('msg').innerHTML='<span style=color:#00ff88>&#10004; Token saved! <a href=/ style=color:#00e5ff>Go to API</a></span>';}
+      else{document.getElementById('msg').innerHTML='<span style=color:#ff1744>Error: '+d.error+'</span>';}
+    }
+    </script></body></html>"""
+
 # ── UPSTOX AUTH ───────────────────────────────────────────
 @app.route("/upstox/login")
 def upstox_login():
