@@ -368,7 +368,7 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
     <div id="upstox-nav-status" style="display:flex;align-items:center;gap:8px;margin-left:4px;">
       <div id="upstox-dot" style="width:8px;height:8px;border-radius:50%;background:#ff1744;flex-shrink:0;"></div>
       <span id="upstox-txt" style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);white-space:nowrap;">API Offline</span>
-      <a id="upstox-reconnect-btn" href="https://waveedgejava.onrender.com/callback" target="_blank"
+      <a id="upstox-reconnect-btn" href="https://waveedgebackflask-kexj.onrender.com/upstox/login" target="_blank"
         style="background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.3);color:var(--cyan);padding:4px 10px;border-radius:5px;font-family:'Space Mono',monospace;font-size:10px;text-decoration:none;white-space:nowrap;transition:all .2s;"
         onmouseover="this.style.background='rgba(0,229,255,.2)'" onmouseout="this.style.background='rgba(0,229,255,.1)'">
         ⚡ Reconnect
@@ -1459,42 +1459,40 @@ renderResults();
 
 // Check Upstox API status
 function checkUpstoxStatus() {
-  fetch('https://waveedgejava.onrender.com/upstox/status')
+  fetch('https://waveedgebackflask-kexj.onrender.com/health', {cache:'no-cache'})
     .then(function(r){ return r.json(); })
     .then(function(data) {
       var connected = data.connected;
-      // Nav dot
-      var dot = document.getElementById('upstox-dot');
-      var txt = document.getElementById('upstox-txt');
-      var btn = document.getElementById('upstox-reconnect-btn');
-      // Banner
-      var banner = document.getElementById('upstox-banner');
-      var bdot   = document.getElementById('upstox-banner-dot');
-      var btxt   = document.getElementById('upstox-banner-txt');
-
+      var dot   = document.getElementById('upstox-dot');
+      var txt   = document.getElementById('upstox-txt');
+      var btn   = document.getElementById('upstox-reconnect-btn');
+      var banner= document.getElementById('upstox-banner');
+      var bdot  = document.getElementById('upstox-banner-dot');
+      var btxt  = document.getElementById('upstox-banner-txt');
+      var apiTxt= document.getElementById('api-status-txt');
       if (connected) {
-        if(dot){ dot.style.background='#00ff88'; }
-        if(txt){ txt.textContent='Upstox Live'; txt.style.color='#00ff88'; }
-        if(btn){ btn.textContent='✓ Connected'; btn.style.borderColor='rgba(0,255,136,.3)'; btn.style.color='#00ff88'; btn.style.background='rgba(0,255,136,.1)'; }
+        if(dot)   { dot.style.background='#00ff88'; dot.style.animation='none'; }
+        if(txt)   { txt.textContent='Live'; txt.style.color='#00ff88'; }
+        if(btn)   { btn.textContent='Connected'; btn.style.color='#00ff88'; btn.style.background='rgba(0,255,136,.1)'; btn.style.borderColor='rgba(0,255,136,.3)'; }
         if(banner){ banner.style.background='rgba(0,255,136,.04)'; banner.style.borderColor='rgba(0,255,136,.15)'; }
-        if(bdot){ bdot.style.background='#00ff88'; bdot.style.animation='none'; }
-        if(btxt){ btxt.textContent='Upstox API connected — live NSE data active'; btxt.style.color='#00ff88'; }
+        if(bdot)  { bdot.style.background='#00ff88'; bdot.style.animation='none'; }
+        if(btxt)  { btxt.textContent='Upstox API connected — live NSE data active'; btxt.style.color='#00ff88'; }
+        if(apiTxt){ apiTxt.textContent='Live API Connected'; apiTxt.style.color='#00ff88'; }
       } else {
-        if(dot){ dot.style.background='#ff1744'; }
-        if(txt){ txt.textContent='API Offline'; txt.style.color='var(--muted)'; }
-        if(btn){ btn.textContent='⚡ Reconnect'; }
+        if(dot)  dot.style.background='#ff1744';
+        if(txt)  { txt.textContent='Token expired'; txt.style.color='#ff9900'; }
+        if(btn)  btn.textContent='Reconnect';
+        if(bdot) bdot.style.background='#ffc940';
+        if(btxt) { btxt.textContent='Token expired — visit /upstox/token to reconnect'; btxt.style.color='#ffc940'; }
       }
     })
     .catch(function() {
-      // Backend sleeping
       var txt = document.getElementById('upstox-txt');
-      if(txt){ txt.textContent='Backend sleeping...'; }
+      if(txt){ txt.textContent='Waking up...'; }
+      setTimeout(checkUpstoxStatus, 15000);
     });
 }
-
-// Check on load
-setTimeout(checkUpstoxStatus, 2000);
-// Check every 5 min
+setTimeout(checkUpstoxStatus, 1000);
 setInterval(checkUpstoxStatus, 300000);
 
 // Wake up Render backend then fetch live data
