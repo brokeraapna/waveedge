@@ -352,7 +352,7 @@ function renderManage(){
       +'</div>';
   }).join('');
 }
-// ── Telegram Auto-Fetch ────────────────────────────────────
+// ── Telegram Feed ─────────────────────────────────────
 function fetchTgPosts() {
   var feed = document.getElementById('tg-feed');
   var dot  = document.getElementById('tg-sync-dot');
@@ -361,81 +361,96 @@ function fetchTgPosts() {
   if (dot)  dot.style.background = '#ffc940';
   if (stat) stat.textContent = 'Fetching from @ewagaurav...';
 
-  var rssUrl = 'https://rsshub.app/telegram/channel/ewagaurav';
-  var proxy  = 'https://api.allorigins.win/get?url=' + encodeURIComponent(rssUrl);
+  var rss = 'https://rsshub.app/telegram/channel/ewagaurav';
+  var url = 'https://api.allorigins.win/get?url=' + encodeURIComponent(rss);
 
-  fetch(proxy, {cache:'no-cache'})
+  fetch(url, {cache:'no-cache'})
     .then(function(r){ return r.json(); })
-    .then(function(data){ parseTgRSS(data.contents); })
+    .then(function(d){ renderTgFeed(d.contents, feed, dot, stat); })
     .catch(function(){
-      // Try fallback proxy
-      var proxy2 = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://tg.i-c-a.su/rss/ewagaurav');
-      fetch(proxy2, {cache:'no-cache'})
+      var rss2 = 'https://tg.i-c-a.su/rss/ewagaurav';
+      var url2 = 'https://api.allorigins.win/get?url=' + encodeURIComponent(rss2);
+      fetch(url2, {cache:'no-cache'})
         .then(function(r){ return r.json(); })
-        .then(function(data){ parseTgRSS(data.contents); })
-        .catch(function(){ showTgError(); });
+        .then(function(d){ renderTgFeed(d.contents, feed, dot, stat); })
+        .catch(function(){ tgError(feed, dot, stat); });
     });
 }
 
-function parseTgRSS(xml) {
-  var feed = document.getElementById('tg-feed');
-  var dot  = document.getElementById('tg-sync-dot');
-  var stat = document.getElementById('tg-sync-status');
+function renderTgFeed(xml, feed, dot, stat) {
   try {
     var parser = new DOMParser();
     var doc = parser.parseFromString(xml, 'text/xml');
-    var items = Array.from(doc.querySelectorAll('item')).slice(0, 10);
-    if (!items.length) { showTgError(); return; }
-
+    var items = Array.from(doc.querySelectorAll('item')).slice(0,10);
+    if (!items.length) { tgError(feed, dot, stat); return; }
     feed.innerHTML = '';
+    var count = 0;
     items.forEach(function(item) {
-      var desc    = (item.querySelector('description')||{}).textContent || '';
-      var link    = (item.querySelector('link')||{}).textContent || '';
-      var pubDate = (item.querySelector('pubDate')||{}).textContent || '';
-      var clean   = desc.replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&nbsp;/g,' ').trim();
-      if (clean.length < 10) return;
-
-      var dStr = pubDate ? new Date(pubDate).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
-      var bias='neutral', bcolor='#ffc940', bicon='⚖️';
-      if (/bullish|buy|long|upside/i.test(clean))  { bias='bullish';  bcolor='#00ff88'; bicon='🐂'; }
-      if (/bearish|sell|short|downside/i.test(clean)){ bias='bearish'; bcolor='#ff1744'; bicon='🐻'; }
-
-      var card = document.createElement('div');
-      card.style.cssText = 'background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;';
-      var enc = encodeURIComponent(clean.substring(0,400));
-      card.innerHTML =
-        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">' +
-          '<div style="display:flex;align-items:center;gap:8px;">' +
-            '<div style="width:30px;height:30px;background:#0088cc;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;">✈</div>' +
-            '<div><div style="font-family:Space Mono,monospace;font-size:11px;color:var(--cyan);font-weight:700;">@ewagaurav</div>' +
-            '<div style="font-family:Space Mono,monospace;font-size:10px;color:var(--muted);">' + dStr + '</div></div>' +
-          '</div>' +
-          '<div style="display:flex;align-items:center;gap:8px;">' +
-            '<span style="font-family:Space Mono,monospace;font-size:11px;font-weight:700;color:' + bcolor + ';">' + bicon + ' ' + bias.toUpperCase() + '</span>' +
-            (link ? '<a href="' + link + '" target="_blank" style="background:rgba(0,136,204,.1);border:1px solid rgba(0,136,204,.3);color:#0088cc;padding:4px 10px;border-radius:4px;font-family:Space Mono,monospace;font-size:10px;text-decoration:none;">View ↗</a>' : '') +
-          '</div>' +
-        '</div>' +
-        '<div style="font-family:Space Mono,monospace;font-size:12px;color:var(--text);line-height:1.85;white-space:pre-wrap;margin-bottom:12px;">' + clean.substring(0,500) + (clean.length>500?'...':'') + '</div>' +
-        '<button onclick="importTg('' + enc + '')" style="background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.2);color:var(--cyan);padding:6px 14px;border-radius:5px;font-family:Space Mono,monospace;font-size:10px;cursor:pointer;letter-spacing:1px;">+ ADD TO BLOG</button>';
-      feed.appendChild(card);
+      var desc = item.querySelector('description');
+      var link = item.querySelector('link');
+      var pub  = item.querySelector('pubDate');
+      var text = desc ? desc.textContent.replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').trim() : '';
+      if (text.length < 10) return;
+      var href = link ? link.textContent : 'https://t.me/ewagaurav';
+      var dt   = pub  ? new Date(pub.textContent).toLocaleDateString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+      var bias = 'NEUTRAL', bcol = '#ffc940';
+      if (/bullish|buy|long/i.test(text))  { bias = 'BULLISH'; bcol = '#00ff88'; }
+      if (/bearish|sell|short/i.test(text)){ bias = 'BEARISH'; bcol = '#ff1744'; }
+      var div = document.createElement('div');
+      div.style.cssText = 'background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:12px;';
+      // Header row
+      var hdr = document.createElement('div');
+      hdr.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;';
+      var left = document.createElement('div');
+      left.style.cssText = 'font-family:Space Mono,monospace;font-size:10px;color:var(--muted);';
+      left.textContent = '@ewagaurav · ' + dt;
+      var right = document.createElement('div');
+      right.style.cssText = 'display:flex;align-items:center;gap:8px;';
+      var biasEl = document.createElement('span');
+      biasEl.style.cssText = 'font-family:Space Mono,monospace;font-size:11px;font-weight:700;color:' + bcol + ';';
+      biasEl.textContent = bias;
+      var viewEl = document.createElement('a');
+      viewEl.href = href; viewEl.target = '_blank';
+      viewEl.style.cssText = 'background:rgba(0,136,204,.1);border:1px solid rgba(0,136,204,.3);color:#0088cc;padding:3px 9px;border-radius:4px;font-family:Space Mono,monospace;font-size:10px;text-decoration:none;';
+      viewEl.textContent = 'View';
+      right.appendChild(biasEl); right.appendChild(viewEl);
+      hdr.appendChild(left); hdr.appendChild(right);
+      // Body
+      var body = document.createElement('div');
+      body.style.cssText = 'font-family:Space Mono,monospace;font-size:12px;color:var(--text);line-height:1.85;white-space:pre-wrap;margin-bottom:12px;';
+      body.textContent = text.substring(0, 500) + (text.length > 500 ? '...' : '');
+      // Add to blog button
+      var btn = document.createElement('button');
+      btn.style.cssText = 'background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.2);color:var(--cyan);padding:5px 12px;border-radius:5px;font-family:Space Mono,monospace;font-size:10px;cursor:pointer;';
+      btn.textContent = '+ Add to Blog';
+      (function(t){ btn.onclick = function(){ addTgToPost(t); }; })(text);
+      div.appendChild(hdr); div.appendChild(body); div.appendChild(btn);
+      feed.appendChild(div);
+      count++;
     });
-
     if (dot)  { dot.style.background='#00ff88'; dot.style.animation='none'; }
-    if (stat) stat.textContent = items.length + ' latest posts from @ewagaurav';
-  } catch(e) { showTgError(); }
+    if (stat) stat.textContent = count + ' posts from @ewagaurav';
+  } catch(e) { tgError(feed, dot, stat); }
 }
 
-function showTgError() {
-  var feed = document.getElementById('tg-feed');
-  var dot  = document.getElementById('tg-sync-dot');
-  var stat = document.getElementById('tg-sync-status');
-  if (feed) feed.innerHTML = '<div style="text-align:center;padding:36px;"><div style="font-size:36px;margin-bottom:12px;">✈</div><div style="font-family:Space Mono,monospace;font-size:12px;color:var(--muted);line-height:1.8;margin-bottom:18px;">Could not auto-fetch posts.<br>Paste manually below or open Telegram.</div><a href="https://t.me/ewagaurav" target="_blank" style="background:#0088cc;color:#fff;padding:11px 24px;border-radius:7px;font-family:DM Sans,sans-serif;font-weight:700;text-decoration:none;">Open @ewagaurav ↗</a></div>';
+function tgError(feed, dot, stat) {
+  if (feed) {
+    feed.innerHTML = '';
+    var d = document.createElement('div');
+    d.style.cssText = 'text-align:center;padding:36px;';
+    d.innerHTML = '<div style="font-size:32px;margin-bottom:12px;">✈</div><div style="font-family:Space Mono,monospace;font-size:12px;color:var(--muted);line-height:1.8;margin-bottom:16px;">Could not fetch posts.<br>Paste manually below or open Telegram.</div>';
+    var a = document.createElement('a');
+    a.href='https://t.me/ewagaurav'; a.target='_blank';
+    a.style.cssText='background:#0088cc;color:#fff;padding:10px 22px;border-radius:7px;font-family:DM Sans,sans-serif;font-weight:700;text-decoration:none;';
+    a.textContent='Open @ewagaurav';
+    d.appendChild(a);
+    feed.appendChild(d);
+  }
   if (dot)  dot.style.background = '#ff1744';
   if (stat) stat.textContent = 'Could not fetch — paste below';
 }
 
-function importTg(enc) {
-  var text = decodeURIComponent(enc);
+function addTgToPost(text) {
   var pw = prompt('Admin password:');
   if (pw !== PW) { toast('Wrong password'); return; }
   var lines = text.split('\n').filter(function(l){ return l.trim(); });
@@ -444,14 +459,14 @@ function importTg(enc) {
   if (/bullish|buy|long/i.test(text)) bias = 'bullish';
   if (/bearish|sell|short/i.test(text)) bias = 'bearish';
   var sym = '';
-  var sm = title.match(/(NIFTY50|BANKNIFTY|NIFTY|BTCUSDT|ETHUSDT|RELIANCE|GOLD|EURUSD)/i);
-  if (sm) sym = sm[1].toUpperCase();
+  var m = title.match(/(NIFTY50|BANKNIFTY|NIFTY|BTCUSDT|ETHUSDT|RELIANCE|GOLD|EURUSD)/i);
+  if (m) sym = m[1].toUpperCase();
   var posts = getP();
   posts.unshift({id:Date.now(),title:title,symbol:sym,cat:'nse',wave:'Wave Analysis',bias:bias,target:'',sl:'',body:text,chart:'',date:new Date().toISOString(),featured:posts.length===0,source:'telegram'});
   saveP(posts);
   switchTab('posts');
   render();
-  toast('✦ Post added to blog!');
+  toast('Post added to blog!');
 }
 
 
