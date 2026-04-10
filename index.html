@@ -1304,27 +1304,30 @@ async function fetchLiveData() {
   try {
     document.getElementById('res-title').textContent = 'FETCHING LIVE DATA...';
     var mkt = mkt === 'all' ? '' : '?market=' + mkt;
-    var res = await fetch(API_URL + '/scan' + mkt);
+    var res = await fetch(API_URL + '/scan?force=true&t=' + Date.now());
     if (!res.ok) throw new Error('API error');
     var data = await res.json();
     if (data.results && data.results.length > 0) {
       // Map API results to display format
       var liveData = data.results.map(function(r) {
+        var mkt_raw = r.market || 'NSE';
+        var price = r.price ? (r.price > 1000 ? '₹' + Math.round(r.price).toLocaleString('en-IN') : r.price > 1 ? r.price.toFixed(2) : r.price.toFixed(4)) : '—';
+        var chgPct = r.change_pct || 0;
         return {
           s: r.symbol,
-          n: r.name,
-          m: r.market,
-          mc: 'mb-' + r.market.toLowerCase().replace('commo','forex'),
-          p: r.pattern,
-          pc: r.bias === 'bullish' ? 'wp-i' : r.type === 'abc' ? 'wp-a' : 'wp-e',
-          w: r.wave,
-          wc: r.wave_color || '#00e5ff',
-          tgt: String(r.target),
-          tf: '1D',
-          c: r.confidence,
-          chg: (r.change_pct >= 0 ? '+' : '') + r.change_pct + '%',
-          up: r.change_pct >= 0,
-          nw: true
+          n: r.symbol,
+          m: mkt_raw,
+          mc: 'mb-' + mkt_raw.toLowerCase(),
+          p: r.pattern || 'Wave Analysis',
+          pc: r.bias === 'bullish' ? 'wp-i' : r.bias === 'bearish' ? 'wp-a' : 'wp-e',
+          w: r.wave || 'Wave Analysis',
+          wc: r.bias === 'bullish' ? '#00e5ff' : r.bias === 'bearish' ? '#ff4060' : '#ffd700',
+          tgt: price,
+          tf: r.timeframe || '1D',
+          c: r.confidence || 70,
+          chg: (chgPct >= 0 ? '+' : '') + chgPct + '%',
+          up: chgPct >= 0,
+          nw: r.signal === 'BUY' || r.signal === 'SELL'
         };
       });
       renderResultsWithData(liveData);
