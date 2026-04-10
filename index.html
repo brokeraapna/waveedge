@@ -355,6 +355,7 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
     <li><a onclick="showPage('blog')" id="nav-blog">Analysis</a></li>
     <li><a onclick="showPage('signals2')" id="nav-signals2">⚡ AI Signals</a></li>
     <li><a onclick="scrollTo_('#pricing')" id="nav-pricing">Pricing</a></li>
+    <li><a onclick="showPage('tools')" id="nav-tools" style="color:var(--gold);">🛠 Tools</a></li>
   </ul>
 
   <div class="nav-right">
@@ -1629,6 +1630,11 @@ function s2_cellHTML(data, locked) {
     '</div>';
 }
 
+
+<!-- TOOLS PAGE -->
+<div class="page" id="page-tools" style="min-height:100vh;background:var(--bg);">
+  <iframe src="/tools.html" style="width:100%;height:calc(100vh - 64px);border:none;display:block;" id="tools-iframe"></iframe>
+</div>
 
 </body>
 </html>
