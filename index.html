@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WaveEdge.in — Elliott Wave Intelligence</title>
+<title>WaveEdge.in v2.1 — Elliott Wave Intelligence</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -1271,7 +1271,11 @@ function showPage(id){
   if(id==='chart') { setTimeout(renderSymGrid, 50); }
   if(id==='blog') { setTimeout(function(){ blogSeed(); blogRender(); }, 50); }
   if(id==='signals2') { setTimeout(x_refreshAll, 80); }
-  if(id==='tools') { setTimeout(initTools, 50); }
+  if(id==='tools') {
+    var pt=document.getElementById('page-tools');
+    if(pt){pt.style.cssText='display:block!important;visibility:visible;opacity:1;min-height:100vh;background:#020c14;padding:40px;position:relative;z-index:10;';}
+    setTimeout(initTools,50);
+  }
   if(id==='signals') { setTimeout(initSignals, 80); }
 }
 
