@@ -1276,7 +1276,7 @@ function showPage(id){
       if(typeof blogRender==='function') blogRender();
     }, 50); }
     if(id==='signals2' && typeof x_refreshAll==='function') setTimeout(x_refreshAll, 80);
-    if(id==='tools') setTimeout(initTools, 50);
+    if(id==='tools' && typeof initTools==='function') setTimeout(initTools, 50);
     if(id==='signals' && typeof initSignals==='function') setTimeout(initSignals, 80);
   } catch(e) { console.error('showPage error:', e); }
 }
@@ -1640,6 +1640,8 @@ function s2_cellHTML(data, locked) {
     '</div>';
 }
 
+
+</script>
 
 <!-- TOOLS PAGE -->
 <div class="page" id="page-tools" style="min-height:100vh;background:var(--bg);padding:40px;">
