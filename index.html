@@ -1261,22 +1261,24 @@ let mkt='all',conf='all',scIdx=null;
 
 // ─── PAGE NAVIGATION ───
 function showPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active-link'));
-  const el=document.getElementById('nav-'+id);
-  if(el) el.classList.add('active-link');
-  window.scrollTo({top:0});
-  if(id==='scanner') renderScCards();
-  if(id==='chart') { setTimeout(renderSymGrid, 50); }
-  if(id==='blog') { setTimeout(function(){ blogSeed(); blogRender(); }, 50); }
-  if(id==='signals2') { setTimeout(x_refreshAll, 80); }
-  if(id==='tools') {
-    var pt=document.getElementById('page-tools');
-    if(pt){pt.style.cssText='display:block!important;visibility:visible;opacity:1;min-height:100vh;background:#020c14;padding:40px;position:relative;z-index:10;';}
-    setTimeout(initTools,50);
-  }
-  if(id==='signals') { setTimeout(initSignals, 80); }
+  try {
+    document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+    var pg = document.getElementById('page-'+id);
+    if(pg) pg.classList.add('active');
+    document.querySelectorAll('.nav-links a').forEach(function(a){ a.classList.remove('active-link'); });
+    var el = document.getElementById('nav-'+id);
+    if(el) el.classList.add('active-link');
+    window.scrollTo({top:0});
+    if(id==='scanner' && typeof renderScCards==='function') renderScCards();
+    if(id==='chart' && typeof renderSymGrid==='function') setTimeout(renderSymGrid, 50);
+    if(id==='blog') { setTimeout(function(){
+      if(typeof blogSeed==='function') blogSeed();
+      if(typeof blogRender==='function') blogRender();
+    }, 50); }
+    if(id==='signals2' && typeof x_refreshAll==='function') setTimeout(x_refreshAll, 80);
+    if(id==='tools') setTimeout(initTools, 50);
+    if(id==='signals' && typeof initSignals==='function') setTimeout(initSignals, 80);
+  } catch(e) { console.error('showPage error:', e); }
 }
 
 function scrollTo_(id){
