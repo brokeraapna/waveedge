@@ -361,21 +361,57 @@ function fetchTgPosts() {
   if (dot)  dot.style.background = '#ffc940';
   if (stat) stat.textContent = 'Fetching from @ewagaurav...';
 
-  // Fetch Telegram public channel page directly from browser
-  // t.me/s/ewagaurav is the public web preview, accessible without CORS issues
-  fetch('https://t.me/s/ewagaurav', {
-    headers: {'User-Agent': 'Mozilla/5.0'},
-    cache: 'no-cache'
-  })
-  .then(function(r) { return r.text(); })
-  .then(function(html) { parseTgPage(html, feed, dot, stat); })
-  .catch(function() {
-    // Fallback: try via allorigins proxy
-    fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://t.me/s/ewagaurav'))
-      .then(function(r) { return r.json(); })
-      .then(function(d) { parseTgPage(d.contents, feed, dot, stat); })
-      .catch(function() { tgError(feed, dot, stat); });
-  });
+  // Try multiple proxies
+  var proxies = [
+    'https://api.allorigins.win/get?url=' + encodeURIComponent('https://t.me/s/ewagaurav'),
+    'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent('https://t.me/s/ewagaurav'),
+    'https://corsproxy.io/?' + encodeURIComponent('https://t.me/s/ewagaurav'),
+  ];
+
+  function tryProxy(i) {
+    if (i >= proxies.length) { showTgWidget(feed, dot, stat); return; }
+    fetch(proxies[i], {cache:'no-cache'})
+      .then(function(r) {
+        if (!r.ok) throw new Error('HTTP '+r.status);
+        return r.text();
+      })
+      .then(function(txt) {
+        // allorigins returns JSON with .contents
+        var html = txt;
+        try {
+          var j = JSON.parse(txt);
+          if (j.contents) html = j.contents;
+        } catch(e) {}
+        if (!html || html.length < 500) throw new Error('Empty');
+        parseTgPage(html, feed, dot, stat);
+      })
+      .catch(function() { tryProxy(i + 1); });
+  }
+  tryProxy(0);
+}
+
+function showTgWidget(feed, dot, stat) {
+  // All proxies failed - show embedded Telegram widget + open button
+  if (feed) {
+    feed.innerHTML = 
+      '<div style="text-align:center;padding:20px 10px;">' +
+        '<div style="background:rgba(0,136,204,.08);border:1px solid rgba(0,136,204,.2);border-radius:12px;padding:24px;margin-bottom:16px;">' +
+          '<div style="font-family:Space Mono,monospace;font-size:11px;color:var(--muted);margin-bottom:16px;">Live posts from @ewagaurav</div>' +
+          '<script async src="https://telegram.org/js/telegram-widget.js?22" ' +
+            'data-telegram-post="ewagaurav/1" data-width="100%" ' +
+            'data-userpic="true" data-color="1DA1F2" data-dark="1">' +
+          '<\/script>' +
+          '<a href="https://t.me/ewagaurav" target="_blank" ' +
+            'style="display:inline-flex;align-items:center;gap:8px;background:#0088cc;color:#fff;' +
+            'padding:12px 28px;border-radius:8px;font-family:DM Sans,sans-serif;font-weight:700;' +
+            'font-size:15px;text-decoration:none;margin-top:16px;">' +
+            '&#9992; Open @ewagaurav on Telegram' +
+          '</a>' +
+        '</div>' +
+      '</div>';
+  }
+  if (dot)  dot.style.background = '#0088cc';
+  if (stat) stat.textContent = 'Open Telegram to see latest posts';
 }
 
 function parseTgPage(pageHtml, feed, dot, stat) {
