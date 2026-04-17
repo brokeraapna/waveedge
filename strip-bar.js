@@ -1,5 +1,8 @@
-// strip-bar.js
+// strip-bar.js - Rupeezy Referral Strip Bar
 (function() {
+    // Don't add if already exists
+    if (document.getElementById('rupeezy-strip')) return;
+    
     // Create strip div
     const strip = document.createElement('div');
     strip.id = 'rupeezy-strip';
@@ -36,8 +39,13 @@
     // Add to page
     document.body.insertBefore(strip, document.body.firstChild);
     
-    // Add body margin
-    const style = document.createElement('style');
-    style.textContent = 'body { margin-top: 70px !important; }';
-    document.head.appendChild(style);
+    // Add body margin if not already added
+    if (!document.getElementById('strip-body-style')) {
+        const style = document.createElement('style');
+        style.id = 'strip-body-style';
+        style.textContent = 'body { margin-top: 70px !important; }';
+        document.head.appendChild(style);
+    }
+    
+    console.log('Rupeezy strip bar loaded');
 })();
