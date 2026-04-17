@@ -1,8 +1,8 @@
 {
-  "rewrites": [
-    {
-      "source": "/((?!blog\\.html|signals\\.html|tools\\.html).*)",
-      "destination": "/index.html"
-    }
+  "routes": [
+    { "src": "/blog.html", "dest": "/blog.html" },
+    { "src": "/signals.html", "dest": "/signals.html" },
+    { "src": "/tools.html", "dest": "/tools.html" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
