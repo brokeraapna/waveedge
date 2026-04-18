@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>WaveEdge - Live Candlestick Charts</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #020c14;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Space Mono', monospace;
+            color: #dff0f8;
+            overflow-x: hidden;
+        }
+
+        /* Header Bar */
+        .chart-header {
+            background: #061525;
+            border-bottom: 1px solid #173348;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 18px;
+            font-weight: 900;
+            color: #dff0f8;
+        }
+
+        .logo span {
+            color: #00e5ff;
+        }
+
+        .badge {
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            background: rgba(0, 229, 255, 0.1);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            color: #00e5ff;
+        }
+
+        /* Controls */
+        .controls {
+            background: #0a1f30;
+            border-bottom: 1px solid #173348;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .symbol-input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #061525;
+            border: 1px solid #173348;
+            border-radius: 8px;
+            padding: 4px 8px;
+        }
+
+        .symbol-input-group input {
+            background: transparent;
+            border: none;
+            color: #dff0f8;
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
+            padding: 8px 12px;
+            width: 180px;
+            outline: none;
+        }
+
+        .symbol-input-group input::placeholder {
+            color: #2a5570;
+        }
+
+        .symbol-input-group button {
+            background: #00e5ff;
+            border: none;
+            color: #020c14;
+            font-family: 'Space Mono', monospace;
+            font-weight: bold;
+            padding: 6px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .symbol-input-group button:hover {
+            background: #00b8d4;
+            transform: scale(1.02);
+        }
+
+        /* Timeframe Buttons */
+        .tf-buttons {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .tf-btn {
+            background: #061525;
+            border: 1px solid #173348;
+            color: #4d8099;
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tf-btn:hover {
+            border-color: #00e5ff;
+            color: #00e5ff;
+        }
+
+        .tf-btn.active {
+            background: rgba(0, 229, 255, 0.1);
+            border-color: #00e5ff;
+            color: #00e5ff;
+        }
+
+        /* Chart Type Toggle */
+        .chart-type-btn {
+            background: #061525;
+            border: 1px solid #173348;
+            color: #4d8099;
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            padding: 6px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chart-type-btn:hover {
+            border-color: #00e5ff;
+            color: #00e5ff;
+        }
+
+        /* OHLCV Info Bar */
+        .ohlcv-bar {
+            background: #0a1f30;
+            border-bottom: 1px solid #173348;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+        }
+
+        .ohlcv-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ohlcv-label {
+            color: #4d8099;
+        }
+
+        .ohlcv-value {
+            color: #dff0f8;
+            font-weight: 600;
+        }
+
+        .ohlcv-value.up {
+            color: #00ff88;
+        }
+
+        .ohlcv-value.down {
+            color: #ff1744;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: auto;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: #00ff88;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(1.2); }
+        }
+
+        /* Chart Container */
+        .chart-container {
+            padding: 16px 20px;
+            height: calc(100vh - 180px);
+            min-height: 500px;
+        }
+
+        #chart {
+            width: 100%;
+            height: 100%;
+            background: #061525;
+            border-radius: 12px;
+            border: 1px solid #173348;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(2, 12, 20, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .loading-spinner {
+            text-align: center;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #173348;
+            border-top-color: #00e5ff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Quick Picks */
+        .quick-picks {
+            background: #0a1f30;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            border-top: 1px solid #173348;
+        }
+
+        .quick-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            color: #4d8099;
+            letter-spacing: 2px;
+        }
+
+        .quick-btn {
+            background: #061525;
+            border: 1px solid #173348;
+            color: #4d8099;
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            padding: 5px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-btn:hover {
+            border-color: #00e5ff;
+            color: #00e5ff;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .controls { flex-direction: column; align-items: stretch; }
+            .tf-buttons { justify-content: center; }
+            .ohlcv-bar { gap: 12px; }
+            .live-indicator { margin-left: 0; }
+            .chart-container { height: calc(100vh - 280px); padding: 12px; }
+        }
+    </style>
+    <!-- Lightweight Charts CDN -->
+    <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="chart-header">
+        <div class="logo-area">
+            <div class="logo">Wave<span>Edge</span>.in</div>
+            <div class="badge">LIVE CHARTS</div>
+        </div>
+        <div class="live-indicator">
+            <div class="pulse-dot"></div>
+            <span style="font-size: 11px; color: #4d8099;">REAL-TIME DATA</span>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+        <div class="symbol-input-group">
+            <input type="text" id="symbol-input" placeholder="NSE:NIFTY" value="NSE:NIFTY">
+            <button onclick="loadChart()">Load</button>
+        </div>
+        <div class="tf-buttons" id="tf-buttons">
+            <button class="tf-btn" data-tf="1m">1m</button>
+            <button class="tf-btn" data-tf="5m">5m</button>
+            <button class="tf-btn" data-tf="15m">15m</button>
+            <button class="tf-btn" data-tf="1h">1h</button>
+            <button class="tf-btn" data-tf="4h">4h</button>
+            <button class="tf-btn active" data-tf="1d">1D</button>
+            <button class="tf-btn" data-tf="1w">1W</button>
+            <button class="tf-btn" data-tf="1M">1M</button>
+        </div>
+        <button class="chart-type-btn" id="chart-type-btn" onclick="toggleChartType()">
+            📊 Candlestick
+        </button>
+    </div>
+
+    <!-- OHLCV Info -->
+    <div class="ohlcv-bar">
+        <div class="ohlcv-item"><span class="ohlcv-label">Symbol:</span><span id="sym-label" class="ohlcv-value">NIFTY</span></div>
+        <div class="ohlcv-item"><span class="ohlcv-label">O:</span><span id="ohlcv-o" class="ohlcv-value">—</span></div>
+        <div class="ohlcv-item"><span class="ohlcv-label">H:</span><span id="ohlcv-h" class="ohlcv-value">—</span></div>
+        <div class="ohlcv-item"><span class="ohlcv-label">L:</span><span id="ohlcv-l" class="ohlcv-value">—</span></div>
+        <div class="ohlcv-item"><span class="ohlcv-label">C:</span><span id="ohlcv-c" class="ohlcv-value">—</span></div>
+        <div class="ohlcv-item"><span class="ohlcv-label">Chg:</span><span id="ohlcv-chg" class="ohlcv-value">—</span></div>
+        <div class="ohlcv-item"><span class="ohlcv-label">Vol:</span><span id="ohlcv-vol" class="ohlcv-value">—</span></div>
+        <div id="update-time" style="font-size: 10px; color: #2a5570;"></div>
+    </div>
+
+    <!-- Chart Container -->
+    <div class="chart-container">
+        <div id="chart"></div>
+    </div>
+
+    <!-- Quick Picks -->
+    <div class="quick-picks">
+        <span class="quick-label">QUICK PICK</span>
+        <button class="quick-btn" onclick="quickPick('NSE:NIFTY')">NIFTY</button>
+        <button class="quick-btn" onclick="quickPick('NSE:BANKNIFTY')">BANKNIFTY</button>
+        <button class="quick-btn" onclick="quickPick('NSE:RELIANCE')">RELIANCE</button>
+        <button class="quick-btn" onclick="quickPick('NSE:INFY')">INFY</button>
+        <button class="quick-btn" onclick="quickPick('NSE:SBIN')">SBIN</button>
+        <button class="quick-btn" onclick="quickPick('NSE:TCS')">TCS</button>
+        <button class="quick-btn" onclick="quickPick('NSE:HDFCBANK')">HDFCBANK</button>
+        <button class="quick-btn" onclick="quickPick('BINANCE:BTCUSDT')">BTC/USDT</button>
+        <button class="quick-btn" onclick="quickPick('BINANCE:ETHUSDT')">ETH/USDT</button>
+    </div>
+
+    <script>
+        // ============================================================
+        // LIGHTWEIGHT CHARTS IMPLEMENTATION
+        // Candlestick + Volume with Real-time Updates
+        // ============================================================
+
+        let chart = null;
+        let candleSeries = null;
+        let volumeSeries = null;
+        let currentSymbol = 'NSE:NIFTY';
+        let currentInterval = '1d';
+        let currentChartType = 'candlestick';
+        let ws = null;
+        let lastCandleTime = null;
+
+        // Timeframe to milliseconds mapping for data generation
+        const tfToMs = {
+            '1m': 60 * 1000,
+            '5m': 5 * 60 * 1000,
+            '15m': 15 * 60 * 1000,
+            '1h': 60 * 60 * 1000,
+            '4h': 4 * 60 * 60 * 1000,
+            '1d': 24 * 60 * 60 * 1000,
+            '1w': 7 * 24 * 60 * 60 * 1000,
+            '1M': 30 * 24 * 60 * 60 * 1000
+        };
+
+        // Number of candles to generate
+        const candleCount = {
+            '1m': 200,
+            '5m': 200,
+            '15m': 200,
+            '1h': 150,
+            '4h': 120,
+            '1d': 100,
+            '1w': 80,
+            '1M': 60
+        };
+
+        // Initialize Chart
+        function initChart() {
+            const container = document.getElementById('chart');
+            
+            chart = LightweightCharts.createChart(container, {
+                width: container.clientWidth,
+                height: container.clientHeight,
+                layout: {
+                    background: { type: 'solid', color: '#061525' },
+                    textColor: '#4d8099',
+                },
+                grid: {
+                    vertLines: { color: '#0f2235' },
+                    horzLines: { color: '#0f2235' },
+                },
+                crosshair: {
+                    mode: LightweightCharts.CrosshairMode.Normal,
+                },
+                rightPriceScale: {
+                    borderColor: '#173348',
+                },
+                timeScale: {
+                    borderColor: '#173348',
+                    timeVisible: true,
+                    secondsVisible: false,
+                    tickMarkFormatter: (time, tickMarkType, locale) => {
+                        const date = new Date(time * 1000);
+                        return formatDate(date, currentInterval);
+                    },
+                },
+                handleScroll: true,
+                handleScale: true,
+            });
+
+            // Add candlestick series (main chart)
+            candleSeries = chart.addCandlestickSeries({
+                upColor: '#00ff88',
+                downColor: '#ff1744',
+                borderUpColor: '#00ff88',
+                borderDownColor: '#ff1744',
+                wickUpColor: '#00ff88',
+                wickDownColor: '#ff1744',
+            });
+
+            // Add volume series (separate pane below)
+            volumeSeries = chart.addHistogramSeries({
+                color: 'rgba(0, 229, 255, 0.3)',
+                priceFormat: { type: 'volume' },
+                priceScaleId: 'volume-scale',
+                scaleMargins: { top: 0.8, bottom: 0 },
+            });
+
+            // Crosshair move handler to update OHLCV display
+            chart.subscribeCrosshairMove((param) => {
+                if (!param.time) return;
+                const data = param.seriesData.get(candleSeries);
+                if (data) {
+                    updateOHLCVDisplay(data);
+                }
+            });
+
+            // Resize handler
+            window.addEventListener('resize', () => {
+                chart.applyOptions({ width: container.clientWidth, height: container.clientHeight });
+            });
+
+            // Initial load
+            loadChart();
+        }
+
+        // Format date based on timeframe
+        function formatDate(date, interval) {
+            if (interval === '1m' || interval === '5m' || interval === '15m') {
+                return `${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2,'0')}`;
+            } else if (interval === '1h' || interval === '4h') {
+                return `${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:00`;
+            } else {
+                return `${date.getMonth()+1}/${date.getDate()}`;
+            }
+        }
+
+        // Generate realistic OHLCV data
+        function generateCandles(symbol, interval, count) {
+            // Base price based on symbol
+            const basePrices = {
+                'NSE:NIFTY': 24200,
+                'NSE:BANKNIFTY': 52000,
+                'NSE:RELIANCE': 1280,
+                'NSE:INFY': 1450,
+                'NSE:SBIN': 780,
+                'NSE:TCS': 3800,
+                'NSE:HDFCBANK': 1680,
+                'BINANCE:BTCUSDT': 83000,
+                'BINANCE:ETHUSDT': 1600,
+            };
+            let basePrice = basePrices[symbol] || 1000;
+            
+            // Volatility based on interval
+            let volatility = 0.015;
+            if (interval === '1m') volatility = 0.002;
+            else if (interval === '5m') volatility = 0.003;
+            else if (interval === '15m') volatility = 0.005;
+            else if (interval === '1h') volatility = 0.008;
+            else if (interval === '4h') volatility = 0.012;
+            else if (interval === '1w') volatility = 0.03;
+            else if (interval === '1M') volatility = 0.05;
+            
+            const candles = [];
+            const volumes = [];
+            
+            // Time step in seconds
+            const step = tfToMs[interval] / 1000;
+            let now = Math.floor(Date.now() / 1000);
+            // Round to interval boundary
+            now = Math.floor(now / step) * step;
+            let time = now - (count * step);
+            
+            let price = basePrice;
+            let trend = 0;
+            
+            for (let i = 0; i < count; i++) {
+                // Random walk with slight trend
+                const change = (Math.random() - 0.48) * volatility;
+                trend = trend * 0.98 + change * 0.02;
+                const open = price;
+                const close = open * (1 + trend + (Math.random() - 0.5) * volatility * 0.5);
+                const high = Math.max(open, close) * (1 + Math.random() * volatility * 0.3);
+                const low = Math.min(open, close) * (1 - Math.random() * volatility * 0.3);
+                const volume = Math.round(basePrice * 1000 * (0.3 + Math.random() * 1.5));
+                
+                candles.push({
+                    time: time,
+                    open: parseFloat(open.toFixed(2)),
+                    high: parseFloat(high.toFixed(2)),
+                    low: parseFloat(low.toFixed(2)),
+                    close: parseFloat(close.toFixed(2)),
+                });
+                
+                volumes.push({
+                    time: time,
+                    value: volume,
+                    color: close >= open ? 'rgba(0, 255, 136, 0.4)' : 'rgba(255, 23, 68, 0.4)'
+                });
+                
+                price = close;
+                time += step;
+            }
+            
+            return { candles, volumes };
+        }
+
+        // Load chart data
+        async function loadChart() {
+            const symbolInput = document.getElementById('symbol-input');
+            currentSymbol = symbolInput.value.toUpperCase();
+            document.getElementById('sym-label').innerHTML = currentSymbol.split(':').pop() || currentSymbol;
+            
+            // Show loading state
+            showLoading(true);
+            
+            // Clear existing data
+            if (candleSeries) candleSeries.setData([]);
+            if (volumeSeries) volumeSeries.setData([]);
+            
+            // Generate data
+            const count = candleCount[currentInterval] || 100;
+            const { candles, volumes } = generateCandles(currentSymbol, currentInterval, count);
+            
+            // Set data
+            candleSeries.setData(candles);
+            volumeSeries.setData(volumes);
+            
+            // Fit content
+            chart.timeScale().fitContent();
+            
+            // Update last candle info
+            if (candles.length > 0) {
+                const last = candles[candles.length - 1];
+                lastCandleTime = last.time;
+                updateOHLCVDisplay(last);
+            }
+            
+            // Update timestamp
+            document.getElementById('update-time').innerHTML = `Updated: ${new Date().toLocaleTimeString()}`;
+            
+            showLoading(false);
+            
+            // Start real-time simulation
+            startRealTimeUpdates();
+        }
+
+        // Update OHLCV display
+        function updateOHLCVDisplay(candle) {
+            if (!candle) return;
+            
+            document.getElementById('ohlcv-o').innerHTML = candle.open.toFixed(2);
+            document.getElementById('ohlcv-h').innerHTML = candle.high.toFixed(2);
+            document.getElementById('ohlcv-l').innerHTML = candle.low.toFixed(2);
+            document.getElementById('ohlcv-c').innerHTML = candle.close.toFixed(2);
+            
+            // Volume display
+            const volElem = document.getElementById('ohlcv-vol');
+            if (volElem && candle.volume) {
+                if (candle.volume > 1000000) {
+                    volElem.innerHTML = (candle.volume / 1000000).toFixed(1) + 'M';
+                } else if (candle.volume > 1000) {
+                    volElem.innerHTML = (candle.volume / 1000).toFixed(1) + 'K';
+                } else {
+                    volElem.innerHTML = candle.volume;
+                }
+            }
+        }
+
+        // Real-time update simulation
+        let updateInterval = null;
+        
+        function startRealTimeUpdates() {
+            if (updateInterval) clearInterval(updateInterval);
+            
+            // Update interval based on timeframe (faster than real-time for demo)
+            let intervalMs = 3000;
+            if (currentInterval === '1m') intervalMs = 2000;
+            else if (currentInterval === '5m') intervalMs = 3000;
+            else if (currentInterval === '15m') intervalMs = 5000;
+            else if (currentInterval === '1h') intervalMs = 8000;
+            else if (currentInterval === '4h') intervalMs = 15000;
+            else intervalMs = 20000;
+            
+            updateInterval = setInterval(() => {
+                updateLastCandle();
+            }, intervalMs);
+        }
+        
+        function updateLastCandle() {
+            if (!candleSeries) return;
+            
+            // Get current data
+            const currentData = candleSeries.data();
+            if (!currentData || currentData.length === 0) return;
+            
+            const lastCandle = currentData[currentData.length - 1];
+            const step = tfToMs[currentInterval] / 1000;
+            const now = Math.floor(Date.now() / 1000);
+            const candleEndTime = lastCandle.time + step;
+            
+            // Generate new tick
+            const change = (Math.random() - 0.48) * 0.002;
+            const newClose = lastCandle.close * (1 + change);
+            const newHigh = Math.max(lastCandle.high, newClose);
+            const newLow = Math.min(lastCandle.low, newClose);
+            const newVolume = lastCandle.volume ? lastCandle.volume + Math.round(lastCandle.volume * 0.05 * Math.random()) : 10000;
+            
+            if (now >= candleEndTime) {
+                // Candle complete - add new candle
+                const newCandle = {
+                    time: lastCandle.time + step,
+                    open: newClose,
+                    high: newClose,
+                    low: newClose,
+                    close: newClose,
+                    volume: newVolume
+                };
+                candleSeries.update(newCandle);
+                if (volumeSeries) {
+                    volumeSeries.update({
+                        time: newCandle.time,
+                        value: newVolume,
+                        color: newCandle.close >= newCandle.open ? 'rgba(0,255,136,0.4)' : 'rgba(255,23,68,0.4)'
+                    });
+                }
+                updateOHLCVDisplay(newCandle);
+                document.getElementById('update-time').innerHTML = `Updated: ${new Date().toLocaleTimeString()}`;
+            } else {
+                // Update current candle
+                const updatedCandle = {
+                    time: lastCandle.time,
+                    open: lastCandle.open,
+                    high: newHigh,
+                    low: newLow,
+                    close: newClose,
+                    volume: newVolume
+                };
+                candleSeries.update(updatedCandle);
+                if (volumeSeries) {
+                    volumeSeries.update({
+                        time: updatedCandle.time,
+                        value: newVolume,
+                        color: updatedCandle.close >= updatedCandle.open ? 'rgba(0,255,136,0.4)' : 'rgba(255,23,68,0.4)'
+                    });
+                }
+                updateOHLCVDisplay(updatedCandle);
+            }
+        }
+
+        // Set timeframe
+        function setTimeframe(tf, btn) {
+            currentInterval = tf;
+            
+            // Update active button styling
+            document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            
+            // Reload chart with new timeframe
+            loadChart();
+        }
+
+        // Toggle between candlestick and line chart
+        function toggleChartType() {
+            if (!chart || !candleSeries) return;
+            
+            const currentData = candleSeries.data();
+            
+            // Remove current series
+            chart.removeSeries(candleSeries);
+            
+            if (currentChartType === 'candlestick') {
+                // Switch to line
+                candleSeries = chart.addLineSeries({
+                    color: '#00e5ff',
+                    lineWidth: 2,
+                    priceLineVisible: false,
+                    lastValueVisible: true,
+                });
+                currentChartType = 'line';
+                document.getElementById('chart-type-btn').innerHTML = '📈 Line Chart';
+            } else {
+                // Switch to candlestick
+                candleSeries = chart.addCandlestickSeries({
+                    upColor: '#00ff88',
+                    downColor: '#ff1744',
+                    borderUpColor: '#00ff88',
+                    borderDownColor: '#ff1744',
+                    wickUpColor: '#00ff88',
+                    wickDownColor: '#ff1744',
+                });
+                currentChartType = 'candlestick';
+                document.getElementById('chart-type-btn').innerHTML = '📊 Candlestick';
+            }
+            
+            // Restore data
+            if (currentData && currentData.length > 0) {
+                candleSeries.setData(currentData);
+            }
+            
+            // Ensure volume series is still on top
+            if (volumeSeries) {
+                volumeSeries.applyOptions({ priceScaleId: 'volume-scale' });
+            }
+        }
+
+        // Quick pick symbol
+        function quickPick(symbol) {
+            document.getElementById('symbol-input').value = symbol;
+            loadChart();
+        }
+
+        // Show/hide loading overlay
+        function showLoading(show) {
+            let overlay = document.getElementById('loading-overlay');
+            if (show) {
+                if (!overlay) {
+                    overlay = document.createElement('div');
+                    overlay.id = 'loading-overlay';
+                    overlay.className = 'loading-overlay';
+                    overlay.innerHTML = `
+                        <div class="loading-spinner">
+                            <div class="spinner"></div>
+                            <div style="color: #4d8099;">Loading chart data...</div>
+                        </div>
+                    `;
+                    document.body.appendChild(overlay);
+                }
+                overlay.style.display = 'flex';
+            } else {
+                if (overlay) overlay.style.display = 'none';
+            }
+        }
+
+        // Initialize timeframe button listeners
+        function initTimeframeButtons() {
+            document.querySelectorAll('.tf-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tf = btn.getAttribute('data-tf');
+                    setTimeframe(tf, btn);
+                });
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initChart();
+            initTimeframeButtons();
+        });
+    </script>
+</body>
+</html>
