@@ -30,12 +30,6 @@
             gap: 12px;
         }
 
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
         .logo {
             font-family: 'Orbitron', monospace;
             font-size: 18px;
@@ -245,11 +239,6 @@
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            backdrop-filter: blur(4px);
-        }
-
-        .loading-spinner {
-            text-align: center;
         }
 
         .spinner {
@@ -301,13 +290,28 @@
             color: #00e5ff;
         }
 
-        /* Responsive */
+        /* Back button */
+        .back-link {
+            background: #061525;
+            border: 1px solid #173348;
+            color: #4d8099;
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            padding: 6px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .back-link:hover {
+            border-color: #00e5ff;
+            color: #00e5ff;
+        }
+
         @media (max-width: 768px) {
             .controls { flex-direction: column; align-items: stretch; }
-            .tf-buttons { justify-content: center; }
-            .ohlcv-bar { gap: 12px; }
-            .live-indicator { margin-left: 0; }
-            .chart-container { height: calc(100vh - 280px); padding: 12px; }
+            .chart-container { height: calc(100vh - 320px); }
         }
     </style>
     <!-- Lightweight Charts CDN -->
@@ -317,9 +321,9 @@
 
     <!-- Header -->
     <div class="chart-header">
-        <div class="logo-area">
-            <div class="logo">Wave<span>Edge</span>.in</div>
-            <div class="badge">LIVE CHARTS</div>
+        <div class="logo">
+            Wave<span>Edge</span>.in
+            <span class="badge">LIVE CHARTS</span>
         </div>
         <div class="live-indicator">
             <div class="pulse-dot"></div>
@@ -343,9 +347,10 @@
             <button class="tf-btn" data-tf="1w">1W</button>
             <button class="tf-btn" data-tf="1M">1M</button>
         </div>
-        <button class="chart-type-btn" id="chart-type-btn" onclick="toggleChartType()">
-            📊 Candlestick
-        </button>
+        <div style="display: flex; gap: 10px;">
+            <button class="chart-type-btn" id="chart-type-btn" onclick="toggleChartType()">📊 Candlestick</button>
+            <a href="/" class="back-link">← Back to Home</a>
+        </div>
     </div>
 
     <!-- OHLCV Info -->
@@ -357,7 +362,7 @@
         <div class="ohlcv-item"><span class="ohlcv-label">C:</span><span id="ohlcv-c" class="ohlcv-value">—</span></div>
         <div class="ohlcv-item"><span class="ohlcv-label">Chg:</span><span id="ohlcv-chg" class="ohlcv-value">—</span></div>
         <div class="ohlcv-item"><span class="ohlcv-label">Vol:</span><span id="ohlcv-vol" class="ohlcv-value">—</span></div>
-        <div id="update-time" style="font-size: 10px; color: #2a5570;"></div>
+        <div id="update-time" style="font-size: 10px; color: #2a5570; margin-left: auto;"></div>
     </div>
 
     <!-- Chart Container -->
@@ -382,7 +387,6 @@
     <script>
         // ============================================================
         // LIGHTWEIGHT CHARTS IMPLEMENTATION
-        // Candlestick + Volume with Real-time Updates
         // ============================================================
 
         let chart = null;
@@ -391,10 +395,9 @@
         let currentSymbol = 'NSE:NIFTY';
         let currentInterval = '1d';
         let currentChartType = 'candlestick';
-        let ws = null;
-        let lastCandleTime = null;
+        let updateInterval = null;
 
-        // Timeframe to milliseconds mapping for data generation
+        // Timeframe to milliseconds mapping
         const tfToMs = {
             '1m': 60 * 1000,
             '5m': 5 * 60 * 1000,
@@ -406,132 +409,39 @@
             '1M': 30 * 24 * 60 * 60 * 1000
         };
 
-        // Number of candles to generate
         const candleCount = {
-            '1m': 200,
-            '5m': 200,
-            '15m': 200,
-            '1h': 150,
-            '4h': 120,
-            '1d': 100,
-            '1w': 80,
-            '1M': 60
+            '1m': 200, '5m': 200, '15m': 200, '1h': 150,
+            '4h': 120, '1d': 100, '1w': 80, '1M': 60
         };
 
-        // Initialize Chart
-        function initChart() {
-            const container = document.getElementById('chart');
-            
-            chart = LightweightCharts.createChart(container, {
-                width: container.clientWidth,
-                height: container.clientHeight,
-                layout: {
-                    background: { type: 'solid', color: '#061525' },
-                    textColor: '#4d8099',
-                },
-                grid: {
-                    vertLines: { color: '#0f2235' },
-                    horzLines: { color: '#0f2235' },
-                },
-                crosshair: {
-                    mode: LightweightCharts.CrosshairMode.Normal,
-                },
-                rightPriceScale: {
-                    borderColor: '#173348',
-                },
-                timeScale: {
-                    borderColor: '#173348',
-                    timeVisible: true,
-                    secondsVisible: false,
-                    tickMarkFormatter: (time, tickMarkType, locale) => {
-                        const date = new Date(time * 1000);
-                        return formatDate(date, currentInterval);
-                    },
-                },
-                handleScroll: true,
-                handleScale: true,
-            });
+        // Base prices for different symbols
+        const basePrices = {
+            'NSE:NIFTY': 24200, 'NSE:BANKNIFTY': 52000, 'NSE:RELIANCE': 1280,
+            'NSE:INFY': 1450, 'NSE:SBIN': 780, 'NSE:TCS': 3800,
+            'NSE:HDFCBANK': 1680, 'BINANCE:BTCUSDT': 83000, 'BINANCE:ETHUSDT': 1600
+        };
 
-            // Add candlestick series (main chart)
-            candleSeries = chart.addCandlestickSeries({
-                upColor: '#00ff88',
-                downColor: '#ff1744',
-                borderUpColor: '#00ff88',
-                borderDownColor: '#ff1744',
-                wickUpColor: '#00ff88',
-                wickDownColor: '#ff1744',
-            });
-
-            // Add volume series (separate pane below)
-            volumeSeries = chart.addHistogramSeries({
-                color: 'rgba(0, 229, 255, 0.3)',
-                priceFormat: { type: 'volume' },
-                priceScaleId: 'volume-scale',
-                scaleMargins: { top: 0.8, bottom: 0 },
-            });
-
-            // Crosshair move handler to update OHLCV display
-            chart.subscribeCrosshairMove((param) => {
-                if (!param.time) return;
-                const data = param.seriesData.get(candleSeries);
-                if (data) {
-                    updateOHLCVDisplay(data);
-                }
-            });
-
-            // Resize handler
-            window.addEventListener('resize', () => {
-                chart.applyOptions({ width: container.clientWidth, height: container.clientHeight });
-            });
-
-            // Initial load
-            loadChart();
+        function getBasePrice(symbol) {
+            return basePrices[symbol] || 1000;
         }
 
-        // Format date based on timeframe
-        function formatDate(date, interval) {
-            if (interval === '1m' || interval === '5m' || interval === '15m') {
-                return `${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2,'0')}`;
-            } else if (interval === '1h' || interval === '4h') {
-                return `${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:00`;
-            } else {
-                return `${date.getMonth()+1}/${date.getDate()}`;
-            }
-        }
-
-        // Generate realistic OHLCV data
-        function generateCandles(symbol, interval, count) {
-            // Base price based on symbol
-            const basePrices = {
-                'NSE:NIFTY': 24200,
-                'NSE:BANKNIFTY': 52000,
-                'NSE:RELIANCE': 1280,
-                'NSE:INFY': 1450,
-                'NSE:SBIN': 780,
-                'NSE:TCS': 3800,
-                'NSE:HDFCBANK': 1680,
-                'BINANCE:BTCUSDT': 83000,
-                'BINANCE:ETHUSDT': 1600,
+        function getVolatility(interval) {
+            const vol = {
+                '1m': 0.002, '5m': 0.003, '15m': 0.005,
+                '1h': 0.008, '4h': 0.012, '1d': 0.015,
+                '1w': 0.03, '1M': 0.05
             };
-            let basePrice = basePrices[symbol] || 1000;
-            
-            // Volatility based on interval
-            let volatility = 0.015;
-            if (interval === '1m') volatility = 0.002;
-            else if (interval === '5m') volatility = 0.003;
-            else if (interval === '15m') volatility = 0.005;
-            else if (interval === '1h') volatility = 0.008;
-            else if (interval === '4h') volatility = 0.012;
-            else if (interval === '1w') volatility = 0.03;
-            else if (interval === '1M') volatility = 0.05;
+            return vol[interval] || 0.015;
+        }
+
+        function generateCandles(symbol, interval, count) {
+            let basePrice = getBasePrice(symbol);
+            let volatility = getVolatility(interval);
             
             const candles = [];
             const volumes = [];
-            
-            // Time step in seconds
             const step = tfToMs[interval] / 1000;
             let now = Math.floor(Date.now() / 1000);
-            // Round to interval boundary
             now = Math.floor(now / step) * step;
             let time = now - (count * step);
             
@@ -539,7 +449,6 @@
             let trend = 0;
             
             for (let i = 0; i < count; i++) {
-                // Random walk with slight trend
                 const change = (Math.random() - 0.48) * volatility;
                 trend = trend * 0.98 + change * 0.02;
                 const open = price;
@@ -565,79 +474,102 @@
                 price = close;
                 time += step;
             }
-            
             return { candles, volumes };
         }
 
-        // Load chart data
-        async function loadChart() {
+        function initChart() {
+            const container = document.getElementById('chart');
+            
+            chart = LightweightCharts.createChart(container, {
+                width: container.clientWidth,
+                height: container.clientHeight,
+                layout: {
+                    background: { type: 'solid', color: '#061525' },
+                    textColor: '#4d8099',
+                },
+                grid: {
+                    vertLines: { color: '#0f2235' },
+                    horzLines: { color: '#0f2235' },
+                },
+                crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+                rightPriceScale: { borderColor: '#173348' },
+                timeScale: { borderColor: '#173348', timeVisible: true, secondsVisible: false },
+                handleScroll: true,
+                handleScale: true,
+            });
+
+            candleSeries = chart.addCandlestickSeries({
+                upColor: '#00ff88',
+                downColor: '#ff1744',
+                borderUpColor: '#00ff88',
+                borderDownColor: '#ff1744',
+                wickUpColor: '#00ff88',
+                wickDownColor: '#ff1744',
+            });
+
+            volumeSeries = chart.addHistogramSeries({
+                color: 'rgba(0, 229, 255, 0.3)',
+                priceFormat: { type: 'volume' },
+                priceScaleId: 'volume-scale',
+                scaleMargins: { top: 0.8, bottom: 0 },
+            });
+
+            chart.subscribeCrosshairMove((param) => {
+                if (!param || !param.time) return;
+                const data = param.seriesData.get(candleSeries);
+                if (data) {
+                    document.getElementById('ohlcv-o').innerHTML = data.open ? data.open.toFixed(2) : '—';
+                    document.getElementById('ohlcv-h').innerHTML = data.high ? data.high.toFixed(2) : '—';
+                    document.getElementById('ohlcv-l').innerHTML = data.low ? data.low.toFixed(2) : '—';
+                    document.getElementById('ohlcv-c').innerHTML = data.close ? data.close.toFixed(2) : '—';
+                }
+            });
+
+            window.addEventListener('resize', () => {
+                chart.applyOptions({ width: container.clientWidth, height: container.clientHeight });
+            });
+
+            loadChart();
+        }
+
+        function loadChart() {
             const symbolInput = document.getElementById('symbol-input');
             currentSymbol = symbolInput.value.toUpperCase();
             document.getElementById('sym-label').innerHTML = currentSymbol.split(':').pop() || currentSymbol;
             
-            // Show loading state
             showLoading(true);
             
-            // Clear existing data
             if (candleSeries) candleSeries.setData([]);
             if (volumeSeries) volumeSeries.setData([]);
             
-            // Generate data
             const count = candleCount[currentInterval] || 100;
             const { candles, volumes } = generateCandles(currentSymbol, currentInterval, count);
             
-            // Set data
             candleSeries.setData(candles);
             volumeSeries.setData(volumes);
-            
-            // Fit content
             chart.timeScale().fitContent();
             
-            // Update last candle info
             if (candles.length > 0) {
                 const last = candles[candles.length - 1];
-                lastCandleTime = last.time;
-                updateOHLCVDisplay(last);
+                updateOHLCV(last);
             }
             
-            // Update timestamp
             document.getElementById('update-time').innerHTML = `Updated: ${new Date().toLocaleTimeString()}`;
-            
             showLoading(false);
-            
-            // Start real-time simulation
             startRealTimeUpdates();
         }
 
-        // Update OHLCV display
-        function updateOHLCVDisplay(candle) {
+        function updateOHLCV(candle) {
             if (!candle) return;
-            
             document.getElementById('ohlcv-o').innerHTML = candle.open.toFixed(2);
             document.getElementById('ohlcv-h').innerHTML = candle.high.toFixed(2);
             document.getElementById('ohlcv-l').innerHTML = candle.low.toFixed(2);
             document.getElementById('ohlcv-c').innerHTML = candle.close.toFixed(2);
-            
-            // Volume display
-            const volElem = document.getElementById('ohlcv-vol');
-            if (volElem && candle.volume) {
-                if (candle.volume > 1000000) {
-                    volElem.innerHTML = (candle.volume / 1000000).toFixed(1) + 'M';
-                } else if (candle.volume > 1000) {
-                    volElem.innerHTML = (candle.volume / 1000).toFixed(1) + 'K';
-                } else {
-                    volElem.innerHTML = candle.volume;
-                }
-            }
         }
 
-        // Real-time update simulation
-        let updateInterval = null;
-        
         function startRealTimeUpdates() {
             if (updateInterval) clearInterval(updateInterval);
             
-            // Update interval based on timeframe (faster than real-time for demo)
             let intervalMs = 3000;
             if (currentInterval === '1m') intervalMs = 2000;
             else if (currentInterval === '5m') intervalMs = 3000;
@@ -650,11 +582,9 @@
                 updateLastCandle();
             }, intervalMs);
         }
-        
+
         function updateLastCandle() {
             if (!candleSeries) return;
-            
-            // Get current data
             const currentData = candleSeries.data();
             if (!currentData || currentData.length === 0) return;
             
@@ -663,118 +593,70 @@
             const now = Math.floor(Date.now() / 1000);
             const candleEndTime = lastCandle.time + step;
             
-            // Generate new tick
             const change = (Math.random() - 0.48) * 0.002;
             const newClose = lastCandle.close * (1 + change);
             const newHigh = Math.max(lastCandle.high, newClose);
             const newLow = Math.min(lastCandle.low, newClose);
-            const newVolume = lastCandle.volume ? lastCandle.volume + Math.round(lastCandle.volume * 0.05 * Math.random()) : 10000;
             
             if (now >= candleEndTime) {
-                // Candle complete - add new candle
                 const newCandle = {
                     time: lastCandle.time + step,
                     open: newClose,
                     high: newClose,
                     low: newClose,
                     close: newClose,
-                    volume: newVolume
                 };
                 candleSeries.update(newCandle);
-                if (volumeSeries) {
-                    volumeSeries.update({
-                        time: newCandle.time,
-                        value: newVolume,
-                        color: newCandle.close >= newCandle.open ? 'rgba(0,255,136,0.4)' : 'rgba(255,23,68,0.4)'
-                    });
-                }
-                updateOHLCVDisplay(newCandle);
-                document.getElementById('update-time').innerHTML = `Updated: ${new Date().toLocaleTimeString()}`;
+                updateOHLCV(newCandle);
             } else {
-                // Update current candle
                 const updatedCandle = {
                     time: lastCandle.time,
                     open: lastCandle.open,
                     high: newHigh,
                     low: newLow,
                     close: newClose,
-                    volume: newVolume
                 };
                 candleSeries.update(updatedCandle);
-                if (volumeSeries) {
-                    volumeSeries.update({
-                        time: updatedCandle.time,
-                        value: newVolume,
-                        color: updatedCandle.close >= updatedCandle.open ? 'rgba(0,255,136,0.4)' : 'rgba(255,23,68,0.4)'
-                    });
-                }
-                updateOHLCVDisplay(updatedCandle);
+                updateOHLCV(updatedCandle);
             }
+            document.getElementById('update-time').innerHTML = `Updated: ${new Date().toLocaleTimeString()}`;
         }
 
-        // Set timeframe
         function setTimeframe(tf, btn) {
             currentInterval = tf;
-            
-            // Update active button styling
             document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
             if (btn) btn.classList.add('active');
-            
-            // Reload chart with new timeframe
             loadChart();
         }
 
-        // Toggle between candlestick and line chart
         function toggleChartType() {
             if (!chart || !candleSeries) return;
-            
             const currentData = candleSeries.data();
-            
-            // Remove current series
             chart.removeSeries(candleSeries);
             
             if (currentChartType === 'candlestick') {
-                // Switch to line
-                candleSeries = chart.addLineSeries({
-                    color: '#00e5ff',
-                    lineWidth: 2,
-                    priceLineVisible: false,
-                    lastValueVisible: true,
-                });
+                candleSeries = chart.addLineSeries({ color: '#00e5ff', lineWidth: 2 });
                 currentChartType = 'line';
                 document.getElementById('chart-type-btn').innerHTML = '📈 Line Chart';
             } else {
-                // Switch to candlestick
                 candleSeries = chart.addCandlestickSeries({
-                    upColor: '#00ff88',
-                    downColor: '#ff1744',
-                    borderUpColor: '#00ff88',
-                    borderDownColor: '#ff1744',
-                    wickUpColor: '#00ff88',
-                    wickDownColor: '#ff1744',
+                    upColor: '#00ff88', downColor: '#ff1744',
+                    borderUpColor: '#00ff88', borderDownColor: '#ff1744',
+                    wickUpColor: '#00ff88', wickDownColor: '#ff1744',
                 });
                 currentChartType = 'candlestick';
                 document.getElementById('chart-type-btn').innerHTML = '📊 Candlestick';
             }
             
-            // Restore data
-            if (currentData && currentData.length > 0) {
-                candleSeries.setData(currentData);
-            }
-            
-            // Ensure volume series is still on top
-            if (volumeSeries) {
-                volumeSeries.applyOptions({ priceScaleId: 'volume-scale' });
-            }
+            if (currentData && currentData.length > 0) candleSeries.setData(currentData);
+            if (volumeSeries) volumeSeries.applyOptions({ priceScaleId: 'volume-scale' });
         }
 
-        // Quick pick symbol
         function quickPick(symbol) {
             document.getElementById('symbol-input').value = symbol;
             loadChart();
         }
 
-        // Show/hide loading overlay
         function showLoading(show) {
             let overlay = document.getElementById('loading-overlay');
             if (show) {
@@ -782,12 +664,7 @@
                     overlay = document.createElement('div');
                     overlay.id = 'loading-overlay';
                     overlay.className = 'loading-overlay';
-                    overlay.innerHTML = `
-                        <div class="loading-spinner">
-                            <div class="spinner"></div>
-                            <div style="color: #4d8099;">Loading chart data...</div>
-                        </div>
-                    `;
+                    overlay.innerHTML = `<div style="text-align:center"><div class="spinner"></div><div style="color:#4d8099;">Loading chart data...</div></div>`;
                     document.body.appendChild(overlay);
                 }
                 overlay.style.display = 'flex';
@@ -796,21 +673,16 @@
             }
         }
 
-        // Initialize timeframe button listeners
-        function initTimeframeButtons() {
-            document.querySelectorAll('.tf-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const tf = btn.getAttribute('data-tf');
-                    setTimeframe(tf, btn);
-                });
+        // Initialize timeframe buttons
+        document.querySelectorAll('.tf-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tf = btn.getAttribute('data-tf');
+                setTimeframe(tf, btn);
             });
-        }
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            initChart();
-            initTimeframeButtons();
         });
+
+        // Start everything when page loads
+        document.addEventListener('DOMContentLoaded', initChart);
     </script>
 </body>
 </html>
