@@ -350,11 +350,11 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
 
   <ul class="nav-links">
     <li><a onclick="showPage('home')" id="nav-home" class="active-link">Home</a></li>
-    <li><a onclick="showPage('scanner')" id="nav-scanner">Scanner</a></li>
+    
     <li><a onclick="showPage('theory')" id="nav-theory">Theory & Course</a></li>
-    <li><a onclick="showPage('chart')" id="nav-chart">Live Chart</a></li>
+    <li><a onclick="showPage('chart')" id="nav-chart">Chart Library</a></li>
     <li><a onclick="showPage('blog')" id="nav-blog">Analysis</a></li>
-    <li><a onclick="showPage('signals2')" id="nav-signals2">⚡ AI Signals</a></li>
+    
     <li><a onclick="scrollTo_('#pricing')" id="nav-pricing">Pricing</a></li>
     <li><a onclick="showPage('tools')" id="nav-tools" style="color:var(--gold);">🛠 Tools</a></li>
   </ul>
@@ -396,9 +396,12 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
       <div class="l3 glow-cyan">Waves.</div>
     </h1>
     <p class="hero-sub">Professional Elliott Wave analysis engine — scanning NSE, BSE, Crypto, Forex & US markets. Find the edge before the move begins.</p>
+        <div style="background:rgba(255,152,0,.07);border:1px solid rgba(255,152,0,.25);border-radius:8px;padding:10px 20px;margin-bottom:24px;max-width:720px;font-family:'Space Mono',monospace;font-size:10px;color:#ff9800;line-height:1.75;text-align:center;">
+      ⚠ WaveEdge.in is an educational platform. Content is for learning &amp; research only — not investment advice. SEBI Research Analyst registration in progress.
+    </div>
     <div class="hero-actions">
-      <button class="btn-lg primary" onclick="showPage('scanner')">Launch Scanner →</button>
-      <button class="btn-lg outline" onclick="showPage('theory')">Learn Elliott Waves</button>
+            <button class="btn-lg outline" onclick="showPage('theory')">Learn Elliott Waves</button>
+      <button class="btn-lg outline" onclick="showPage('chart')">Chart Library &#8594;</button>
       <button class="btn-lg gold" onclick="showPage('auth');switchTab('signup')">Start Free Trial</button>
     </div>
 
@@ -506,8 +509,7 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
   <!-- RUPEEZY AFFILIATE SECTION -->
   <div style="background:linear-gradient(135deg,#030e18 0%,#061525 50%,#030e18 100%);border-top:1px solid rgba(255,152,0,.15);border-bottom:1px solid rgba(255,152,0,.15);padding:60px 0;">
     <div class="wrap" style="text-align:center;">
-      <div style="font-family:'Space Mono',monospace;font-size:10px;color:#ff9800;letter-spacing:4px;margin-bottom:16px;">RECOMMENDED BROKER</div>
-      <h2 style="font-family:'Orbitron',monospace;font-size:clamp(22px,4vw,36px);font-weight:800;margin-bottom:12px;">
+            <h2 style="font-family:'Orbitron',monospace;font-size:clamp(22px,4vw,36px);font-weight:800;margin-bottom:12px;">
         Scan with WaveEdge.<br>
         <span style="color:#ff9800;">Trade with Rupeezy.</span>
       </h2>
@@ -532,8 +534,7 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
          style="display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#ff9800,#ff5722);color:#fff;text-decoration:none;padding:16px 40px;border-radius:10px;font-family:'Orbitron',monospace;font-weight:800;font-size:15px;letter-spacing:.5px;box-shadow:0 4px 24px rgba(255,152,0,.3);">
         📈 Open FREE Rupeezy Account →
       </a>
-      <div style="font-family:'Space Mono',monospace;font-size:10px;color:#2a4a5e;margin-top:14px;">Recommended by Gaurav · @ewagaurav · waveedge.in</div>
-    </div>
+          </div>
   </div>
 
   <!-- PRICING -->
@@ -1014,8 +1015,8 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
 <div class="tv-page">
   <div class="tv-wrap">
     <div class="tv-header">
-      <div class="tv-title">Live <span>TradingView</span> Chart</div>
-      <div class="live-tag"><div class="pulse"></div>Opens full chart on TradingView — all symbols, all indicators</div>
+      <div class="tv-title">Historical <span>Chart Library</span></div>
+      <div class="live-tag"><div class="pulse"></div>Browse charts — all symbols, all timeframes</div>
     </div>
 
     <!-- SYMBOL GRID -->
@@ -1719,7 +1720,7 @@ function initTools() {
     <span style="font-size:22px;">📈</span>
     <div>
       <div style="font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:#ff9800;letter-spacing:.5px;">Open FREE Rupeezy Demat Account</div>
-      <div style="font-family:'Space Mono',monospace;font-size:10px;color:#6b9a4d;">₹0 delivery brokerage · 10-min setup · Recommended by WaveEdge</div>
+      <div style="font-family:'Space Mono',monospace;font-size:10px;color:#6b9a4d;">₹0 delivery brokerage · 10-min setup</div>
     </div>
   </div>
   <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
