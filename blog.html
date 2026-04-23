@@ -187,7 +187,37 @@ h1 em{font-style:normal;color:var(--cyan);}
         <div><label class="flbl">Stop Loss</label><input class="finp" id="f-sl" type="text" placeholder="23200"/></div>
       </div>
       <div class="fgrp"><label class="flbl">Analysis *</label><textarea class="finp" id="f-body" rows="5" placeholder="Write full wave analysis..." style="resize:vertical;line-height:1.6;"></textarea></div>
-      <div class="fgrp"><label class="flbl">Chart URL</label><input class="finp" id="f-chart" type="text" placeholder="https://www.tradingview.com/chart/"/></div>
+      <div class="fgrp">
+        <label class="flbl">Chart Image</label>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <!-- Option 1: Upload JPG/PNG directly -->
+          <div style="background:var(--s2);border:2px dashed var(--border2);border-radius:8px;padding:16px;text-align:center;cursor:pointer;transition:border-color .2s;" 
+               onclick="document.getElementById('f-img-upload').click()"
+               ondragover="event.preventDefault();this.style.borderColor='var(--cyan)'"
+               ondragleave="this.style.borderColor='var(--border2)'"
+               ondrop="handleImgDrop(event)">
+            <input type="file" id="f-img-upload" accept="image/jpeg,image/png,image/jpg,image/webp" 
+                   style="display:none" onchange="handleImgUpload(this)"/>
+            <div id="img-preview" style="display:none;margin-bottom:10px;">
+              <img id="img-preview-el" style="max-width:100%;max-height:200px;border-radius:6px;object-fit:contain;" alt="Chart preview"/>
+              <div style="font-family:Space Mono,monospace;font-size:10px;color:var(--green);margin-top:6px;" id="img-name"></div>
+              <button onclick="event.stopPropagation();clearImg()" style="margin-top:6px;background:rgba(255,64,96,.1);border:1px solid rgba(255,64,96,.2);color:var(--red);padding:4px 10px;border-radius:4px;font-family:Space Mono,monospace;font-size:10px;cursor:pointer;">✕ Remove</button>
+            </div>
+            <div id="img-placeholder">
+              <div style="font-size:28px;margin-bottom:6px;">📊</div>
+              <div style="font-family:Space Mono,monospace;font-size:11px;color:var(--cyan);">Click or drag to upload chart image</div>
+              <div style="font-family:Space Mono,monospace;font-size:10px;color:var(--muted);margin-top:4px;">JPG · PNG · WEBP · Max 5MB</div>
+            </div>
+          </div>
+          <!-- Option 2: Paste image URL -->
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="flex:1;height:1px;background:var(--border);"></div>
+            <span style="font-family:Space Mono,monospace;font-size:10px;color:var(--muted);">OR</span>
+            <div style="flex:1;height:1px;background:var(--border);"></div>
+          </div>
+          <input class="finp" id="f-chart" type="text" placeholder="Paste image URL or TradingView chart link..."/>
+        </div>
+      </div>
       <button class="btn-p" onclick="savePost()" style="width:100%;margin-bottom:18px;">&#128221; Publish Post</button>
       <div style="border-top:1px solid var(--border);padding-top:14px;">
         <div class="sub" style="margin-bottom:10px;letter-spacing:1px;">MANAGE POSTS</div>
@@ -259,7 +289,16 @@ function mkFeat(p){
   var bi=bc(p.bias);
   var th=p.target?'<div style="margin-top:10px"><div class="sub">TARGET</div><div style="font-family:Space Mono,monospace;font-size:13px;color:var(--gold);font-weight:700">'+p.target+'</div></div>':'';
   var sh=p.sl?'<div style="margin-top:6px"><div class="sub">STOP LOSS</div><div style="font-family:Space Mono,monospace;font-size:11px;color:var(--red)">'+p.sl+'</div></div>':'';
-  var ch=p.chart?'<a href="'+p.chart+'" target="_blank" onclick="event.stopPropagation()" style="display:inline-block;background:linear-gradient(135deg,var(--cyan),var(--green));color:#000;padding:9px 18px;border-radius:6px;font-family:DM Sans,sans-serif;font-weight:700;font-size:13px;text-decoration:none">View Chart</a>':'';
+  var ch='';
+  if(p.chart){
+    var isImg = p.chart.startsWith('data:image') || /\.(jpg|jpeg|png|webp|gif)(\?|$)/i.test(p.chart);
+    if(isImg){
+      ch = '<div style="margin-top:12px;border-radius:8px;overflow:hidden;border:1px solid var(--border);"><img src="'+p.chart+'" alt="'+p.title+' chart" style="width:100%;max-height:400px;object-fit:contain;background:#000;display:block;" loading="lazy"/></div>';
+    } else {
+      ch = '<a href="'+p.chart+'" target="_blank" onclick="event.stopPropagation()" style="display:inline-block;background:linear-gradient(135deg,var(--cyan),var(--green));color:#000;padding:9px 18px;border-radius:6px;font-family:DM Sans,sans-serif;font-weight:700;font-size:13px;text-decoration:none;margin-top:12px;">&#128200; View Chart &#8599;</a>';
+    }
+  }
+
   el.innerHTML='<div class="feat-badge"><div class="fdot"></div>FEATURED</div>'
     +'<div style="display:grid;grid-template-columns:1fr auto;gap:18px;align-items:start">'
     +'<div><div class="card-title" style="font-size:19px;margin-bottom:8px">'+p.title+'</div>'
@@ -329,12 +368,56 @@ function setBias(b){
   var bg=b==='bullish'?'rgba(0,255,136,.1)':b==='bearish'?'rgba(255,23,68,.1)':'rgba(255,202,40,.1)';
   act.style.border='2px solid '+c;act.style.background=bg;act.style.color=c;
 }
+// ── IMAGE UPLOAD HANDLING ──────────────────────────
+var _imgData = null; // stores base64 image data
+
+function handleImgUpload(input) {
+  var file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { toast('Image too large — max 5MB'); return; }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    _imgData = e.target.result; // base64 data URL
+    showImgPreview(_imgData, file.name);
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleImgDrop(e) {
+  e.preventDefault();
+  e.currentTarget.style.borderColor = 'var(--border2)';
+  var file = e.dataTransfer.files[0];
+  if (!file || !file.type.startsWith('image/')) { toast('Please drop an image file'); return; }
+  if (file.size > 5 * 1024 * 1024) { toast('Image too large — max 5MB'); return; }
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    _imgData = ev.target.result;
+    showImgPreview(_imgData, file.name);
+  };
+  reader.readAsDataURL(file);
+}
+
+function showImgPreview(src, name) {
+  document.getElementById('img-preview-el').src = src;
+  document.getElementById('img-name').textContent = '✓ ' + name;
+  document.getElementById('img-preview').style.display = 'block';
+  document.getElementById('img-placeholder').style.display = 'none';
+}
+
+function clearImg() {
+  _imgData = null;
+  document.getElementById('f-img-upload').value = '';
+  document.getElementById('img-preview').style.display = 'none';
+  document.getElementById('img-placeholder').style.display = 'block';
+  document.getElementById('img-preview-el').src = '';
+}
+
 function savePost(){
   var title=document.getElementById('f-title').value.trim();
   var body=document.getElementById('f-body').value.trim();
   if(!title||!body){toast('Title and Analysis required');return;}
   var posts=getP();
-  posts.unshift({id:Date.now(),title:title,symbol:document.getElementById('f-symbol').value.trim(),cat:document.getElementById('f-cat').value,wave:document.getElementById('f-wave').value,bias:_bias,target:document.getElementById('f-target').value.trim(),sl:document.getElementById('f-sl').value.trim(),body:body,chart:document.getElementById('f-chart').value.trim(),date:new Date().toISOString(),featured:posts.length===0});
+  posts.unshift({id:Date.now(),title:title,symbol:document.getElementById('f-symbol').value.trim(),cat:document.getElementById('f-cat').value,wave:document.getElementById('f-wave').value,bias:_bias,target:document.getElementById('f-target').value.trim(),sl:document.getElementById('f-sl').value.trim(),body:body,chart: _imgData || document.getElementById('f-chart').value.trim(),date:new Date().toISOString(),featured:posts.length===0});
   saveP(posts);
   ['f-title','f-symbol','f-target','f-sl','f-body','f-chart'].forEach(function(id){document.getElementById(id).value='';});
   renderManage();render();toast('Post published!');
@@ -553,6 +636,7 @@ function addTgToPost(text) {
   var posts = getP();
   posts.unshift({id:Date.now(),title:title,symbol:sym,cat:'nse',wave:'Wave Analysis',bias:bias,target:'',sl:'',body:text,chart:'',date:new Date().toISOString(),featured:posts.length===0,source:'telegram'});
   saveP(posts);
+  clearImg();
   switchTab('posts');
   render();
   toast('Post added to blog!');
