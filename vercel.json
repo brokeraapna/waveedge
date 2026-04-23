@@ -1,5 +1,6 @@
 {
   "routes": [
+    { "src": "/sitemap.xml", "dest": "/sitemap.xml" },
     { "src": "/blog.html", "dest": "/blog.html" },
     { "src": "/signals.html", "dest": "/signals.html" },
     { "src": "/tools.html", "dest": "/tools.html" },
