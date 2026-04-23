@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<!-- ═══ SEO METADATA ═══ -->
+<title>Elliott Wave AI Scanner for NSE | WaveEdge — Real-Time Wave Detection</title>
+<meta name="description" content="WaveEdge is India's first Elliott Wave AI Scanner for NSE, BSE, Crypto & Forex. Auto-detect Wave 3 breakouts, Fibonacci targets & impulse patterns in real time. Free trial — no credit card needed."/>
+<meta name="keywords" content="Elliott Wave AI scanner NSE, Elliott Wave scanner India, NSE wave count tool, Elliott Wave software India, NIFTY wave analysis, BANKNIFTY Elliott Wave, Wave 3 breakout scanner, Fibonacci target NSE"/>
+<link rel="canonical" href="https://waveedge.in/elliott-wave-ai-scanner-nse"/>
+
+<!-- Open Graph -->
+<meta property="og:title" content="Elliott Wave AI Scanner for NSE | WaveEdge"/>
+<meta property="og:description" content="Auto-detect Elliott Wave patterns across NSE, BSE, Crypto & Forex. Real-time Wave 3 breakouts, Fibonacci projections, MACD confirmation."/>
+<meta property="og:url" content="https://waveedge.in/elliott-wave-ai-scanner-nse"/>
+<meta property="og:type" content="website"/>
+<meta property="og:image" content="https://waveedge.in/images/elliott-wave-ai-scanner-nse-chart.png"/>
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Elliott Wave AI Scanner for NSE | WaveEdge"/>
+<meta name="twitter:description" content="India's most advanced Elliott Wave scanner. Auto-detect Wave 3, Fibonacci targets, impulse patterns — NSE, Crypto, Forex."/>
+
+<!-- Schema: FAQ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is an Elliott Wave AI Scanner for NSE?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "An Elliott Wave AI Scanner for NSE automatically identifies Elliott Wave patterns — such as impulse waves, Wave 3 breakouts, and ABC corrections — across NSE and BSE stocks in real time, saving traders hours of manual wave counting."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does WaveEdge detect Wave 3 breakouts?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "WaveEdge uses a machine-learning model trained on historical NSE data to detect when Wave 2 correction ends and Wave 3 — the strongest, most profitable wave — is about to begin. It confirms entries with Fibonacci retracement levels and MACD zero-line crossovers."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which markets does WaveEdge scan?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "WaveEdge scans NSE, BSE (Indian equities and indices), Cryptocurrency (BTC, ETH, SOL and 200+ pairs), Forex (EUR/USD, USD/INR and major pairs), and US Markets (NASDAQ, NYSE). Over 4,200 instruments total."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does WaveEdge work for NIFTY and BANKNIFTY?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. WaveEdge provides dedicated Elliott Wave analysis for NIFTY 50, BANKNIFTY, FINNIFTY, and MIDCPNIFTY. It scans across 9 timeframes from 5-minute to monthly charts."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the Fibonacci target projection feature?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "After detecting a Wave 3 setup, WaveEdge automatically calculates Fibonacci extension targets at 1.618x, 2.618x, and 4.236x of Wave 1, giving traders precise price targets before the move begins."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is there a free trial for WaveEdge?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. WaveEdge offers a 14-day free trial with no credit card required. You get access to the Elliott Wave scanner, MACD signal table, and Fibonacci calculator during the trial period."
+      }
+    }
+  ]
+}
+</script>
+
+<!-- Schema: SoftwareApplication -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "WaveEdge Elliott Wave AI Scanner",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "999",
+    "priceCurrency": "INR"
+  },
+  "description": "AI-powered Elliott Wave scanner for NSE, BSE, Crypto and Forex markets. Real-time wave detection, Fibonacci targets, MACD signals.",
+  "url": "https://waveedge.in"
+}
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#040d14;--s1:#071520;--s2:#0c2030;
+  --border:#0f2a3d;--border2:#173d57;
+  --cyan:#00e5ff;--green:#00ff88;--gold:#ffc940;--red:#ff4060;--orange:#ff7043;
+  --text:#d8eef8;--muted:#3d7a99;--muted2:#1d4a63;
+  --sans:'Syne',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6;overflow-x:hidden;}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:999;background:rgba(4,13,20,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 5vw;display:flex;align-items:center;justify-content:space-between;height:64px;}
+.nav-logo{font-family:var(--sans);font-weight:800;font-size:20px;color:#fff;text-decoration:none;letter-spacing:-0.5px;}
+.nav-logo span{color:var(--cyan);}
+.nav-links{display:flex;gap:28px;list-style:none;}
+.nav-links a{font-family:var(--mono);font-size:11px;color:var(--muted);text-decoration:none;letter-spacing:1px;transition:color .2s;}
+.nav-links a:hover{color:var(--cyan);}
+.nav-cta{background:var(--cyan);color:#000;padding:9px 22px;border-radius:6px;font-family:var(--sans);font-weight:700;font-size:13px;text-decoration:none;transition:opacity .2s;}
+.nav-cta:hover{opacity:.85;}
+
+/* ── HERO ── */
+.hero{min-height:92vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 5vw 60px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(0,229,255,.06) 0%,transparent 70%);}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.2);color:var(--cyan);padding:7px 18px;border-radius:20px;font-family:var(--mono);font-size:11px;letter-spacing:2px;margin-bottom:28px;}
+.hero-badge::before{content:'';width:7px;height:7px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+h1{font-size:clamp(36px,6vw,80px);font-weight:800;line-height:1.05;letter-spacing:-1.5px;margin-bottom:24px;}
+h1 em{font-style:normal;color:var(--cyan);}
+h1 strong{color:var(--green);}
+.hero-sub{font-family:var(--mono);font-size:clamp(13px,1.5vw,16px);color:var(--muted);max-width:620px;margin:0 auto 40px;line-height:1.8;}
+.hero-sub b{color:var(--text);}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:60px;}
+.btn-primary{background:linear-gradient(135deg,var(--cyan),var(--green));color:#000;padding:15px 36px;border-radius:8px;font-family:var(--sans);font-weight:800;font-size:15px;text-decoration:none;letter-spacing:.3px;transition:all .2s;box-shadow:0 4px 28px rgba(0,229,255,.25);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 36px rgba(0,229,255,.35);}
+.btn-secondary{background:transparent;border:1px solid var(--border2);color:var(--text);padding:15px 36px;border-radius:8px;font-family:var(--sans);font-weight:600;font-size:15px;text-decoration:none;transition:all .2s;}
+.btn-secondary:hover{border-color:var(--cyan);color:var(--cyan);}
+.hero-stats{display:flex;gap:40px;justify-content:center;flex-wrap:wrap;}
+.stat{text-align:center;}
+.stat-num{font-family:var(--mono);font-size:28px;font-weight:700;color:var(--cyan);}
+.stat-lbl{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;margin-top:4px;}
+
+/* ── SECTIONS ── */
+.section{padding:80px 5vw;}
+.section-inner{max-width:1100px;margin:0 auto;}
+.sec-tag{font-family:var(--mono);font-size:10px;color:var(--cyan);letter-spacing:4px;margin-bottom:12px;}
+h2{font-size:clamp(26px,4vw,44px);font-weight:800;letter-spacing:-1px;margin-bottom:16px;line-height:1.1;}
+h2 em{font-style:normal;color:var(--cyan);}
+.sec-sub{font-family:var(--mono);font-size:13px;color:var(--muted);max-width:560px;line-height:1.8;margin-bottom:48px;}
+hr.div{border:none;border-top:1px solid var(--border);margin:0;}
+
+/* ── HOW IT WORKS ── */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;}
+.step{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:28px;position:relative;overflow:hidden;transition:all .3s;}
+.step:hover{border-color:var(--cyan);transform:translateY(-4px);}
+.step::before{content:attr(data-n);position:absolute;top:-10px;right:16px;font-family:var(--mono);font-size:80px;font-weight:700;color:var(--border);line-height:1;}
+.step-icon{font-size:32px;margin-bottom:14px;}
+.step h3{font-size:16px;font-weight:700;margin-bottom:8px;color:#fff;}
+.step p{font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.8;}
+
+/* ── CHART PREVIEW ── */
+.chart-preview{background:var(--s1);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:16px;}
+.chart-header{background:var(--s2);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.chart-sym{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--cyan);}
+.chart-live{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;color:var(--green);}
+.chart-live::before{content:'';width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.5s infinite;}
+.chart-body{padding:20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.wave-card{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;}
+.wave-num{font-family:var(--mono);font-size:24px;font-weight:700;margin-bottom:4px;}
+.wave-lbl{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;}
+.wave-price{font-family:var(--mono);font-size:13px;color:var(--text);margin-top:6px;}
+.fib-visual{grid-column:1/-1;background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:20px;}
+.fib-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.fib-label{font-family:var(--mono);font-size:10px;color:var(--muted);width:60px;flex-shrink:0;}
+.fib-bar-wrap{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.fib-bar-fill{height:100%;border-radius:3px;transition:width 1s ease;}
+.fib-price{font-family:var(--mono);font-size:11px;font-weight:700;width:80px;text-align:right;flex-shrink:0;}
+
+/* ── SCANNER TYPES ── */
+.scanner-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;}
+.sc-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:20px;transition:all .25s;cursor:default;}
+.sc-card:hover{border-color:var(--cyan);background:rgba(0,229,255,.04);}
+.sc-icon{font-size:28px;margin-bottom:10px;}
+.sc-name{font-size:13px;font-weight:700;margin-bottom:6px;color:#fff;}
+.sc-desc{font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.7;}
+.sc-tag{display:inline-block;margin-top:8px;font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:3px;font-weight:700;letter-spacing:1px;}
+
+/* ── MARKETS ── */
+.markets{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
+.mkt{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:24px;transition:border-color .2s;}
+.mkt:hover{border-color:var(--gold);}
+.mkt-flag{font-size:36px;margin-bottom:12px;}
+.mkt-name{font-size:16px;font-weight:700;margin-bottom:6px;}
+.mkt-count{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:12px;}
+.mkt-items{list-style:none;}
+.mkt-items li{font-family:var(--mono);font-size:11px;color:var(--muted);padding:3px 0;border-bottom:1px solid var(--border);}
+.mkt-items li:last-child{border:none;}
+.mkt-items li::before{content:'▸ ';color:var(--cyan);}
+
+/* ── MACD SECTION ── */
+.macd-table{width:100%;border-collapse:collapse;background:var(--s1);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.macd-table th{padding:12px 16px;font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--muted);background:var(--s2);text-align:center;}
+.macd-table td{padding:12px 16px;font-family:var(--mono);font-size:12px;border-bottom:1px solid var(--border);text-align:center;}
+.macd-table tr:last-child td{border-bottom:none;}
+.sig-buy{background:rgba(0,255,136,.12);color:var(--green);padding:4px 10px;border-radius:4px;font-weight:700;font-size:11px;}
+.sig-sell{background:rgba(255,64,96,.12);color:var(--red);padding:4px 10px;border-radius:4px;font-weight:700;font-size:11px;}
+.sig-lock{color:var(--muted);font-size:10px;}
+.sym-name{font-weight:700;color:#fff;text-align:left!important;}
+
+/* ── TESTIMONIALS ── */
+.testimonials{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;}
+.testi{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:28px;}
+.testi-quote{font-family:var(--mono);font-size:13px;color:var(--text);line-height:1.8;margin-bottom:20px;font-style:italic;}
+.testi-quote::before{content:'"';font-size:40px;color:var(--cyan);line-height:0;vertical-align:-16px;margin-right:4px;}
+.testi-author{display:flex;align-items:center;gap:12px;}
+.testi-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--green));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#000;flex-shrink:0;}
+.testi-name{font-weight:700;font-size:13px;}
+.testi-sub{font-family:var(--mono);font-size:10px;color:var(--muted);}
+.stars{color:var(--gold);font-size:14px;margin-bottom:12px;}
+
+/* ── FAQ ── */
+.faq{max-width:760px;margin:0 auto;}
+.faq-item{border:1px solid var(--border);border-radius:10px;margin-bottom:12px;overflow:hidden;}
+.faq-q{padding:20px 24px;font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;transition:background .2s;}
+.faq-q:hover{background:var(--s1);}
+.faq-q::after{content:'+';font-size:22px;color:var(--cyan);font-weight:300;transition:transform .3s;flex-shrink:0;}
+.faq-item.open .faq-q::after{transform:rotate(45deg);}
+.faq-a{display:none;padding:0 24px 20px;font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.9;}
+.faq-item.open .faq-a{display:block;}
+.faq-a a{color:var(--cyan);text-decoration:none;}
+.faq-a a:hover{text-decoration:underline;}
+
+/* ── CTA ── */
+.cta-section{background:linear-gradient(135deg,#030e18,#061525,#030e18);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:100px 5vw;text-align:center;}
+.cta-section h2{font-size:clamp(30px,5vw,58px);margin-bottom:16px;}
+.cta-section p{font-family:var(--mono);font-size:13px;color:var(--muted);max-width:500px;margin:0 auto 40px;line-height:1.8;}
+.cta-note{font-family:var(--mono);font-size:11px;color:var(--muted2);margin-top:16px;}
+
+/* ── FOOTER ── */
+footer{padding:40px 5vw;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+.footer-logo{font-weight:800;font-size:16px;color:#fff;}
+.footer-logo span{color:var(--cyan);}
+.footer-links{display:flex;gap:24px;}
+.footer-links a{font-family:var(--mono);font-size:11px;color:var(--muted);text-decoration:none;transition:color .2s;}
+.footer-links a:hover{color:var(--cyan);}
+.footer-copy{font-family:var(--mono);font-size:10px;color:var(--muted2);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .nav-links{display:none;}
+  .chart-body{grid-template-columns:1fr 1fr;}
+  .hero-stats{gap:24px;}
+  .stat-num{font-size:22px;}
+}
+
+/* ── ANIMATIONS ── */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease;}
+.reveal.visible{opacity:1;transform:none;}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <a href="https://waveedge.in" class="nav-logo">Wave<span>Edge</span></a>
+  <ul class="nav-links">
+    <li><a href="https://waveedge.in/#pricing">Pricing</a></li>
+    <li><a href="https://waveedge.in/elliott-wave-theory">Learn EW Theory</a></li>
+    <li><a href="https://waveedge.in/blog">Analysis Blog</a></li>
+    <li><a href="https://t.me/ewagaurav" target="_blank">Telegram</a></li>
+  </ul>
+  <a href="https://waveedge.in/#pricing" class="nav-cta">Start Free Trial</a>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<!-- URL slug: /elliott-wave-ai-scanner-nse -->
+<section class="hero">
+  <div>
+    <div class="hero-badge">Elliott Wave AI Scanner — NSE · BSE · Crypto · Forex</div>
+
+    <!-- H1: Primary keyword in first heading -->
+    <h1>
+      <em>Elliott Wave AI Scanner</em><br>
+      for <strong>NSE Traders</strong><br>
+      Who Want the Edge
+    </h1>
+
+    <!-- Primary keyword in first 100 words -->
+    <p class="hero-sub">
+      WaveEdge is India's most advanced <b>Elliott Wave AI scanner for NSE</b> — automatically detecting Wave 3 breakouts, ABC corrections, and Fibonacci price targets across NIFTY, BANKNIFTY, and 4,200+ instruments. <b>No manual wave counting. No guesswork.</b>
+    </p>
+
+    <div class="hero-btns">
+      <a href="https://waveedge.in/#pricing" class="btn-primary">Start Free 14-Day Trial →</a>
+      <a href="https://waveedge.in" class="btn-secondary">See Live Scanner</a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">4,200+</div><div class="stat-lbl">Instruments</div></div>
+      <div class="stat"><div class="stat-num">14</div><div class="stat-lbl">Wave Scanners</div></div>
+      <div class="stat"><div class="stat-num">9</div><div class="stat-lbl">Timeframes</div></div>
+      <div class="stat"><div class="stat-num">87.4%</div><div class="stat-lbl">Pattern Accuracy</div></div>
+    </div>
+  </div>
+</section>
+
+<hr class="div"/>
+
+<!-- ═══ HOW IT WORKS ═══ -->
+<section class="section reveal">
+  <div class="section-inner">
+    <div class="sec-tag">// HOW IT WORKS</div>
+    <!-- H2 -->
+    <h2>How the <em>Elliott Wave Scanner</em> Works</h2>
+    <p class="sec-sub">From raw price data to a high-confidence wave setup in under 3 seconds — here is the engine behind every signal.</p>
+
+    <div class="steps">
+      <div class="step" data-n="1">
+        <div class="step-icon">📡</div>
+        <h3>Real-Time Data Feed</h3>
+        <p>WaveEdge pulls live OHLCV data from Upstox API across 9 timeframes — from 5-minute intraday to monthly charts — for every NSE, BSE, Crypto, and Forex symbol.</p>
+      </div>
+      <div class="step" data-n="2">
+        <div class="step-icon">🧠</div>
+        <h3>AI Wave Labeling</h3>
+        <p>Our ML model — trained on 100,000+ historical NSE candle sequences — labels wave structures and identifies where each symbol is in its Elliott Wave cycle right now.</p>
+      </div>
+      <div class="step" data-n="3">
+        <div class="step-icon">📐</div>
+        <h3>Fibonacci Projection</h3>
+        <p>Once a wave count is confirmed, WaveEdge auto-projects Fibonacci targets at 1.272x, 1.618x, 2.618x of Wave 1 — giving you precise entry and exit prices before the move.</p>
+      </div>
+      <div class="step" data-n="4">
+        <div class="step-icon">⚡</div>
+        <h3>MACD Confirmation</h3>
+        <p>Every wave setup is confirmed with a MACD zero-line crossover signal across 6 timeframes — monthly, weekly, daily, 75-min, 15-min, and 5-min — for multi-timeframe confluence.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="div"/>
+
+<!-- ═══ CHART PREVIEW ═══ -->
+<section class="section reveal">
+  <div class="section-inner">
+    <div class="sec-tag">// LIVE EXAMPLE</div>
+    <h2><em>Wave 3 Breakout</em> — NIFTY 50</h2>
+    <p class="sec-sub">A real-time example of how WaveEdge identifies a Wave 3 setup on NIFTY with Fibonacci targets and MACD confirmation.</p>
+
+    <!-- Chart image placeholder with SEO alt text -->
+    <div class="chart-preview">
+      <div class="chart-header">
+        <span class="chart-sym">NSE:NIFTY · Wave 3 Breakout Setup</span>
+        <span class="chart-live">SCANNING LIVE</span>
+      </div>
+      <!-- 
+        SUGGESTED IMAGE: annotated screenshot of NIFTY Elliott Wave count
+        Filename: elliott-wave-ai-scanner-nse-nifty-wave3-setup.png
+        Alt text: "Elliott Wave AI scanner NSE showing NIFTY Wave 3 breakout with Fibonacci targets at 24800 and 25400"
+        Dimensions: 1200×600px
+      -->
+      <div style="background:linear-gradient(135deg,#061525,#040d14);padding:28px;text-align:center;min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:2px;">[ REPLACE WITH ANNOTATED NIFTY CHART IMAGE ]</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2);">Filename: elliott-wave-ai-scanner-nse-nifty-wave3-setup.png</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2);">Alt: "NIFTY Elliott Wave 3 breakout with Fibonacci target projection"</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px;">
+          <span style="background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);color:var(--green);padding:4px 12px;border-radius:4px;font-family:var(--mono);font-size:10px;">① Wave 1: 21,800 → 23,200</span>
+          <span style="background:rgba(255,201,64,.1);border:1px solid rgba(255,201,64,.3);color:var(--gold);padding:4px 12px;border-radius:4px;font-family:var(--mono);font-size:10px;">② Wave 2: Retracement 61.8%</span>
+          <span style="background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.3);color:var(--cyan);padding:4px 12px;border-radius:4px;font-family:var(--mono);font-size:10px;">③ Wave 3 Target: 25,460 (1.618x)</span>
+        </div>
+      </div>
+      <div class="chart-body">
+        <div class="wave-card">
+          <div class="wave-num" style="color:var(--green);">①②</div>
+          <div class="wave-lbl">WAVES COMPLETE</div>
+          <div class="wave-price">23,180 confirmed</div>
+        </div>
+        <div class="wave-card" style="border-color:var(--cyan);">
+          <div class="wave-num" style="color:var(--cyan);">③</div>
+          <div class="wave-lbl">IN PROGRESS</div>
+          <div class="wave-price">Target 25,460</div>
+        </div>
+        <div class="wave-card">
+          <div class="wave-num" style="color:var(--muted);">④⑤</div>
+          <div class="wave-lbl">PROJECTED</div>
+          <div class="wave-price">26,800 ext.</div>
+        </div>
+        <div class="fib-visual">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--cyan);letter-spacing:2px;margin-bottom:16px;">FIBONACCI EXTENSION TARGETS — NIFTY WAVE 3</div>
+          <div class="fib-row">
+            <span class="fib-label">100%</span>
+            <div class="fib-bar-wrap"><div class="fib-bar-fill" style="width:60%;background:var(--muted);"></div></div>
+            <span class="fib-price" style="color:var(--muted);">24,600</span>
+          </div>
+          <div class="fib-row">
+            <span class="fib-label">127.2%</span>
+            <div class="fib-bar-wrap"><div class="fib-bar-fill" style="width:72%;background:var(--gold);"></div></div>
+            <span class="fib-price" style="color:var(--gold);">24,980</span>
+          </div>
+          <div class="fib-row">
+            <span class="fib-label" style="color:var(--cyan);">161.8% ★</span>
+            <div class="fib-bar-wrap"><div class="fib-bar-fill" style="width:85%;background:var(--cyan);"></div></div>
+            <span class="fib-price" style="color:var(--cyan);">25,460</span>
+          </div>
+          <div class="fib-row">
+            <span class="fib-label">261.8%</span>
+            <div class="fib-bar-wrap"><div class="fib-bar-fill" style="width:100%;background:var(--green);"></div></div>
+            <span class="fib-price" style="color:var(--green);">26,840</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.12);border-radius:10px;padding:16px 20px;font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.8;">
+      💡 <b style="color:var(--text);">Pro tip:</b> The highest probability trade is entering Wave 3 after Wave 2 retraces to the 61.8% Fibonacci level with MACD turning positive.
+      → <a href="https://waveedge.in/elliott-wave-theory" style="color:var(--cyan);text-decoration:none;">Learn Elliott Wave Theory →</a>
+    </div>
+  </div>
+</section>
+
+<hr class="div"/>
+
+<!-- ═══ 14 SCANNER TYPES ═══ -->
+<section class="section reveal" style="background:var(--s1);">
+  <div class="section-inner">
+    <div class="sec-tag">// 14 SCANNER TYPES</div>
+    <h2>Every <em>Wave Pattern</em> — Auto-Detected</h2>
+    <p class="sec-sub">WaveEdge's <a href="https://waveedge.in" style="color:var(--cyan);text-decoration:none;">Elliott Wave AI scanner</a> covers all 14 major Elliott Wave patterns, from the most common impulse waves to rare complex corrections.</p>
+
+    <div class="scanner-grid">
+      <div class="sc-card">
+        <div class="sc-icon">⚡</div>
+        <div class="sc-name">Wave 3 Breakout</div>
+        <div class="sc-desc">Detects when Wave 2 ends and the strongest, fastest Wave 3 is beginning — the highest reward-to-risk setup in Elliott Wave.</div>
+        <span class="sc-tag" style="background:rgba(0,255,136,.1);color:var(--green);">HIGH SIGNAL</span>
+      </div>
+      <div class="sc-card">
+        <div class="sc-icon">🔺</div>
+        <div class="sc-name">Wave 5 Exhaustion</div>
+        <div class="sc-desc">Identifies final Wave 5 tops with RSI divergence and fading momentum — ideal for shorting or booking profits before reversal.</div>
+        <span class="sc-tag" style="background:rgba(255,64,96,.1);color:var(--red);">REVERSAL</span>
+      </div>
+      <div class="sc-card">
+        <div class="sc-icon">🔀</div>
+        <div class="sc-name">ABC Correction Finder</div>
+        <div class="sc-desc">Detects zigzags, flats, and triangles signaling trend resumption — perfect for re-entry after a correction.</div>
+        <span class="sc-tag" style="background:rgba(255,201,64,.1);color:var(--gold);">TREND RESUME</span>
+      </div>
+      <div class="sc-card">
+        <div class="sc-icon">🌀</div>
+        <div class="sc-name">Impulse Detector</div>
+        <div class="sc-desc">Confirms complete 5-wave impulse sequences forming across multiple timeframes — for position sizing confidence.</div>
+        <span class="sc-tag" style="background:rgba(0,229,255,.1);color:var(--cyan);">MULTI-TF</span>
+      </div>
+      <div class="sc-card">
+        <div class="sc-icon">📊</div>
+        <div class="sc-name">Fibonacci Clusters</div>
+        <div class="sc-desc">Finds confluence zones where multiple Fibonacci retracements and extensions overlap — strongest support/resistance levels.</div>
+        <span class="sc-tag" style="background:rgba(255,152,0,.1);color:#ff9800;">CONFLUENCE</span>
+      </div>
+      <div class="sc-card">
+        <div class="sc-icon">♦</div>
+        <div class="sc-name">Ending Diagonal</div>
+        <div class="sc-desc">Rare wedge pattern in Wave 5 or Wave C signaling an imminent sharp reversal — catches big trend endings.</div>
+        <span class="sc-tag" style="background:rgba(179,136,255,.1);color:#b388ff;">RARE</span>
+      </div>
+      <div class="sc-card">
+        <div class="sc-icon">🔷</div>
+        <div class="sc-name">Triangle Scanner</div>
+        <div class="sc-desc">Contracting and expanding triangles in Wave 4 or B — signals the final wave thrust is imminent.</div>
+        <span class="sc-tag" style="background:rgba(0,229,255,.1);color:var(--cyan);">TRIANGLE</span>
+      </div>
+      <div class="sc-card">
+        <div class="sc-icon">🎯</div>
+        <div class="sc-name">Double Three (WXY)</div>
+        <div class="sc-desc">Detects complex W-X-Y corrective patterns — two correction patterns linked — for advanced traders.</div>
+        <span class="sc-tag" style="background:rgba(255,64,96,.1);color:var(--red);">COMPLEX</span>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:36px;">
+      <a href="https://waveedge.in" style="color:var(--cyan);font-family:var(--mono);font-size:12px;text-decoration:none;border-bottom:1px solid rgba(0,229,255,.3);padding-bottom:2px;">View all 14 scanner types on WaveEdge →</a>
+    </div>
+  </div>
+</section>
+
+<hr class="div"/>
+
+<!-- ═══ MARKETS COVERED ═══ -->
+<section class="section reveal">
+  <div class="section-inner">
+    <div class="sec-tag">// MARKETS COVERED</div>
+    <h2>One Scanner. <em>Every Market.</em></h2>
+    <p class="sec-sub">Trade Indian equities, indices, crypto, forex, and US stocks — all with the same Elliott Wave AI scanner.</p>
+
+    <div class="markets">
+      <div class="mkt">
+        <div class="mkt-flag">🇮🇳</div>
+        <div class="mkt-name">NSE / BSE</div>
+        <div class="mkt-count">500+ Indian Stocks & Indices</div>
+        <ul class="mkt-items">
+          <li>NIFTY 50, BANKNIFTY, SENSEX</li>
+          <li>FINNIFTY, MIDCPNIFTY</li>
+          <li>RELIANCE, TCS, INFY, SBIN</li>
+          <li>All F&O stocks</li>
+          <li>Small & Midcap indices</li>
+        </ul>
+      </div>
+      <div class="mkt">
+        <div class="mkt-flag">₿</div>
+        <div class="mkt-name">Cryptocurrency</div>
+        <div class="mkt-count">200+ Crypto Pairs</div>
+        <ul class="mkt-items">
+          <li>BTC/USDT, ETH/USDT</li>
+          <li>SOL, BNB, ADA, XRP</li>
+          <li>All Binance spot pairs</li>
+          <li>Perpetual futures</li>
+          <li>DeFi tokens</li>
+        </ul>
+      </div>
+      <div class="mkt">
+        <div class="mkt-flag">💱</div>
+        <div class="mkt-name">Forex</div>
+        <div class="mkt-count">60+ Currency Pairs</div>
+        <ul class="mkt-items">
+          <li>EUR/USD, GBP/USD</li>
+          <li>USD/INR, USD/JPY</li>
+          <li>All major pairs</li>
+          <li>Commodity currencies</li>
+          <li>Cross pairs</li>
+        </ul>
+      </div>
+      <div class="mkt">
+        <div class="mkt-flag">🇺🇸</div>
+        <div class="mkt-name">US Markets</div>
+        <div class="mkt-count">3,500+ US Stocks</div>
+        <ul class="mkt-items">
+          <li>NASDAQ: AAPL, NVDA, TSLA</li>
+          <li>NYSE: SPY, QQQ, AMZN</li>
+          <li>S&P 500 components</li>
+          <li>ETFs and indices</li>
+          <li>Commodity futures</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="div"/>
+
+<!-- ═══ MACD SIGNALS ═══ -->
+<section class="section reveal" style="background:var(--s1);">
+  <div class="section-inner">
+    <div class="sec-tag">// AI SMART SIGNAL</div>
+    <h2>MACD <em>Multi-Timeframe</em> Signal Table</h2>
+    <p class="sec-sub">Every symbol shows BUY/SELL signals across 6 timeframes simultaneously — confirming wave entries with MACD zero-line crossovers and <a href="https://waveedge.in" style="color:var(--cyan);text-decoration:none;">market alerts</a>.</p>
+
+    <!-- 
+      SUGGESTED VIDEO: 30-second screen recording of MACD table refreshing
+      Filename: waveedge-macd-signal-table-nse-demo.mp4
+      Alt/Title: "WaveEdge MACD multi-timeframe signal table for NSE stocks"
+    -->
+    <div style="overflow-x:auto;">
+      <table class="macd-table">
+        <thead>
+          <tr>
+            <th style="text-align:left;">SCRIP</th>
+            <th>MONTHLY</th>
+            <th>WEEKLY</th>
+            <th>DAILY</th>
+            <th>75 MIN</th>
+            <th>15 MIN</th>
+            <th>5 MIN</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="sym-name">NIFTY 50</td>
+            <td><span class="sig-sell">SELL</span></td>
+            <td><span class="sig-sell">SELL</span></td>
+            <td><span class="sig-buy">BUY</span></td>
+            <td><span class="sig-sell">SELL</span></td>
+            <td><span class="sig-lock">🔒 PRO</span></td>
+            <td><span class="sig-lock">🔒 PRO</span></td>
+          </tr>
+          <tr>
+            <td class="sym-name">BANKNIFTY</td>
+            <td><span class="sig-sell">SELL</span></td>
+            <td><span class="sig-buy">BUY</span></td>
+            <td><span class="sig-sell">SELL</span></td>
+            <td><span class="sig-buy">BUY</span></td>
+            <td><span class="sig-lock">🔒 PRO</span></td>
+            <td><span class="sig-lock">🔒 PRO</span></td>
+          </tr>
+          <tr>
+            <td class="sym-name">RELIANCE</td>
+            <td><span class="sig-buy">BUY</span></td>
+            <td><span class="sig-buy">BUY</span></td>
+            <td><span class="sig-buy">BUY</span></td>
+            <td><span class="sig-buy">BUY</span></td>
+            <td><span class="sig-lock">🔒 PRO</span></td>
+            <td><span class="sig-lock">🔒 PRO</span></td>
+          </tr>
+          <tr>
+            <td class="sym-name">BTC/USDT</td>
+            <td><span class="sig-buy">BUY</span></td>
+            <td><span class="sig-sell">SELL</span></td>
+            <td><span class="sig-sell">SELL</span></td>
+            <td><span class="sig-sell">SELL</span></td>
+            <td><span class="sig-lock">🔒 PRO</span></td>
+            <td><span class="sig-lock">🔒 PRO</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--muted2);margin-top:10px;text-align:center;">
+      75-Min · 15-Min · 5-Min signals available on Professional plan ·
+      <a href="https://waveedge.in/#pricing" style="color:var(--cyan);text-decoration:none;">Upgrade to PRO →</a>
+    </div>
+  </div>
+</section>
+
+<hr class="div"/>
+
+<!-- ═══ FIBONACCI TARGETS ═══ -->
+<section class="section reveal">
+  <div class="section-inner">
+    <div class="sec-tag">// FIBONACCI TARGETS</div>
+    <h2>Auto-Calculated <em>Fib Targets</em> — No Manual Work</h2>
+    <p class="sec-sub">WaveEdge's built-in <a href="https://waveedge.in" style="color:var(--cyan);text-decoration:none;">Fibonacci calculator</a> auto-projects price targets the moment a Wave 3 setup is confirmed. Know your target before you enter.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">
+      <div style="background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center;">
+        <div style="font-family:var(--mono);font-size:32px;font-weight:700;color:var(--muted);margin-bottom:8px;">23.6%</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--muted);">First Retracement</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted2);margin-top:6px;">Weak correction zone</div>
+      </div>
+      <div style="background:var(--s1);border:1px solid rgba(255,201,64,.3);border-radius:12px;padding:24px;text-align:center;">
+        <div style="font-family:var(--mono);font-size:32px;font-weight:700;color:var(--gold);margin-bottom:8px;">61.8%</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--gold);">Golden Ratio Entry</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted2);margin-top:6px;">Optimal Wave 3 entry zone</div>
+      </div>
+      <div style="background:var(--s1);border:1px solid rgba(0,229,255,.3);border-radius:12px;padding:24px;text-align:center;">
+        <div style="font-family:var(--mono);font-size:32px;font-weight:700;color:var(--cyan);margin-bottom:8px;">161.8%</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--cyan);">Wave 3 Extension</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted2);margin-top:6px;">Primary profit target</div>
+      </div>
+      <div style="background:var(--s1);border:1px solid rgba(0,255,136,.3);border-radius:12px;padding:24px;text-align:center;">
+        <div style="font-family:var(--mono);font-size:32px;font-weight:700;color:var(--green);margin-bottom:8px;">261.8%</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--green);">Extended Wave Target</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted2);margin-top:6px;">For strong trending markets</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="div"/>
+
+<!-- ═══ TESTIMONIALS ═══ -->
+<section class="section reveal" style="background:var(--s1);">
+  <div class="section-inner">
+    <div class="sec-tag">// WHAT TRADERS SAY</div>
+    <h2>Trusted by <em>NSE Traders</em> Across India</h2>
+    <p class="sec-sub">Real feedback from traders using the Elliott Wave AI scanner on waveedge.in.</p>
+
+    <div class="testimonials">
+      <div class="testi">
+        <div class="stars">★★★★★</div>
+        <div class="testi-quote">Finally an Elliott Wave tool built for Indian markets. The Wave 3 scanner on BANKNIFTY gave me a perfect entry at 51,200 with a target at 53,800 — hit within 4 sessions.</div>
+        <div class="testi-author">
+          <div class="testi-avatar">R</div>
+          <div>
+            <div class="testi-name">Rahul M.</div>
+            <div class="testi-sub">Options Trader · Mumbai · PRO Plan</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi">
+        <div class="stars">★★★★★</div>
+        <div class="testi-quote">The multi-timeframe MACD table is a game-changer. I can see confluence across daily, 75-min, and 15-min in one glance. Reduced my losing trades by 40% in the first month.</div>
+        <div class="testi-author">
+          <div class="testi-avatar">P</div>
+          <div>
+            <div class="testi-name">Priya K.</div>
+            <div class="testi-sub">Swing Trader · Bangalore · PRO Plan</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi">
+        <div class="stars">★★★★★</div>
+        <div class="testi-quote">Used to spend 2 hours counting waves manually. WaveEdge does it in seconds for 50+ stocks. The ABC correction finder on RELIANCE saved me from a bad entry last week.</div>
+        <div class="testi-author">
+          <div class="testi-avatar">A</div>
+          <div>
+            <div class="testi-name">Amit S.</div>
+            <div class="testi-sub">Positional Trader · Delhi · Institutional Plan</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="div"/>
+
+<!-- ═══ FAQ ═══ -->
+<section class="section reveal">
+  <div class="section-inner">
+    <div class="sec-tag">// FAQ</div>
+    <h2>Frequently Asked <em>Questions</em></h2>
+    <p class="sec-sub" style="margin-bottom:32px;">Everything you need to know about the Elliott Wave AI scanner for NSE.</p>
+
+    <div class="faq">
+      <div class="faq-item open">
+        <div class="faq-q" onclick="toggleFaq(this)">What is an Elliott Wave AI Scanner for NSE?</div>
+        <div class="faq-a">
+          An <strong>Elliott Wave AI Scanner for NSE</strong> automatically identifies Elliott Wave patterns — impulse waves (①②③④⑤), corrective waves (ABC), and all 14 sub-patterns — across NSE and BSE stocks in real time. Instead of spending hours manually counting waves on charts, WaveEdge's AI does it instantly for 500+ Indian stocks and indices. Learn more on our <a href="https://waveedge.in/elliott-wave-theory">Elliott Wave Theory guide →</a>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">How does WaveEdge detect Wave 3 breakouts on NIFTY and BANKNIFTY?</div>
+        <div class="faq-a">
+          WaveEdge monitors NIFTY and BANKNIFTY across 9 timeframes. When Wave 2 retraces to the 61.8% Fibonacci level and MACD starts curling positive, the scanner flags a high-probability Wave 3 entry. The system then auto-projects the Wave 3 target at 1.618x of Wave 1, giving you a precise profit target. This works on both daily charts for positional trades and 15-minute charts for intraday BANKNIFTY trades.
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Which markets does WaveEdge scan?</div>
+        <div class="faq-a">
+          WaveEdge scans <strong>NSE & BSE</strong> (500+ Indian stocks, NIFTY, BANKNIFTY, SENSEX), <strong>Cryptocurrency</strong> (200+ pairs including BTC, ETH, SOL on Binance), <strong>Forex</strong> (60+ pairs including USD/INR, EUR/USD), and <strong>US Markets</strong> (3,500+ stocks on NASDAQ and NYSE). Total: 4,200+ instruments across all 9 timeframes.
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">What Fibonacci levels does WaveEdge project?</div>
+        <div class="faq-a">
+          WaveEdge automatically calculates retracement levels (23.6%, 38.2%, 50%, 61.8%, 78.6%) and extension targets (100%, 127.2%, 161.8%, 200%, 261.8%, 361.8%). For Elliott Wave specifically, it highlights the key 61.8% retracement as the Wave 3 entry zone and 161.8% as the primary Wave 3 target. Use the built-in <a href="https://waveedge.in">Fibonacci Calculator tool →</a> for manual calculations.
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">How is WaveEdge different from TradingView's Elliott Wave tools?</div>
+        <div class="faq-a">
+          TradingView requires manual wave labeling — you draw waves yourself. WaveEdge automatically detects and labels all 14 Elliott Wave patterns across 4,200+ instruments simultaneously, in real time. You can scan the entire NSE in seconds instead of analyzing stocks one by one. WaveEdge also combines wave analysis with MACD zero-line signals for multi-timeframe confirmation.
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Is there a free trial for the Elliott Wave scanner?</div>
+        <div class="faq-a">
+          Yes! WaveEdge offers a <strong>14-day free trial</strong> — no credit card required. During the trial you get access to the full Elliott Wave scanner (all 14 patterns), MACD signal table for Monthly/Weekly/Daily timeframes, and the Fibonacci Calculator. Upgrade to PRO (₹2,499/mo) to unlock 75-min, 15-min, and 5-min intraday signals. <a href="https://waveedge.in/#pricing">Start free trial →</a>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Does WaveEdge work for options trading on NSE?</div>
+        <div class="faq-a">
+          Yes. WaveEdge's Elliott Wave scanner is widely used by NSE options traders — especially for NIFTY and BANKNIFTY weekly options. The Wave 3 breakout signal gives an early entry before the big move, while the Wave 5 exhaustion scanner helps time exits and identify reversal setups for option selling strategies.
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Who is behind WaveEdge?</div>
+        <div class="faq-a">
+          WaveEdge is built by Gaurav, an Elliott Wave practitioner and trader with years of experience analyzing NSE markets. Daily wave analysis is shared on Telegram <a href="https://t.me/ewagaurav" target="_blank">@ewagaurav</a> and X.com. The platform combines Gaurav's manual wave expertise with AI automation — making professional wave analysis accessible to every trader.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="div"/>
+
+<!-- ═══ CTA ═══ -->
+<section class="cta-section reveal">
+  <div class="sec-tag" style="margin-bottom:16px;">// START TODAY</div>
+  <h2>Stop Counting Waves<br><em>Manually.</em></h2>
+  <p>Join traders using WaveEdge's Elliott Wave AI scanner for NSE to find Wave 3 breakouts, Fibonacci targets, and MACD entries — automatically, in real time.</p>
+  <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+    <a href="https://waveedge.in/#pricing" class="btn-primary" style="font-size:16px;padding:17px 44px;">Start Free 14-Day Trial →</a>
+    <a href="https://t.me/ewagaurav" target="_blank" class="btn-secondary" style="font-size:16px;padding:17px 44px;">Follow @ewagaurav</a>
+  </div>
+  <div class="cta-note">No credit card required · Cancel anytime · Free forever plan available</div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-logo">Wave<span>Edge</span>.in</div>
+  <div class="footer-links">
+    <a href="https://waveedge.in">Home</a>
+    <a href="https://waveedge.in/elliott-wave-theory">EW Theory</a>
+    <a href="https://waveedge.in/blog">Analysis Blog</a>
+    <a href="https://waveedge.in/#pricing">Pricing</a>
+    <a href="https://t.me/ewagaurav" target="_blank">Telegram</a>
+  </div>
+  <div class="footer-copy">© 2026 WaveEdge Analytics Pvt. Ltd. · Not financial advice.</div>
+</footer>
+
+<script>
+// FAQ toggle
+function toggleFaq(el) {
+  var item = el.parentElement;
+  var wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(function(f){ f.classList.remove('open'); });
+  if (!wasOpen) item.classList.add('open');
+}
+
+// Scroll reveal
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+  });
+}, {threshold:0.08});
+document.querySelectorAll('.reveal').forEach(function(el){ observer.observe(el); });
+</script>
+
+</body>
+</html>
