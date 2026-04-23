@@ -3,6 +3,8 @@
     { "src": "/blog.html", "dest": "/blog.html" },
     { "src": "/signals.html", "dest": "/signals.html" },
     { "src": "/tools.html", "dest": "/tools.html" },
+    { "src": "/elliott-wave-ai-scanner-nse", "dest": "/elliott-wave-ai-scanner-nse.html" },
+    { "src": "/elliott-wave-ai-scanner-nse.html", "dest": "/elliott-wave-ai-scanner-nse.html" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
