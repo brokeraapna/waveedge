@@ -326,8 +326,21 @@ function handleImgUpload(input) {
   if (file.size > 5 * 1024 * 1024) { toast('Image too large — max 5MB'); return; }
   var reader = new FileReader();
   reader.onload = function(e) {
-    _imgData = e.target.result; // base64 data URL
-    showImgPreview(_imgData, file.name);
+    // Compress image to max 800px wide to fit localStorage
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      var maxW = 900, maxH = 600;
+      var w = img.width, h = img.height;
+      if (w > maxW) { h = h * maxW / w; w = maxW; }
+      if (h > maxH) { w = w * maxH / h; h = maxH; }
+      canvas.width = w; canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      _imgData = canvas.toDataURL('image/jpeg', 0.75); // compress to JPEG 75%
+      showImgPreview(_imgData, file.name);
+    };
+    img.src = e.target.result;
   };
   reader.readAsDataURL(file);
 }
@@ -369,7 +382,7 @@ function savePost(){
   posts.unshift({id:Date.now(),title:title,symbol:document.getElementById('f-symbol').value.trim(),cat:document.getElementById('f-cat').value,wave:document.getElementById('f-wave').value,bias:_bias,target:document.getElementById('f-target').value.trim(),sl:document.getElementById('f-sl').value.trim(),body:body,chart: _imgData || document.getElementById('f-chart').value.trim(),date:new Date().toISOString(),featured:posts.length===0});
   saveP(posts);
   ['f-title','f-symbol','f-target','f-sl','f-body','f-chart'].forEach(function(id){document.getElementById(id).value='';});
-  renderManage();render();toast('Post published!');
+  clearImg();document.getElementById('f-bias-n').click();renderManage();render();toast('Post published! ✓');
 }
 function delPost(id){if(!confirm('Delete?'))return;saveP(getP().filter(function(p){return p.id!==id;}));renderManage();render();toast('Deleted.');}
 function featPost(id){var posts=getP();posts.forEach(function(p){p.featured=(p.id===id);});saveP(posts);renderManage();render();toast('Featured updated!');}
