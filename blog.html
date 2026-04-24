@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
+<meta charset="UTF-8"/><!-- WaveEdge Blog v4.1 - Updated 2026-04-24 02:28 -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Analysis | WaveEdge</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Orbitron:wght@700;900&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
@@ -16,7 +16,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 h1{font-family:'Orbitron',monospace;font-size:26px;font-weight:900;letter-spacing:-1px;margin-bottom:6px;}
 h1 em{font-style:normal;color:var(--cyan);}
 .sub{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);}
-.hdr-btns{display:flex;gap:10px;flex-wrap:wrap;}
+.hdr-btns{display:flex;gap:10px;flex-wrap:wrap;align-items:center;flex-shrink:0;min-width:fit-content;}
 .btn-admin{background:linear-gradient(135deg,var(--cyan),var(--green));color:#000;border:none;padding:10px 20px;border-radius:7px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;cursor:pointer;}
 .btn-tg{background:#0088cc;color:#fff;padding:10px 20px;border-radius:7px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
 .tabs{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;width:fit-content;margin-bottom:22px;}
@@ -70,6 +70,18 @@ h1 em{font-style:normal;color:var(--cyan);}
 </head>
 <body>
 <!-- WAVEEDGE-BLOG-v4.1-ADMIN-ENABLED -->
+<!-- Fixed Admin Button - always visible -->
+<div style="position:fixed;top:12px;right:12px;z-index:8000;">
+  <button onclick="openAdmin()" 
+    style="background:linear-gradient(135deg,#00e5ff,#00ff88);color:#000;border:none;
+           padding:8px 16px;border-radius:7px;font-family:'DM Sans',sans-serif;
+           font-weight:700;font-size:12px;cursor:pointer;
+           box-shadow:0 2px 12px rgba(0,229,255,.3);
+           display:flex;align-items:center;gap:6px;">
+    🔑 Admin
+  </button>
+</div>
+
 <div class="wrap">
   <div class="hdr">
     <div>
