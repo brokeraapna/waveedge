@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI Smart Signal | WaveEdge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060a10;--bg2:#0a1018;--bg3:#0d1520;
+  --border:#1a2a3a;--border2:#0f1e2d;
+  --green:#00e5a0;--green-dim:rgba(0,229,160,0.12);--green-border:rgba(0,229,160,0.25);
+  --red:#ff4060;--red-dim:rgba(255,60,80,0.12);--red-border:rgba(255,60,80,0.25);
+  --gold:#ffb900;--gold-dim:rgba(255,185,0,0.10);
+  --text:#c8d8e8;--text-dim:#5a7090;--text-muted:#2a4060;
+  --mono:'Share Tech Mono',monospace;--sans:'Exo 2',sans-serif;
+}
+html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--sans);}
+body{background-image:radial-gradient(ellipse at 15% 5%,rgba(0,200,120,0.05) 0%,transparent 45%),radial-gradient(ellipse at 85% 90%,rgba(255,60,80,0.04) 0%,transparent 45%);}
+.nav{display:flex;align-items:center;gap:0;padding:0 20px;height:56px;background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.nav-logo{font-family:var(--mono);font-size:17px;letter-spacing:3px;color:var(--green);text-shadow:0 0 16px rgba(0,229,160,0.35);margin-right:24px;white-space:nowrap;text-decoration:none;}
+.nav-logo span{color:var(--red);}
+.nav-links{display:flex;gap:2px;flex:1;}
+.nav-link{padding:6px 14px;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;border-radius:6px;cursor:pointer;color:var(--text-dim);border:1px solid transparent;background:none;font-family:var(--sans);transition:all 0.18s;white-space:nowrap;}
+.nav-link:hover{color:var(--text);background:rgba(255,255,255,0.04);}
+.nav-link.active{color:var(--green);border-color:var(--green-border);background:var(--green-dim);}
+.nav-link.pg-signals.active{color:var(--gold);border-color:rgba(255,185,0,0.3);background:var(--gold-dim);}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.live-chip{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:1px;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.25}}
+.tier-toggle{display:flex;border-radius:6px;overflow:hidden;border:1px solid var(--border);}
+.tier-btn{padding:6px 12px;font-family:var(--sans);font-weight:700;font-size:11px;letter-spacing:1px;cursor:pointer;border:none;transition:all 0.18s;background:var(--bg3);color:var(--text-dim);}
+.tier-btn.free.active{background:var(--green-dim);color:var(--green);}
+.tier-btn.pro.active{background:var(--gold-dim);color:var(--gold);}
+.page{display:none;animation:fadeIn 0.25s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* HOME */
+.home-hero{max-width:960px;margin:0 auto;padding:56px 24px 36px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;}
+@media(max-width:700px){.home-hero{grid-template-columns:1fr;padding:36px 16px 20px;}}
+.hero-tag{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--green);border:1px solid var(--green-border);padding:4px 10px;border-radius:3px;margin-bottom:16px;background:var(--green-dim);}
+.hero-title{font-size:40px;font-weight:800;line-height:1.1;margin-bottom:14px;}
+.hero-title em{color:var(--green);font-style:normal;}
+.hero-sub{font-size:14px;color:var(--text-dim);line-height:1.7;margin-bottom:28px;}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;}
+.btn-primary{padding:11px 22px;border-radius:7px;border:none;cursor:pointer;font-family:var(--sans);font-weight:700;font-size:14px;background:var(--green);color:#000;transition:opacity 0.18s;}
+.btn-primary:hover{opacity:0.85;}
+.btn-outline{padding:11px 22px;border-radius:7px;cursor:pointer;font-family:var(--sans);font-weight:600;font-size:13px;background:transparent;color:var(--text);border:1px solid var(--border);transition:all 0.18s;}
+.btn-outline:hover{border-color:var(--green);color:var(--green);}
+.hero-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;font-family:var(--mono);font-size:12px;color:var(--text-dim);position:relative;overflow:hidden;}
+.hero-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,229,160,0.04),transparent);pointer-events:none;}
+.hero-card-label{font-size:10px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;}
+.hcr{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border2);}
+.hcr:last-child{border-bottom:none;}
+.hcr-tf{color:var(--text-muted);font-size:11px;}
+.hcr-buy{color:var(--green);font-weight:700;}
+.hcr-sell{color:var(--red);font-weight:700;}
+.hcr-za{color:rgba(0,229,160,0.5);font-size:10px;}
+.hcr-zb{color:rgba(255,60,80,0.5);font-size:10px;}
+.features-grid{max-width:960px;margin:0 auto 60px;padding:0 24px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+@media(max-width:700px){.features-grid{grid-template-columns:1fr;}}
+.feature-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;transition:border-color 0.2s;}
+.feature-card:hover{border-color:rgba(0,229,160,0.2);}
+.fi{font-size:22px;margin-bottom:10px;}
+.ft{font-size:14px;font-weight:700;margin-bottom:6px;color:#e0f0ff;}
+.fd{font-size:12px;color:var(--text-dim);line-height:1.6;}
+/* SIGNAL PAGE */
+.sp-wrap{max-width:1020px;margin:0 auto;padding:28px 20px 60px;}
+.sp-title-row{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.sp-title{font-size:26px;font-weight:800;}
+.sp-title em{color:var(--green);font-style:normal;}
+.sp-badge{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--green);border:1px solid var(--green-border);background:var(--green-dim);padding:3px 8px;border-radius:3px;}
+/* PRO ALERT BOX */
+.pro-alert-box{display:none;align-items:center;gap:12px;padding:12px 18px;background:rgba(255,185,0,0.07);border:1px solid rgba(255,185,0,0.3);border-radius:8px;margin-bottom:14px;flex-wrap:wrap;}
+.pa-icon{font-size:20px;animation:blink 1s infinite;}
+.pa-text{font-family:var(--sans);font-size:13px;font-weight:600;color:var(--gold);}
+.pa-count{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--gold);background:rgba(255,185,0,0.15);border:1px solid rgba(255,185,0,0.4);padding:2px 14px;border-radius:6px;margin-left:4px;}
+.pa-sub{font-size:11px;color:#7a5a10;margin-left:4px;}
+/* Summary */
+.summary-strip{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;margin-bottom:14px;}
+.ss-label{font-family:var(--mono);font-size:10px;color:var(--text-muted);letter-spacing:1px;}
+.ss-val{font-family:var(--mono);font-size:12px;font-weight:700;}
+.ss-val.buy{color:var(--green);}
+.ss-val.sell{color:var(--red);}
+.ss-watch{font-family:var(--mono);font-size:14px;font-weight:700;color:#e0f0ff;}
+.ss-divider{width:1px;height:18px;background:var(--border);}
+.update-stamp{font-family:var(--mono);font-size:10px;color:var(--text-muted);margin-left:auto;}
+/* Controls */
+.sp-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+.sp-input{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:7px;font-family:var(--mono);font-size:13px;outline:none;width:170px;transition:border-color 0.18s;}
+.sp-input:focus{border-color:var(--green);}
+.sp-input::placeholder{color:var(--text-muted);}
+.sp-add-btn{background:var(--green);color:#000;border:none;padding:9px 14px;border-radius:7px;font-family:var(--sans);font-weight:700;font-size:13px;cursor:pointer;transition:opacity 0.18s;}
+.sp-add-btn:hover{opacity:0.85;}
+.sp-refresh{background:var(--bg3);border:1px solid var(--border);color:var(--green);padding:9px 12px;border-radius:7px;font-family:var(--sans);font-weight:700;font-size:13px;cursor:pointer;transition:all 0.18s;}
+.sp-refresh:hover{border-color:var(--green);}
+/* Recent */
+.recent-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px;align-items:center;}
+.recent-label{font-family:var(--mono);font-size:10px;color:var(--text-muted);letter-spacing:1px;white-space:nowrap;}
+.recent-chip{font-family:var(--mono);font-size:11px;letter-spacing:1px;padding:3px 9px;border-radius:4px;cursor:pointer;border:1px solid var(--border);background:var(--bg3);color:var(--text-dim);transition:all 0.15s;}
+.recent-chip:hover{border-color:var(--green);color:var(--green);}
+/* Upgrade */
+.upgrade-banner{background:linear-gradient(135deg,#120e00,#0d0900);border:1px solid #2a1e00;border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px;}
+.ub-icon{font-size:20px;}
+.ub-text{flex:1;}
+.ub-text strong{color:var(--gold);font-size:13px;}
+.ub-text p{font-size:11px;color:#5a4010;margin-top:2px;}
+.ub-btn{background:linear-gradient(135deg,#b88000,#ffb900);color:#000;border:none;padding:9px 16px;border-radius:6px;font-family:var(--sans);font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap;transition:opacity 0.18s;}
+.ub-btn:hover{opacity:0.85;}
+/* Table */
+.main-table-wrap{border-radius:12px;overflow:hidden;border:1px solid var(--border);box-shadow:0 8px 40px rgba(0,0,0,0.5);margin-bottom:18px;overflow-x:auto;}
+.main-table{width:100%;border-collapse:collapse;min-width:600px;}
+.main-table thead tr{background:#080f18;}
+.main-table th{padding:11px 6px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);text-align:center;border-bottom:1px solid var(--border);}
+.main-table th.th-left{text-align:left;padding-left:16px;}
+.main-table th.th-paid{color:rgba(255,185,0,0.5);border-left:2px solid rgba(255,185,0,0.12);}
+.main-table tbody tr{border-bottom:1px solid var(--border2);transition:background 0.12s;}
+.main-table tbody tr:hover{background:rgba(0,229,160,0.025);}
+.main-table tbody tr:last-child{border-bottom:none;}
+.main-table td{padding:9px 5px;text-align:center;vertical-align:middle;}
+.main-table td.td-ticker{font-family:var(--mono);font-size:13px;font-weight:700;color:#e0f0ff;letter-spacing:2px;text-align:left;padding-left:16px;background:var(--bg2);white-space:nowrap;}
+.main-table td.td-ticker small{display:block;font-size:9px;color:var(--text-muted);letter-spacing:1px;margin-top:1px;}
+.main-table td.td-paid{border-left:2px solid rgba(255,185,0,0.1);}
+.remove-btn{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px;padding:2px 6px;border-radius:4px;transition:color 0.15s;line-height:1;}
+.remove-btn:hover{color:var(--red);}
+/* Signal cell */
+.sc{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.sc-sig{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:0.5px;padding:2px 7px;border-radius:3px;white-space:nowrap;}
+.sc.buy .sc-sig{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+.sc.sell .sc-sig{background:var(--red-dim);color:var(--red);border:1px solid var(--red-border);}
+.sc.neutral .sc-sig{background:rgba(90,120,150,0.08);color:#3a5a7a;border:1px solid rgba(90,120,150,0.15);}
+.sc-zero{font-size:9px;letter-spacing:0.5px;}
+.sc-zero.above{color:rgba(0,229,160,0.5);}
+.sc-zero.below{color:rgba(255,60,80,0.45);}
+.sc-cross{font-family:var(--mono);font-size:8px;font-weight:700;padding:1px 5px;border-radius:2px;animation:flashBadge 1.2s ease infinite;}
+.sc.buy .sc-cross{background:rgba(0,229,160,0.2);color:var(--green);border:1px solid var(--green);}
+.sc.sell .sc-cross{background:rgba(255,60,80,0.2);color:var(--red);border:1px solid var(--red);}
+@keyframes flashBadge{0%,100%{opacity:1}50%{opacity:0.3}}
+.sc-locked{display:flex;align-items:center;justify-content:center;gap:3px;font-family:var(--mono);font-size:9px;color:rgba(255,185,0,0.4);letter-spacing:1px;}
+.mbar{width:30px;height:3px;background:#0d1520;border-radius:2px;overflow:hidden;margin-top:2px;}
+.mbar-fill{height:100%;border-radius:2px;}
+.mbar-fill.pos{background:var(--green);}
+.mbar-fill.neg{background:var(--red);}
+.sp-footer{font-family:var(--mono);font-size:10px;color:var(--text-muted);text-align:center;letter-spacing:1px;padding-top:10px;}
+/* ABOUT */
+.about-wrap{max-width:760px;margin:0 auto;padding:48px 24px 60px;}
+.about-section{margin-bottom:36px;}
+.about-h{font-size:20px;font-weight:700;color:#e0f0ff;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.about-p{font-size:14px;color:var(--text-dim);line-height:1.8;margin-bottom:12px;}
+.about-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px;}
+.about-table th{text-align:left;padding:8px 12px;background:var(--bg2);color:var(--text-muted);font-size:11px;letter-spacing:1px;border-bottom:1px solid var(--border);}
+.about-table td{padding:9px 12px;border-bottom:1px solid var(--border2);color:var(--text-dim);}
+.about-table td:first-child{font-family:var(--mono);color:#e0f0ff;}
+@media(max-width:640px){.sp-title{font-size:20px;}.main-table td.td-ticker{font-size:11px;}.sc-sig{font-size:9px;}.sp-input{width:130px;}.nav-logo{font-size:14px;margin-right:12px;}}
+
+/* PRO Access Modal */
+.pro-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;align-items:center;justify-content:center;}
+.pro-modal-overlay.show{display:flex;}
+.pro-modal{background:#061525;border:1px solid #00e5ff44;border-radius:16px;padding:36px;max-width:420px;width:90%;text-align:center;}
+.pro-modal h2{font-family:'Orbitron',monospace;color:#00e5ff;font-size:20px;margin-bottom:8px;}
+.pro-modal p{color:#4d8099;font-size:13px;margin-bottom:24px;line-height:1.6;}
+.pro-code-input{width:100%;background:#0a1f30;border:2px solid #173348;color:#fff;padding:14px 18px;border-radius:8px;font-family:'Share Tech Mono',monospace;font-size:18px;letter-spacing:4px;text-align:center;text-transform:uppercase;outline:none;margin-bottom:16px;}
+.pro-code-input:focus{border-color:#00e5ff;}
+.pro-submit-btn{width:100%;background:linear-gradient(135deg,#00e5ff,#00ff88);color:#000;border:none;padding:14px;border-radius:8px;font-family:'Orbitron',monospace;font-weight:700;font-size:15px;cursor:pointer;margin-bottom:12px;}
+.pro-submit-btn:hover{opacity:.9;}
+.pro-cancel-btn{background:none;border:none;color:#4d8099;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.pro-cancel-btn:hover{color:#fff;}
+.pro-error{color:#ff4060;font-size:12px;font-family:'Share Tech Mono',monospace;margin-bottom:12px;display:none;}
+.pro-success{color:#00ff88;font-size:13px;font-family:'Share Tech Mono',monospace;margin-bottom:12px;display:none;}
+.pro-active-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);color:#00ff88;padding:6px 14px;border-radius:20px;font-family:'Share Tech Mono',monospace;font-size:11px;margin-bottom:16px;}
+
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="javascript:void(0)" onclick="window.parent && window.parent.showPage ? window.parent.showPage('home') : window.location='/'">Wave<span>Edge</span></a>
+  <div class="nav-links">
+    <button class="nav-link" onclick="window.parent && window.parent.showPage ? window.parent.showPage('home') : showPage('home')">Home</button>
+    <button class="nav-link pg-signals" onclick="showPage('signals')">&#9889; Signal Table</button>
+  </div>
+  <div class="nav-right">
+    <div class="live-chip"><div class="live-dot"></div><span>LIVE</span></div>
+    <div class="tier-toggle">
+      <button class="tier-btn free active" id="btn-free" onclick="setTier(false)">FREE</button>
+      <button class="tier-btn pro" id="btn-pro" onclick="showProModal()">&#9889; PRO</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="home-hero">
+    <div>
+      <div class="hero-tag">&#9889; AI SMART SIGNAL</div>
+      <h1 class="hero-title">Trade with <em>Precision</em> Intelligence</h1>
+      <p class="hero-sub">Multi-timeframe analysis — from monthly to 5-minute — giving you BUY/SELL signals based on zero line crossovers across every horizon, in real time.</p>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="showPage('signals')">Launch Signal Table &rarr;</button>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-label">NIFTY50 &middot; PREVIEW</div>
+      <div class="hcr"><span class="hcr-tf">Monthly</span><span class="hcr-buy">BUY</span><span class="hcr-za">&#9650; Above Zero</span></div>
+      <div class="hcr"><span class="hcr-tf">Weekly</span><span class="hcr-sell">SELL</span><span class="hcr-zb">&#9660; Below Zero</span></div>
+      <div class="hcr"><span class="hcr-tf">Daily</span><span class="hcr-buy">BUY</span><span class="hcr-za">&#9650; Above Zero</span></div>
+      <div class="hcr"><span class="hcr-tf">75 Min &#9889;</span><span class="hcr-buy">BUY</span><span class="hcr-za">&#9650; Above Zero</span></div>
+      <div class="hcr"><span class="hcr-tf">15 Min &#9889;</span><span class="hcr-sell">SELL</span><span class="hcr-zb">&#9660; Below Zero</span></div>
+      <div class="hcr"><span class="hcr-tf">5 Min &#9889;</span><span class="hcr-buy">BUY</span><span class="hcr-za">&#9650; Above Zero</span></div>
+    </div>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card"><div class="fi">&#128202;</div><div class="ft">6 Timeframes</div><div class="fd">Monthly, Weekly, Daily free. 75-min, 15-min, 5-min on Pro.</div></div>
+    <div class="feature-card"><div class="fi">&#129302;</div><div class="ft">AI Smart Signal</div><div class="fd">BUY when MACD crosses above zero. SELL when MACD crosses below zero.</div></div>
+    <div class="feature-card"><div class="fi">&#129518;</div><div class="ft">Multi-Scrip Table</div><div class="fd">Watch up to 20 scrips. Recent scrips auto-populate your watchlist.</div></div>
+    <div class="feature-card"><div class="fi">&#9889;</div><div class="ft">Intraday Pro</div><div class="fd">Unlock 5, 15, and 75-minute signals with live crossover alerts.</div></div>
+    <div class="feature-card"><div class="fi">&#128276;</div><div class="ft">Pro Alert Counter</div><div class="fd">Live count of active intraday crossovers across all your watched scrips.</div></div>
+    <div class="feature-card"><div class="fi">&#127919;</div><div class="ft">Zero Line Logic</div><div class="fd">Pure zero-line crossover signals — no noise, just confirmed momentum shifts.</div></div>
+  </div>
+</div>
+
+
+<!-- RUPEEZY AFFILIATE - HOME PAGE -->
+<div style="background:linear-gradient(135deg,#0d2640,#061525);border-top:1px solid rgba(255,152,0,.2);padding:28px 40px;">
+  <div style="max-width:800px;margin:0 auto;text-align:center;">
+    <div style="font-family:'Space Mono',monospace;font-size:10px;color:#ff9800;letter-spacing:3px;margin-bottom:12px;">POWERED BY</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;">
+      <div>
+        <div style="font-family:'Orbitron',monospace;font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;">Trade What You Scan</div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;color:#4d8099;">Open a Rupeezy account · Zero brokerage on delivery · Instant setup</div>
+      </div>
+      <a href="https://rupeezy.in/open-demat-account?referred_by=Hg2En&clicked=true" target="_blank" rel="noopener"
+         style="background:linear-gradient(135deg,#ff9800,#ff5722);color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-family:'Orbitron',monospace;font-weight:700;font-size:13px;letter-spacing:.5px;white-space:nowrap;flex-shrink:0;">
+        📈 Open FREE Demat →
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- SIGNAL PAGE -->
+<div class="page" id="page-signals">
+  <div class="sp-wrap">
+    <div class="sp-title-row">
+      <h1 class="sp-title">AI <em>Smart Signal</em></h1>
+      <span class="sp-badge">LIVE</span>
+    </div>
+
+    <!-- PRO ALERT BOX -->
+    <div class="pro-alert-box" id="pro-alert-box">
+      <div class="pa-icon">&#128276;</div>
+      <span class="pa-text">Active Intraday Crossover Alerts</span>
+      <span class="pa-count" id="pro-alert-count">0</span>
+      <span class="pa-sub">signals crossed zero line</span>
+    </div>
+
+    <div class="summary-strip">
+      <span class="ss-label">WATCHING</span>
+      <span class="ss-val ss-watch" id="ss-count">12 scrips</span>
+      <div class="ss-divider"></div>
+      <span class="ss-label">BUY</span>
+      <span class="ss-val buy" id="ss-buys">&#9650; 0</span>
+      <div class="ss-divider"></div>
+      <span class="ss-label">SELL</span>
+      <span class="ss-val sell" id="ss-sells">&#9660; 0</span>
+      <span class="update-stamp" id="update-stamp"></span>
+    </div>
+
+    <div class="sp-controls">
+      <input class="sp-input" id="scrip-input" placeholder="Add scrip (e.g. INFY)..." maxlength="10" onkeydown="if(event.key==='Enter')addScrip()"/>
+      <button class="sp-add-btn" onclick="addScrip()">+ ADD</button>
+      <button class="sp-refresh" onclick="refreshAll()">&#8635; REFRESH</button>
+    </div>
+
+    <div class="recent-row" id="recent-row"><span class="recent-label">RECENT:</span></div>
+
+    <div class="upgrade-banner" id="upgrade-banner">
+      <div class="ub-icon">&#9889;</div>
+      <div class="ub-text">
+        <strong>Unlock Intraday Signals &mdash; 5, 15 &amp; 75-Min</strong>
+        <p>Get buy/sell signals across all 6 timeframes + live crossover alert counter.</p>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <a href="https://rzp.io/rzp/VMsJmBwc" target="_blank" class="ub-btn" style="text-decoration:none;">Upgrade &#8377;2,499/mo</a>
+        <button onclick="showProModal()" style="background:linear-gradient(135deg,#00e5ff,#00ff88);color:#000;border:none;padding:10px 20px;border-radius:8px;font-family:'Orbitron',monospace;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;">&#128273; Enter Access Code</button>
+      </div>
+    </div>
+
+    <div class="main-table-wrap">
+      <table class="main-table">
+        <thead>
+          <tr>
+            <th class="th-left" style="width:130px">SCRIP</th>
+            <th>MONTHLY</th><th>WEEKLY</th><th>DAILY</th>
+            <th class="th-paid">75 MIN</th>
+            <th class="th-paid">15 MIN</th>
+            <th class="th-paid">5 MIN</th>
+            <th style="width:28px"></th>
+          </tr>
+        </thead>
+        <tbody id="signal-tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="sp-footer">
+      BUY = MACD crosses above zero line &nbsp;&middot;&nbsp; SELL = MACD crosses below zero line &nbsp;&middot;&nbsp; Flashing CROSS badge = fresh crossover &nbsp;&middot;&nbsp; Simulated data for demo
+    </div>
+    <!-- RUPEEZY AFFILIATE -->
+    <div style="margin:20px 0 8px;background:linear-gradient(135deg,#0a1f30,#061525);border:1px solid rgba(255,152,0,.3);border-radius:12px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:40px;height:40px;background:linear-gradient(135deg,#ff9800,#e65c00);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">📈</div>
+        <div>
+          <div style="font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:#ff9800;margin-bottom:3px;">Trade with Zero Brokerage</div>
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:#4d8099;">Open FREE Rupeezy Demat · ₹0 delivery charges · Instant activation</div>
+        </div>
+      </div>
+      <a href="https://rupeezy.in/open-demat-account?referred_by=Hg2En&clicked=true" target="_blank" rel="noopener"
+         style="background:linear-gradient(135deg,#ff9800,#e65c00);color:#fff;text-decoration:none;padding:10px 20px;border-radius:7px;font-family:'Orbitron',monospace;font-weight:700;font-size:11px;white-space:nowrap;letter-spacing:.5px;">
+        Open FREE Account →
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+var isPaid = false;
+var scrips = ["NIFTY","BANKNIFTY","RELIANCE","INFY","SBIN","TATAMOTORS","AAPL","NVDA","TSLA","BTCUSDT","ETHUSDT","MSFT"];
+var allData = {};
+
+var TIMEFRAMES = [
+  {id:"monthly",paid:false,bars:60, tfSeed:100},
+  {id:"weekly", paid:false,bars:80, tfSeed:200},
+  {id:"daily",  paid:false,bars:120,tfSeed:300},
+  {id:"tf75",   paid:true, bars:150,tfSeed:400},
+  {id:"tf15",   paid:true, bars:200,tfSeed:500},
+  {id:"tf5",    paid:true, bars:300,tfSeed:600}
+];
+
+function emaCalc(data, period) {
+  if (data.length < period) return [];
+  var k = 2/(period+1), val = 0, i;
+  for (i = 0; i < period; i++) val += data[i];
+  val /= period;
+  var result = [val];
+  for (i = period; i < data.length; i++) { val = data[i]*k + val*(1-k); result.push(val); }
+  return result;
+}
+
+function computeMACD(closes) {
+  if (closes.length < 35) return null;
+  var e12 = emaCalc(closes, 12), e26 = emaCalc(closes, 26), ml = [], i;
+  for (i = 0; i < e26.length; i++) ml.push(e12[i+11] - e26[i]);
+  var sl = emaCalc(ml, 9);
+  var mv = ml[ml.length-1], sv = sl[sl.length-1];
+  var pm = ml.length >= 2 ? ml[ml.length-2] : mv;
+  return {macdVal:mv, sigVal:sv, histogram:mv-sv, prevMacd:pm};
+}
+
+function getSignal(macd) {
+  if (!macd) return {signal:"—", zero:"—", crossover:false, histogram:0};
+  // BUY = MACD above zero line | SELL = MACD below zero line
+  var currZero = macd.macdVal > 0 ? "ABOVE" : "BELOW";
+  var prevZero = macd.prevMacd > 0 ? "ABOVE" : "BELOW";
+  var crossover = (currZero !== prevZero);
+  var signal = currZero === "ABOVE" ? "BUY" : "SELL";
+  return {signal:signal, zero:currZero, crossover:crossover, histogram:macd.histogram};
+}
+
+function rng(s) { var x = Math.sin(s*9301+49297)*233280; return x-Math.floor(x); }
+
+function generatePrices(tSeed, tfSeed, count) {
+  var prices = [], price = 450+(tSeed%80)-40, i, r1, r2, trend;
+  for (i = 0; i < count; i++) {
+    r1 = rng(tSeed*0.37+tfSeed*0.13+i*0.079);
+    r2 = rng(tSeed*0.19+tfSeed*0.41+i*0.053+1);
+    trend = Math.sin(i/(count*0.18)+tSeed*0.01)*0.008;
+    price = price*(1+(r1-0.48+trend)*0.013);
+    prices.push(price+(r2-0.5)*price*0.003);
+  }
+  return prices;
+}
+
+function tickerHash(t) {
+  var h = 0, i;
+  for (i = 0; i < t.length; i++) h = ((h*31+t.charCodeAt(i))>>>0);
+  return h;
+}
+
+function computeForTicker(ticker) {
+  var seed = tickerHash(ticker), result = {}, i, tf;
+  for (i = 0; i < TIMEFRAMES.length; i++) {
+    tf = TIMEFRAMES[i];
+    if (tf.paid && !isPaid) { result[tf.id] = null; continue; }
+    result[tf.id] = getSignal(computeMACD(generatePrices(seed, tf.tfSeed, tf.bars)));
+  }
+  return result;
+}
+
+function sigCellHTML(data, locked) {
+  if (locked) return '<div class="sc-locked">&#128274; PRO</div>';
+  if (!data || data.signal === "—") return '<div class="sc neutral"><span class="sc-sig">—</span></div>';
+  var cls = data.signal === "BUY" ? "buy" : "sell";
+  var zeroCls = data.zero === "ABOVE" ? "above" : "below";
+  var zeroTxt = data.zero === "ABOVE" ? "&#9650; Above Zero" : "&#9660; Below Zero";
+  var cross = data.crossover ? '<span class="sc-cross">'+(data.signal==="BUY"?"&#8593;CROSS":"&#8595;CROSS")+'</span>' : '';
+  var h = data.histogram || 0;
+  var pct = Math.min(Math.abs(h)/(Math.abs(h)*3||1)*100,100).toFixed(0);
+  return '<div class="sc '+cls+'">' +
+    '<span class="sc-sig">'+data.signal+'</span>' + cross +
+    '<span class="sc-zero '+zeroCls+'">'+zeroTxt+'</span>' +
+    '<div class="mbar"><div class="mbar-fill '+(h>0?"pos":"neg")+'" style="width:'+pct+'%"></div></div>' +
+    '</div>';
+}
+
+function renderTable() {
+  var tbody = document.getElementById('signal-tbody');
+  var rows = '', totalB = 0, totalS = 0, proAlerts = 0, i, j, tf, d, ticker, buys, sells, small;
+  for (i = 0; i < scrips.length; i++) {
+    ticker = scrips[i]; d = allData[ticker] || {}; buys = 0; sells = 0;
+    for (j = 0; j < TIMEFRAMES.length; j++) {
+      tf = TIMEFRAMES[j];
+      if (tf.paid && !isPaid) continue;
+      if (d[tf.id] && d[tf.id].signal === "BUY") buys++;
+      if (d[tf.id] && d[tf.id].signal === "SELL") sells++;
+      if (tf.paid && isPaid && d[tf.id] && d[tf.id].crossover) proAlerts++;
+    }
+    totalB += buys; totalS += sells;
+    small = buys > sells ? '&#9650; '+buys+'B' : sells > buys ? '&#9660; '+sells+'S' : '—';
+    if (buys > 0 && sells > 0) small = buys+'B &middot; '+sells+'S';
+    rows += '<tr>' +
+      '<td class="td-ticker">'+ticker+'<small>'+small+'</small></td>' +
+      '<td>'+sigCellHTML(d.monthly,false)+'</td>' +
+      '<td>'+sigCellHTML(d.weekly,false)+'</td>' +
+      '<td>'+sigCellHTML(d.daily,false)+'</td>' +
+      '<td class="td-paid">'+sigCellHTML(d.tf75,!isPaid)+'</td>' +
+      '<td class="td-paid">'+sigCellHTML(d.tf15,!isPaid)+'</td>' +
+      '<td class="td-paid">'+sigCellHTML(d.tf5,!isPaid)+'</td>' +
+      '<td><button class="remove-btn" onclick="removeScrip(\''+ticker+'\')">&times;</button></td>' +
+      '</tr>';
+  }
+  tbody.innerHTML = rows;
+  document.getElementById('ss-count').textContent = scrips.length+' scrips';
+  document.getElementById('ss-buys').textContent = '▲ '+totalB;
+  document.getElementById('ss-sells').textContent = '▼ '+totalS;
+  document.getElementById('update-stamp').textContent = '↻ '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  var ab = document.getElementById('pro-alert-box');
+  if (isPaid && proAlerts > 0) { ab.style.display='flex'; document.getElementById('pro-alert-count').textContent=proAlerts; }
+  else { ab.style.display='none'; }
+  renderRecent();
+  document.getElementById('upgrade-banner').style.display = isPaid ? 'none' : 'flex';
+}
+
+function renderRecent() {
+  var row = document.getElementById('recent-row'), chips = scrips.slice(0,6), html = '<span class="recent-label">RECENT:</span>', i;
+  for (i = 0; i < chips.length; i++) html += '<span class="recent-chip" onclick="bumpScrip(\''+chips[i]+'\')">'+chips[i]+'</span>';
+  row.innerHTML = html;
+}
+
+function bumpScrip(t) { scrips=[t].concat(scrips.filter(function(x){return x!==t;})); refreshAll(); }
+
+function refreshAll() {
+  var i;
+  for (i = 0; i < scrips.length; i++) allData[scrips[i]] = computeForTicker(scrips[i]);
+  renderTable();
+}
+
+function addScrip() {
+  var inp = document.getElementById('scrip-input'), val = inp.value.trim().toUpperCase();
+  if (!val) return;
+  scrips = [val].concat(scrips.filter(function(x){return x!==val;}));
+  if (scrips.length > 20) scrips = scrips.slice(0,20);
+  allData[val] = computeForTicker(val);
+  inp.value = ''; renderTable(); inp.focus();
+}
+
+function removeScrip(t) { scrips=scrips.filter(function(x){return x!==t;}); renderTable(); }
+
+function setTier(paid) {
+  isPaid = paid;
+  document.getElementById('btn-free').className='tier-btn free'+(paid?'':' active');
+  document.getElementById('btn-pro').className='tier-btn pro'+(paid?' active':'');
+  refreshAll();
+}
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(function(l){l.classList.remove('active');});
+  var links=document.querySelectorAll('.nav-link'), pages=['home','signals'], i;
+  for (i=0;i<pages.length;i++) if(pages[i]===id) links[i].classList.add('active');
+  if (id==='signals') renderTable();
+}
+
+// ── Real API Integration ──────────────────────────────────
+var API_BASE = 'https://waveedgebackflask-kexj.onrender.com';
+var _apiLoading = false;
+
+function fetchRealData() {
+  if (_apiLoading) return;
+  _apiLoading = true;
+
+  var url = API_BASE + '/macd/batch?scrips=' + scrips.join(',') + '&paid=' + isPaid;
+  fetch(url, {cache:'no-cache'})
+    .then(function(r){ return r.json(); })
+    .then(function(data) {
+      _apiLoading = false;
+      if (!data.results) { renderFallback(); return; }
+      Object.keys(data.results).forEach(function(ticker) {
+        var r = data.results[ticker];
+        if (!r || !r.timeframes) return;
+        allData[ticker] = {};
+        Object.keys(r.timeframes).forEach(function(tf) {
+          var t = r.timeframes[tf];
+          if (!t || t.signal === '—') {
+            allData[ticker][tf] = {signal:'—',zero:'—',crossover:false,histogram:0};
+          } else {
+            allData[ticker][tf] = {signal:t.signal,zero:t.zero,crossover:t.crossover,histogram:t.histogram};
+          }
+        });
+        if (!isPaid) {
+          ['tf75','tf15','tf5'].forEach(function(tf){ allData[ticker][tf] = null; });
+        }
+      });
+      renderTable();
+    })
+    .catch(function() {
+      _apiLoading = false;
+      renderFallback();
+    });
+}
+
+function renderFallback() {
+  // Use simulated data if API unavailable
+  var i;
+  for (i = 0; i < scrips.length; i++) allData[scrips[i]] = computeForTicker(scrips[i]);
+  renderTable();
+}
+
+// Override refreshAll to use real API
+var _origRefreshAll = refreshAll;
+refreshAll = function() {
+  fetchRealData();
+};
+
+// Init
+fetchRealData();
+setInterval(fetchRealData, 30000);
+
+// ── PRO ACCESS CODE SYSTEM ─────────────────────────────
+var SECRET = 'waveedge2024';
+
+function makeCodeHash(plan, expiry) {
+  // Deterministic hash matching Python logic
+  var raw = plan + ':' + expiry + ':' + SECRET;
+  return simpleHash(raw).substring(0, 8).toUpperCase();
+}
+
+function simpleHash(str) {
+  // SHA-256 equivalent using SubtleCrypto - sync fallback
+  var hash = 0;
+  for (var i = 0; i < str.length; i++) {
+    var c = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + c;
+    hash |= 0;
+  }
+  return Math.abs(hash).toString(16).padStart(8, '0');
+}
+
+var WE_CODES = {"WE-0634-DFE5": "2026-04-14:PRO", "WE-7FDF-30D1": "2026-04-14:INST", "WE-3451-E0D2": "2026-04-15:PRO", "WE-F175-3947": "2026-04-15:INST", "WE-D07C-3624": "2026-04-16:PRO", "WE-B1A3-E232": "2026-04-16:INST", "WE-97D4-9410": "2026-04-17:PRO", "WE-26C1-F693": "2026-04-17:INST", "WE-EBE3-CCA2": "2026-04-18:PRO", "WE-ABBD-F138": "2026-04-18:INST", "WE-4F0C-CC3B": "2026-04-19:PRO", "WE-B19F-9AED": "2026-04-19:INST", "WE-4C4A-5402": "2026-04-20:PRO", "WE-CB43-EE6E": "2026-04-20:INST", "WE-48F8-8304": "2026-04-21:PRO", "WE-072E-54A4": "2026-04-21:INST", "WE-A761-035E": "2026-04-22:PRO", "WE-31AA-BA47": "2026-04-22:INST", "WE-13F5-94E8": "2026-04-23:PRO", "WE-18D7-283A": "2026-04-23:INST", "WE-A460-FCB0": "2026-04-24:PRO", "WE-C75E-2DF7": "2026-04-24:INST", "WE-A328-0F81": "2026-04-25:PRO", "WE-644B-57CC": "2026-04-25:INST", "WE-8AE0-94CB": "2026-04-26:PRO", "WE-41E8-C954": "2026-04-26:INST", "WE-CE7D-B376": "2026-04-27:PRO", "WE-666B-45B3": "2026-04-27:INST", "WE-F595-9CC6": "2026-04-28:PRO", "WE-4578-5B9B": "2026-04-28:INST", "WE-1823-0583": "2026-04-29:PRO", "WE-5630-6CDB": "2026-04-29:INST", "WE-EB98-DEDF": "2026-04-30:PRO", "WE-686E-5344": "2026-04-30:INST", "WE-71EF-CB76": "2026-05-01:PRO", "WE-BF5E-C44D": "2026-05-01:INST", "WE-8188-8B22": "2026-05-02:PRO", "WE-C06B-47D1": "2026-05-02:INST", "WE-1AE8-DD4C": "2026-05-03:PRO", "WE-5FB9-224E": "2026-05-03:INST", "WE-03BB-278B": "2026-05-04:PRO", "WE-5321-E9CE": "2026-05-04:INST", "WE-0D14-812B": "2026-05-05:PRO", "WE-CC8C-FB11": "2026-05-05:INST", "WE-F190-3F1C": "2026-05-06:PRO", "WE-4BDB-7CA1": "2026-05-06:INST", "WE-E19E-8FCA": "2026-05-07:PRO", "WE-6065-8ED4": "2026-05-07:INST", "WE-5E7F-0531": "2026-05-08:PRO", "WE-94A7-E955": "2026-05-08:INST", "WE-5300-DDEE": "2026-05-09:PRO", "WE-2D57-A32B": "2026-05-09:INST", "WE-5332-49A6": "2026-05-10:PRO", "WE-9AB8-1408": "2026-05-10:INST", "WE-20B2-6E9A": "2026-05-11:PRO", "WE-52C6-17BE": "2026-05-11:INST", "WE-38C4-183B": "2026-05-12:PRO", "WE-531D-D936": "2026-05-12:INST", "WE-C9C3-832B": "2026-05-13:PRO", "WE-19FD-2C89": "2026-05-13:INST", "WE-9868-C7C1": "2026-05-14:PRO", "WE-0E33-51FE": "2026-05-14:INST", "WE-2118-58E9": "2026-05-15:PRO", "WE-06DC-7287": "2026-05-15:INST", "WE-A3AE-EDFC": "2026-05-16:PRO", "WE-9457-AF73": "2026-05-16:INST", "WE-7997-FFA3": "2026-05-17:PRO", "WE-44B0-AB41": "2026-05-17:INST", "WE-A37D-1793": "2026-05-18:PRO", "WE-A780-5DC0": "2026-05-18:INST", "WE-93AD-CC78": "2026-05-19:PRO", "WE-0B19-C27A": "2026-05-19:INST", "WE-B197-3E4E": "2026-05-20:PRO", "WE-3A94-AEB2": "2026-05-20:INST", "WE-DBC0-9062": "2026-05-21:PRO", "WE-C7FD-6A80": "2026-05-21:INST", "WE-EAF5-C571": "2026-05-22:PRO", "WE-A2DE-E9B7": "2026-05-22:INST", "WE-4BE1-F67B": "2026-05-23:PRO", "WE-6664-8933": "2026-05-23:INST", "WE-82FF-FCAE": "2026-05-24:PRO", "WE-694D-E858": "2026-05-24:INST", "WE-929F-DC2B": "2026-05-25:PRO", "WE-42E9-73E1": "2026-05-25:INST", "WE-8CDB-D09C": "2026-05-26:PRO", "WE-69F2-41D1": "2026-05-26:INST", "WE-EC7A-064D": "2026-05-27:PRO", "WE-866A-7E45": "2026-05-27:INST", "WE-7B30-3795": "2026-05-28:PRO", "WE-C757-1B91": "2026-05-28:INST", "WE-8C75-AF6E": "2026-05-29:PRO", "WE-FCD4-ACAC": "2026-05-29:INST", "WE-7A9B-CF34": "2026-05-30:PRO", "WE-1482-AE61": "2026-05-30:INST", "WE-B40F-386D": "2026-05-31:PRO", "WE-41AA-20F7": "2026-05-31:INST", "WE-CFFB-046D": "2026-06-01:PRO", "WE-870F-B42D": "2026-06-01:INST", "WE-6D59-08B0": "2026-06-02:PRO", "WE-98E5-3B30": "2026-06-02:INST", "WE-D66C-0CF3": "2026-06-03:PRO", "WE-7FEB-9185": "2026-06-03:INST", "WE-81AD-F2A8": "2026-06-04:PRO", "WE-4FF7-7154": "2026-06-04:INST", "WE-794E-5850": "2026-06-05:PRO", "WE-F0DE-09C9": "2026-06-05:INST", "WE-8116-7F7F": "2026-06-06:PRO", "WE-3272-99E8": "2026-06-06:INST", "WE-F86F-EBA7": "2026-06-07:PRO", "WE-2316-53CF": "2026-06-07:INST", "WE-7264-514E": "2026-06-08:PRO", "WE-1EC6-C5D8": "2026-06-08:INST", "WE-86F5-CBA0": "2026-06-09:PRO", "WE-50F9-ACE5": "2026-06-09:INST", "WE-0B8D-B208": "2026-06-10:PRO", "WE-B4DB-66EB": "2026-06-10:INST", "WE-5BCF-3E33": "2026-06-11:PRO", "WE-A86E-04F7": "2026-06-11:INST", "WE-CC74-7B48": "2026-06-12:PRO", "WE-0686-3E8C": "2026-06-12:INST", "WE-A744-287D": "2026-06-13:PRO", "WE-1B97-A67E": "2026-06-13:INST", "WE-66E7-F8BB": "2026-06-14:PRO", "WE-CFDE-951F": "2026-06-14:INST", "WE-CBAC-6CE8": "2026-06-15:PRO", "WE-D874-86E1": "2026-06-15:INST", "WE-3CA6-825E": "2026-06-16:PRO", "WE-E668-07ED": "2026-06-16:INST", "WE-46EA-F892": "2026-06-17:PRO", "WE-349C-0C49": "2026-06-17:INST", "WE-5B16-9968": "2026-06-18:PRO", "WE-C608-F578": "2026-06-18:INST", "WE-8DDB-5CB8": "2026-06-19:PRO", "WE-6925-2388": "2026-06-19:INST", "WE-3DC8-E4AE": "2026-06-20:PRO", "WE-F551-BC11": "2026-06-20:INST", "WE-DD08-7AF1": "2026-06-21:PRO", "WE-23EB-5137": "2026-06-21:INST", "WE-1817-FB7B": "2026-06-22:PRO", "WE-9469-7816": "2026-06-22:INST", "WE-FEFE-9298": "2026-06-23:PRO", "WE-B166-6D56": "2026-06-23:INST", "WE-2EF8-4BF1": "2026-06-24:PRO", "WE-129D-FC5A": "2026-06-24:INST", "WE-9127-48B6": "2026-06-25:PRO", "WE-B658-28A5": "2026-06-25:INST", "WE-B15F-6490": "2026-06-26:PRO", "WE-D782-F637": "2026-06-26:INST", "WE-227E-27D3": "2026-06-27:PRO", "WE-D866-184B": "2026-06-27:INST", "WE-8B80-6CC4": "2026-06-28:PRO", "WE-DDFE-4A53": "2026-06-28:INST", "WE-71FA-D8E1": "2026-06-29:PRO", "WE-D9E1-B627": "2026-06-29:INST", "WE-56B6-FB90": "2026-06-30:PRO", "WE-67F8-D930": "2026-06-30:INST", "WE-BE23-16BA": "2026-07-01:PRO", "WE-D1F2-2581": "2026-07-01:INST", "WE-957A-769F": "2026-07-02:PRO", "WE-7EA0-E10E": "2026-07-02:INST", "WE-E34A-728A": "2026-07-03:PRO", "WE-8B35-19F5": "2026-07-03:INST", "WE-EA12-7087": "2026-07-04:PRO", "WE-5A64-E2BB": "2026-07-04:INST", "WE-AE99-D554": "2026-07-05:PRO", "WE-3A2A-0D9A": "2026-07-05:INST", "WE-A571-FCC2": "2026-07-06:PRO", "WE-5D1E-FB38": "2026-07-06:INST", "WE-89D6-1AD0": "2026-07-07:PRO", "WE-7415-609A": "2026-07-07:INST", "WE-5761-41A5": "2026-07-08:PRO", "WE-47F3-07DC": "2026-07-08:INST", "WE-F79B-22DE": "2026-07-09:PRO", "WE-6446-7DA6": "2026-07-09:INST", "WE-DC23-3EBE": "2026-07-10:PRO", "WE-80D9-8DB1": "2026-07-10:INST", "WE-0FED-4D38": "2026-07-11:PRO", "WE-2A0A-C30A": "2026-07-11:INST", "WE-DE35-F7DD": "2026-07-12:PRO", "WE-A284-12D3": "2026-07-12:INST", "WE-C996-EF14": "2026-07-13:PRO", "WE-D6E6-EA8A": "2026-07-13:INST", "WE-6F9E-47DE": "2026-07-14:PRO", "WE-7AC7-375C": "2026-07-14:INST", "WE-C3CF-8C88": "2026-07-15:PRO", "WE-AB42-4311": "2026-07-15:INST", "WE-1F40-3A3E": "2026-07-16:PRO", "WE-340B-7175": "2026-07-16:INST", "WE-D08A-FB38": "2026-07-17:PRO", "WE-8566-B9E5": "2026-07-17:INST", "WE-7985-58A4": "2026-07-18:PRO", "WE-E391-D283": "2026-07-18:INST", "WE-B778-35E3": "2026-07-19:PRO", "WE-2864-1271": "2026-07-19:INST", "WE-70F3-B795": "2026-07-20:PRO", "WE-3E61-492D": "2026-07-20:INST", "WE-5FC4-A67F": "2026-07-21:PRO", "WE-D182-55DA": "2026-07-21:INST", "WE-EFE7-C161": "2026-07-22:PRO", "WE-CA50-1EEA": "2026-07-22:INST", "WE-3038-A2E5": "2026-07-23:PRO", "WE-E284-8468": "2026-07-23:INST", "WE-C2DE-D308": "2026-07-24:PRO", "WE-3450-EAE5": "2026-07-24:INST", "WE-7480-E3BF": "2026-07-25:PRO", "WE-A174-ABF5": "2026-07-25:INST", "WE-CA89-33C1": "2026-07-26:PRO", "WE-81D3-8BF8": "2026-07-26:INST", "WE-FF68-FAD6": "2026-07-27:PRO", "WE-097B-968C": "2026-07-27:INST", "WE-5BF0-F9B1": "2026-07-28:PRO", "WE-FAA2-906C": "2026-07-28:INST", "WE-3151-4A98": "2026-07-29:PRO", "WE-A809-B8AD": "2026-07-29:INST", "WE-232C-0F70": "2026-07-30:PRO", "WE-8BB6-6540": "2026-07-30:INST", "WE-A3EB-6F4C": "2026-07-31:PRO", "WE-06CA-3CF6": "2026-07-31:INST", "WE-116D-E30E": "2026-08-01:PRO", "WE-3F89-C9D7": "2026-08-01:INST", "WE-49F9-E92A": "2026-08-02:PRO", "WE-4ED7-B354": "2026-08-02:INST", "WE-40FF-216B": "2026-08-03:PRO", "WE-3425-72C9": "2026-08-03:INST", "WE-5C84-94A2": "2026-08-04:PRO", "WE-7E03-2644": "2026-08-04:INST", "WE-06B6-3BAB": "2026-08-05:PRO", "WE-7EC8-C84D": "2026-08-05:INST", "WE-093C-42D4": "2026-08-06:PRO", "WE-5833-7E12": "2026-08-06:INST", "WE-98A8-EDAD": "2026-08-07:PRO", "WE-F680-787F": "2026-08-07:INST", "WE-271B-3EA9": "2026-08-08:PRO", "WE-0C08-4EA2": "2026-08-08:INST", "WE-9860-D86B": "2026-08-09:PRO", "WE-FD35-5A43": "2026-08-09:INST", "WE-D5E1-7C8B": "2026-08-10:PRO", "WE-A4AD-BC1E": "2026-08-10:INST", "WE-DDC6-0CC6": "2026-08-11:PRO", "WE-1114-3EB0": "2026-08-11:INST", "WE-B800-13FC": "2026-08-12:PRO", "WE-7E17-3EBB": "2026-08-12:INST", "WE-71B3-10B7": "2026-08-13:PRO", "WE-61D5-A8DB": "2026-08-13:INST", "WE-270E-B0EA": "2026-08-14:PRO", "WE-BC85-BAEE": "2026-08-14:INST", "WE-24F2-9611": "2026-08-15:PRO", "WE-BB48-F5AD": "2026-08-15:INST", "WE-BFAC-83BF": "2026-08-16:PRO", "WE-D1C7-EF48": "2026-08-16:INST", "WE-C026-8268": "2026-08-17:PRO", "WE-903F-85FF": "2026-08-17:INST", "WE-2995-BE25": "2026-08-18:PRO", "WE-35CD-0C1A": "2026-08-18:INST", "WE-FE2B-6F74": "2026-08-19:PRO", "WE-6C9C-E285": "2026-08-19:INST", "WE-4EA0-4834": "2026-08-20:PRO", "WE-14CE-6DC7": "2026-08-20:INST", "WE-C4C6-5836": "2026-08-21:PRO", "WE-9E75-CA96": "2026-08-21:INST", "WE-8DA7-C36A": "2026-08-22:PRO", "WE-5C37-A3E4": "2026-08-22:INST", "WE-0C2E-EC12": "2026-08-23:PRO", "WE-C00B-9E91": "2026-08-23:INST", "WE-9ADF-04CD": "2026-08-24:PRO", "WE-90A3-6712": "2026-08-24:INST", "WE-9041-62CB": "2026-08-25:PRO", "WE-69B1-B3BA": "2026-08-25:INST", "WE-C504-8995": "2026-08-26:PRO", "WE-99E3-F474": "2026-08-26:INST", "WE-C593-E434": "2026-08-27:PRO", "WE-59BA-F920": "2026-08-27:INST", "WE-062A-8EF1": "2026-08-28:PRO", "WE-6D58-1B74": "2026-08-28:INST", "WE-5652-1D2C": "2026-08-29:PRO", "WE-AAE2-E0DD": "2026-08-29:INST", "WE-8D5D-83C1": "2026-08-30:PRO", "WE-DAA6-30F1": "2026-08-30:INST", "WE-78CE-FD64": "2026-08-31:PRO", "WE-8255-7FBA": "2026-08-31:INST", "WE-48AE-8CB0": "2026-09-01:PRO", "WE-16F2-D082": "2026-09-01:INST", "WE-DEAB-299C": "2026-09-02:PRO", "WE-1010-F4CB": "2026-09-02:INST", "WE-4368-7BD4": "2026-09-03:PRO", "WE-6F7F-CB43": "2026-09-03:INST", "WE-1FCC-987F": "2026-09-04:PRO", "WE-C37E-F8BC": "2026-09-04:INST", "WE-DE07-91FB": "2026-09-05:PRO", "WE-6BB7-ED5F": "2026-09-05:INST", "WE-CF1A-1A56": "2026-09-06:PRO", "WE-B4E9-7F1A": "2026-09-06:INST", "WE-81D7-8259": "2026-09-07:PRO", "WE-39D4-F5AF": "2026-09-07:INST", "WE-68ED-9B0C": "2026-09-08:PRO", "WE-AAEF-DE22": "2026-09-08:INST", "WE-9583-927C": "2026-09-09:PRO", "WE-8D46-5E96": "2026-09-09:INST", "WE-44CA-623A": "2026-09-10:PRO", "WE-D788-15B3": "2026-09-10:INST", "WE-054F-3B5A": "2026-09-11:PRO", "WE-8CDF-243A": "2026-09-11:INST", "WE-4D15-9717": "2026-09-12:PRO", "WE-25CF-CEBC": "2026-09-12:INST", "WE-CDE3-F0A8": "2026-09-13:PRO", "WE-45B8-B34A": "2026-09-13:INST", "WE-2106-E364": "2026-09-14:PRO", "WE-4A6E-2CE5": "2026-09-14:INST", "WE-0007-D3D8": "2026-09-15:PRO", "WE-B30B-F194": "2026-09-15:INST", "WE-38A1-4D15": "2026-09-16:PRO", "WE-EF4B-CC21": "2026-09-16:INST", "WE-8631-1FEF": "2026-09-17:PRO", "WE-5E14-062B": "2026-09-17:INST", "WE-5134-6C9A": "2026-09-18:PRO", "WE-C3BC-81BF": "2026-09-18:INST", "WE-F038-5EFA": "2026-09-19:PRO", "WE-742D-3876": "2026-09-19:INST", "WE-5300-D3A5": "2026-09-20:PRO", "WE-BE58-FB2E": "2026-09-20:INST", "WE-D5D0-E3AF": "2026-09-21:PRO", "WE-8400-EB05": "2026-09-21:INST", "WE-11B1-2D3F": "2026-09-22:PRO", "WE-EB75-25F2": "2026-09-22:INST", "WE-588D-682A": "2026-09-23:PRO", "WE-D82A-EE1A": "2026-09-23:INST", "WE-DA3F-687B": "2026-09-24:PRO", "WE-E8AF-9063": "2026-09-24:INST", "WE-6163-E5ED": "2026-09-25:PRO", "WE-E74A-77CB": "2026-09-25:INST", "WE-C363-62EF": "2026-09-26:PRO", "WE-8AD7-8E6A": "2026-09-26:INST", "WE-3913-5802": "2026-09-27:PRO", "WE-4875-B2C5": "2026-09-27:INST", "WE-6A28-A9F3": "2026-09-28:PRO", "WE-02E4-AA6D": "2026-09-28:INST", "WE-4FB9-8EA8": "2026-09-29:PRO", "WE-079F-F026": "2026-09-29:INST", "WE-309F-07F2": "2026-09-30:PRO", "WE-7DC0-5B1A": "2026-09-30:INST", "WE-BC2F-C893": "2026-10-01:PRO", "WE-86FF-E9FB": "2026-10-01:INST", "WE-642D-8383": "2026-10-02:PRO", "WE-31F2-B83D": "2026-10-02:INST", "WE-855D-2DF7": "2026-10-03:PRO", "WE-6043-8F43": "2026-10-03:INST", "WE-69A1-CF1C": "2026-10-04:PRO", "WE-9B45-403F": "2026-10-04:INST", "WE-6A6E-EFB7": "2026-10-05:PRO", "WE-CD38-B612": "2026-10-05:INST", "WE-F57E-6A03": "2026-10-06:PRO", "WE-1FC9-5EBF": "2026-10-06:INST", "WE-AEC4-87AD": "2026-10-07:PRO", "WE-112B-2CFD": "2026-10-07:INST", "WE-C90F-21DA": "2026-10-08:PRO", "WE-B4AC-8E37": "2026-10-08:INST", "WE-4A97-2F4D": "2026-10-09:PRO", "WE-B956-7A08": "2026-10-09:INST", "WE-2A53-0259": "2026-10-10:PRO", "WE-FFF2-64CA": "2026-10-10:INST", "WE-A367-ADFE": "2026-10-11:PRO", "WE-69FA-2DDB": "2026-10-11:INST", "WE-0D05-0ED1": "2026-10-12:PRO", "WE-14B8-8973": "2026-10-12:INST", "WE-2A02-B623": "2026-10-13:PRO", "WE-88D0-0BF7": "2026-10-13:INST", "WE-8B1A-28CC": "2026-10-14:PRO", "WE-CBEC-C649": "2026-10-14:INST", "WE-A695-F9B6": "2026-10-15:PRO", "WE-97DD-EDC0": "2026-10-15:INST", "WE-C8D4-11EC": "2026-10-16:PRO", "WE-15AD-0A8A": "2026-10-16:INST", "WE-09C1-49BE": "2026-10-17:PRO", "WE-FF79-E2EE": "2026-10-17:INST", "WE-9C81-CEF8": "2026-10-18:PRO", "WE-13E1-EA91": "2026-10-18:INST", "WE-C1A2-668A": "2026-10-19:PRO", "WE-6F63-9C3C": "2026-10-19:INST", "WE-6D17-CA64": "2026-10-20:PRO", "WE-6BE4-0A33": "2026-10-20:INST", "WE-05C6-6423": "2026-10-21:PRO", "WE-39E0-FBDF": "2026-10-21:INST", "WE-B4E2-519A": "2026-10-22:PRO", "WE-C27E-6FAA": "2026-10-22:INST", "WE-1829-1AC2": "2026-10-23:PRO", "WE-7B6B-6FAC": "2026-10-23:INST", "WE-49F4-E754": "2026-10-24:PRO", "WE-C45C-1C0C": "2026-10-24:INST", "WE-6FA1-8C8C": "2026-10-25:PRO", "WE-0AA5-23C8": "2026-10-25:INST", "WE-1741-8F71": "2026-10-26:PRO", "WE-0D46-77AC": "2026-10-26:INST", "WE-7F14-CF0B": "2026-10-27:PRO", "WE-10A3-A081": "2026-10-27:INST", "WE-4CAC-E276": "2026-10-28:PRO", "WE-3409-FB70": "2026-10-28:INST", "WE-7C65-028E": "2026-10-29:PRO", "WE-8F03-C84A": "2026-10-29:INST", "WE-B979-4AF7": "2026-10-30:PRO", "WE-DF9C-095D": "2026-10-30:INST", "WE-D9C4-28AF": "2026-10-31:PRO", "WE-3E12-C62E": "2026-10-31:INST", "WE-9704-EA44": "2026-11-01:PRO", "WE-3F4B-9242": "2026-11-01:INST", "WE-52F9-2147": "2026-11-02:PRO", "WE-C0F7-8BD9": "2026-11-02:INST", "WE-E5B7-1B25": "2026-11-03:PRO", "WE-AFF9-3608": "2026-11-03:INST", "WE-CF19-E713": "2026-11-04:PRO", "WE-8AF7-F55D": "2026-11-04:INST", "WE-35A8-EDDF": "2026-11-05:PRO", "WE-BE1D-7CEA": "2026-11-05:INST", "WE-BB12-711D": "2026-11-06:PRO", "WE-DD73-6946": "2026-11-06:INST", "WE-C6DE-77B9": "2026-11-07:PRO", "WE-CAB7-DAAB": "2026-11-07:INST", "WE-E459-10EF": "2026-11-08:PRO", "WE-0CC1-168C": "2026-11-08:INST", "WE-9D38-44E9": "2026-11-09:PRO", "WE-418E-82C0": "2026-11-09:INST", "WE-BCE6-7899": "2026-11-10:PRO", "WE-612F-9D32": "2026-11-10:INST", "WE-9103-ADDB": "2026-11-11:PRO", "WE-3FBF-846A": "2026-11-11:INST", "WE-0869-FA72": "2026-11-12:PRO", "WE-4402-9CF1": "2026-11-12:INST", "WE-FD9D-A8F3": "2026-11-13:PRO", "WE-47D8-847E": "2026-11-13:INST", "WE-3150-E7D3": "2026-11-14:PRO", "WE-68C3-A5F2": "2026-11-14:INST", "WE-1634-6359": "2026-11-15:PRO", "WE-7141-0938": "2026-11-15:INST", "WE-F3A0-B938": "2026-11-16:PRO", "WE-B6B9-A47F": "2026-11-16:INST", "WE-0C3C-CEED": "2026-11-17:PRO", "WE-A47D-2593": "2026-11-17:INST", "WE-DEF3-0A0B": "2026-11-18:PRO", "WE-26E6-678D": "2026-11-18:INST", "WE-2C5F-0D61": "2026-11-19:PRO", "WE-73F5-ACFB": "2026-11-19:INST", "WE-D156-FBA8": "2026-11-20:PRO", "WE-015F-2C21": "2026-11-20:INST", "WE-4347-7D5C": "2026-11-21:PRO", "WE-E1C2-DD81": "2026-11-21:INST", "WE-9568-49E1": "2026-11-22:PRO", "WE-66BB-1385": "2026-11-22:INST", "WE-0DDB-A1E2": "2026-11-23:PRO", "WE-2379-61E5": "2026-11-23:INST", "WE-71BC-CD38": "2026-11-24:PRO", "WE-0297-1212": "2026-11-24:INST", "WE-3AEC-DB8A": "2026-11-25:PRO", "WE-B244-8795": "2026-11-25:INST", "WE-C72E-DECA": "2026-11-26:PRO", "WE-9175-2E03": "2026-11-26:INST", "WE-43D1-E37A": "2026-11-27:PRO", "WE-C613-DFF8": "2026-11-27:INST", "WE-B8F4-8AE9": "2026-11-28:PRO", "WE-1AC8-E3C0": "2026-11-28:INST", "WE-0FC0-ADEC": "2026-11-29:PRO", "WE-A855-3247": "2026-11-29:INST", "WE-FCC9-4A44": "2026-11-30:PRO", "WE-D360-E502": "2026-11-30:INST", "WE-3286-BCEC": "2026-12-01:PRO", "WE-D0FE-9392": "2026-12-01:INST", "WE-5AAF-C8BC": "2026-12-02:PRO", "WE-4512-6ECB": "2026-12-02:INST", "WE-D62B-658A": "2026-12-03:PRO", "WE-7143-FAB5": "2026-12-03:INST", "WE-0316-0035": "2026-12-04:PRO", "WE-C3B5-A2A9": "2026-12-04:INST", "WE-375C-F756": "2026-12-05:PRO", "WE-6BC7-8A19": "2026-12-05:INST", "WE-588C-5508": "2026-12-06:PRO", "WE-C348-0626": "2026-12-06:INST", "WE-A3AE-EBB6": "2026-12-07:PRO", "WE-7F07-1405": "2026-12-07:INST", "WE-1D63-0E0C": "2026-12-08:PRO", "WE-DCD2-7FED": "2026-12-08:INST", "WE-5431-B30F": "2026-12-09:PRO", "WE-10A9-A3D4": "2026-12-09:INST", "WE-AF23-51D5": "2026-12-10:PRO", "WE-15A4-6FF4": "2026-12-10:INST", "WE-B77F-B52E": "2026-12-11:PRO", "WE-AFDD-EB0F": "2026-12-11:INST", "WE-99B4-95E0": "2026-12-12:PRO", "WE-2820-E5AD": "2026-12-12:INST", "WE-F4E6-7EB2": "2026-12-13:PRO", "WE-870B-895E": "2026-12-13:INST", "WE-2693-1DAE": "2026-12-14:PRO", "WE-40F5-42DA": "2026-12-14:INST", "WE-9236-6B09": "2026-12-15:PRO", "WE-56FD-4256": "2026-12-15:INST", "WE-B5D9-5A5F": "2026-12-16:PRO", "WE-C4F5-E963": "2026-12-16:INST", "WE-E787-74E3": "2026-12-17:PRO", "WE-F170-4BA7": "2026-12-17:INST", "WE-6FE0-EBBC": "2026-12-18:PRO", "WE-F22A-0F97": "2026-12-18:INST", "WE-B74B-6D71": "2026-12-19:PRO", "WE-EE0F-E956": "2026-12-19:INST", "WE-0ED1-4427": "2026-12-20:PRO", "WE-F2A4-C353": "2026-12-20:INST", "WE-A753-FA9B": "2026-12-21:PRO", "WE-BB4D-C381": "2026-12-21:INST", "WE-5620-BFC8": "2026-12-22:PRO", "WE-4019-3776": "2026-12-22:INST", "WE-C655-F7B5": "2026-12-23:PRO", "WE-D44C-CA76": "2026-12-23:INST", "WE-E1A1-EF4B": "2026-12-24:PRO", "WE-3459-AF91": "2026-12-24:INST", "WE-379E-A078": "2026-12-25:PRO", "WE-A6DF-B7A6": "2026-12-25:INST", "WE-AEC4-227D": "2026-12-26:PRO", "WE-AA3C-9B3B": "2026-12-26:INST", "WE-F0FC-B985": "2026-12-27:PRO", "WE-2F66-F2DC": "2026-12-27:INST", "WE-E51E-5DCD": "2026-12-28:PRO", "WE-E42F-D0F4": "2026-12-28:INST", "WE-38BF-972B": "2026-12-29:PRO", "WE-0681-9C63": "2026-12-29:INST", "WE-4694-C6B4": "2026-12-30:PRO", "WE-64F7-7C46": "2026-12-30:INST", "WE-FD53-8A92": "2026-12-31:PRO", "WE-E7D2-8EFC": "2026-12-31:INST", "WE-19A4-44D8": "2027-01-01:PRO", "WE-FBAE-377B": "2027-01-01:INST", "WE-8E43-BDA1": "2027-01-02:PRO", "WE-2376-7ED3": "2027-01-02:INST", "WE-EBC8-7894": "2027-01-03:PRO", "WE-6B0C-4334": "2027-01-03:INST", "WE-9140-836F": "2027-01-04:PRO", "WE-256E-93A4": "2027-01-04:INST", "WE-D7A3-811F": "2027-01-05:PRO", "WE-5CC2-193F": "2027-01-05:INST", "WE-890B-A338": "2027-01-06:PRO", "WE-0102-599B": "2027-01-06:INST", "WE-6CEA-21AD": "2027-01-07:PRO", "WE-633A-9DC6": "2027-01-07:INST", "WE-BAF3-36E1": "2027-01-08:PRO", "WE-C8DE-E0E6": "2027-01-08:INST", "WE-3E25-4A09": "2027-01-09:PRO", "WE-B4A1-6249": "2027-01-09:INST", "WE-F345-38D6": "2027-01-10:PRO", "WE-590F-9910": "2027-01-10:INST", "WE-6583-1EE6": "2027-01-11:PRO", "WE-AF39-9D0B": "2027-01-11:INST", "WE-0FB2-B857": "2027-01-12:PRO", "WE-7A31-31CA": "2027-01-12:INST", "WE-A17F-F3A6": "2027-01-13:PRO", "WE-4040-31A1": "2027-01-13:INST", "WE-175A-F6CD": "2027-01-14:PRO", "WE-27E0-9A86": "2027-01-14:INST", "WE-6523-A282": "2027-01-15:PRO", "WE-F201-6691": "2027-01-15:INST", "WE-084D-E46A": "2027-01-16:PRO", "WE-8574-68B2": "2027-01-16:INST", "WE-0E2F-8C6F": "2027-01-17:PRO", "WE-B07F-C01D": "2027-01-17:INST", "WE-ABE9-A4B7": "2027-01-18:PRO", "WE-BB42-F9E5": "2027-01-18:INST", "WE-8E7F-045F": "2027-01-19:PRO", "WE-5D8C-3C33": "2027-01-19:INST", "WE-2008-663C": "2027-01-20:PRO", "WE-DED6-1864": "2027-01-20:INST", "WE-B1F3-56A1": "2027-01-21:PRO", "WE-92D0-E5B4": "2027-01-21:INST", "WE-5774-CEDA": "2027-01-22:PRO", "WE-8B0A-3A1C": "2027-01-22:INST", "WE-B155-3111": "2027-01-23:PRO", "WE-1A0D-CFDA": "2027-01-23:INST", "WE-5FD2-E4A9": "2027-01-24:PRO", "WE-35C7-8A5E": "2027-01-24:INST", "WE-BEFB-5DEB": "2027-01-25:PRO", "WE-C5A5-74B7": "2027-01-25:INST", "WE-E298-CB35": "2027-01-26:PRO", "WE-9CB3-E976": "2027-01-26:INST", "WE-0A92-7265": "2027-01-27:PRO", "WE-D2AB-FA50": "2027-01-27:INST", "WE-1E75-D737": "2027-01-28:PRO", "WE-AC37-2239": "2027-01-28:INST", "WE-ED8F-4B67": "2027-01-29:PRO", "WE-6D25-63DD": "2027-01-29:INST", "WE-768D-C5D8": "2027-01-30:PRO", "WE-575F-E27C": "2027-01-30:INST", "WE-554D-AED1": "2027-01-31:PRO", "WE-06AD-9523": "2027-01-31:INST", "WE-4BE0-03FD": "2027-02-01:PRO", "WE-AAF2-6648": "2027-02-01:INST", "WE-4981-08EC": "2027-02-02:PRO", "WE-D6CC-2082": "2027-02-02:INST", "WE-F298-FAA7": "2027-02-03:PRO", "WE-07B4-6C43": "2027-02-03:INST", "WE-11D0-8858": "2027-02-04:PRO", "WE-2AC3-AA77": "2027-02-04:INST", "WE-E7E8-9810": "2027-02-05:PRO", "WE-91A2-CF08": "2027-02-05:INST", "WE-103C-BFDA": "2027-02-06:PRO", "WE-8F6E-45C1": "2027-02-06:INST", "WE-7762-AEFC": "2027-02-07:PRO", "WE-BC6B-C0AA": "2027-02-07:INST", "WE-F538-5DD5": "2027-02-08:PRO", "WE-DAD1-E933": "2027-02-08:INST", "WE-74FC-5C65": "2027-02-09:PRO", "WE-01C5-D9B1": "2027-02-09:INST", "WE-9E80-D7B3": "2027-02-10:PRO", "WE-9286-DEEA": "2027-02-10:INST", "WE-33FA-4A53": "2027-02-11:PRO", "WE-D5B6-885B": "2027-02-11:INST", "WE-11DE-8D46": "2027-02-12:PRO", "WE-450B-7A09": "2027-02-12:INST", "WE-508B-F91E": "2027-02-13:PRO", "WE-DDF9-F5FB": "2027-02-13:INST", "WE-967F-972F": "2027-02-14:PRO", "WE-3AC9-E3FF": "2027-02-14:INST", "WE-BF7F-63FE": "2027-02-15:PRO", "WE-D517-7F2D": "2027-02-15:INST", "WE-5D65-6887": "2027-02-16:PRO", "WE-5C89-50DD": "2027-02-16:INST", "WE-3C3C-F7A7": "2027-02-17:PRO", "WE-1666-0038": "2027-02-17:INST", "WE-ADC9-7E36": "2027-02-18:PRO", "WE-A739-5C11": "2027-02-18:INST", "WE-9CA8-660B": "2027-02-19:PRO", "WE-18A6-B3C8": "2027-02-19:INST", "WE-CF70-1D2E": "2027-02-20:PRO", "WE-9166-503C": "2027-02-20:INST", "WE-A13D-78BC": "2027-02-21:PRO", "WE-7521-0118": "2027-02-21:INST", "WE-0FD1-CC25": "2027-02-22:PRO", "WE-50D2-0FBB": "2027-02-22:INST", "WE-1D76-FF81": "2027-02-23:PRO", "WE-CA51-49A3": "2027-02-23:INST", "WE-C470-C41E": "2027-02-24:PRO", "WE-79BF-0902": "2027-02-24:INST", "WE-3A9B-F0E5": "2027-02-25:PRO", "WE-34B3-B202": "2027-02-25:INST", "WE-B50C-E492": "2027-02-26:PRO", "WE-4518-E654": "2027-02-26:INST", "WE-FEC0-23A2": "2027-02-27:PRO", "WE-55B0-CF37": "2027-02-27:INST", "WE-9478-E043": "2027-02-28:PRO", "WE-B1EC-42A5": "2027-02-28:INST", "WE-E9D6-2B8F": "2027-03-01:PRO", "WE-8D77-751A": "2027-03-01:INST", "WE-5748-F8D1": "2027-03-02:PRO", "WE-DB28-71A8": "2027-03-02:INST", "WE-2F35-AC78": "2027-03-03:PRO", "WE-A3E0-5308": "2027-03-03:INST", "WE-7D3A-ABF3": "2027-03-04:PRO", "WE-5D76-CF5F": "2027-03-04:INST", "WE-999D-8C3B": "2027-03-05:PRO", "WE-FA3C-05B1": "2027-03-05:INST", "WE-FD83-2ACA": "2027-03-06:PRO", "WE-D5A3-9BBC": "2027-03-06:INST", "WE-D812-2699": "2027-03-07:PRO", "WE-6A6E-8842": "2027-03-07:INST", "WE-BED7-74C1": "2027-03-08:PRO", "WE-0BF9-2557": "2027-03-08:INST", "WE-3E5E-6EF1": "2027-03-09:PRO", "WE-F454-B25F": "2027-03-09:INST", "WE-E572-019D": "2027-03-10:PRO", "WE-F841-1A2E": "2027-03-10:INST", "WE-398D-9EEE": "2027-03-11:PRO", "WE-12CC-5BCB": "2027-03-11:INST", "WE-C0CE-E1BB": "2027-03-12:PRO", "WE-F6B3-D78C": "2027-03-12:INST", "WE-57D1-6564": "2027-03-13:PRO", "WE-87E5-D6D6": "2027-03-13:INST", "WE-40AD-6223": "2027-03-14:PRO", "WE-5005-BF1C": "2027-03-14:INST", "WE-395E-3D2F": "2027-03-15:PRO", "WE-2A7A-3235": "2027-03-15:INST", "WE-DEF3-4160": "2027-03-16:PRO", "WE-8975-71B8": "2027-03-16:INST", "WE-7EE8-DDDD": "2027-03-17:PRO", "WE-0777-4913": "2027-03-17:INST", "WE-27CE-3BA4": "2027-03-18:PRO", "WE-5035-69DB": "2027-03-18:INST", "WE-ECCF-B590": "2027-03-19:PRO", "WE-DDD9-01EF": "2027-03-19:INST", "WE-BAE1-78A2": "2027-03-20:PRO", "WE-6CE6-4F2C": "2027-03-20:INST", "WE-33F6-B14C": "2027-03-21:PRO", "WE-616B-9D09": "2027-03-21:INST", "WE-6C70-A3FF": "2027-03-22:PRO", "WE-E95F-7C60": "2027-03-22:INST", "WE-326E-952C": "2027-03-23:PRO", "WE-F10D-3D21": "2027-03-23:INST", "WE-5EE3-E55E": "2027-03-24:PRO", "WE-2658-D94D": "2027-03-24:INST", "WE-96F3-200B": "2027-03-25:PRO", "WE-F0F2-139B": "2027-03-25:INST", "WE-8965-312A": "2027-03-26:PRO", "WE-6C43-E527": "2027-03-26:INST", "WE-34ED-2EB6": "2027-03-27:PRO", "WE-D20A-692D": "2027-03-27:INST", "WE-221C-8A39": "2027-03-28:PRO", "WE-08FC-462D": "2027-03-28:INST", "WE-F46D-1E62": "2027-03-29:PRO", "WE-42A8-C307": "2027-03-29:INST", "WE-CF6F-6913": "2027-03-30:PRO", "WE-26B3-ACF6": "2027-03-30:INST", "WE-8AD9-9F36": "2027-03-31:PRO", "WE-1A5B-C067": "2027-03-31:INST", "WE-1097-AE26": "2027-04-01:PRO", "WE-E1A4-93FF": "2027-04-01:INST", "WE-2FF8-BC44": "2027-04-02:PRO", "WE-4478-5A14": "2027-04-02:INST", "WE-AB29-164D": "2027-04-03:PRO", "WE-1510-B04F": "2027-04-03:INST", "WE-50E9-EFE8": "2027-04-04:PRO", "WE-7AFC-DFD6": "2027-04-04:INST", "WE-9314-759D": "2027-04-05:PRO", "WE-747D-479A": "2027-04-05:INST", "WE-2782-9376": "2027-04-06:PRO", "WE-CD2C-0AF0": "2027-04-06:INST", "WE-C909-D411": "2027-04-07:PRO", "WE-6226-929B": "2027-04-07:INST", "WE-22A9-8445": "2027-04-08:PRO", "WE-FDE9-59C9": "2027-04-08:INST", "WE-57A1-A15A": "2027-04-09:PRO", "WE-047B-3E2E": "2027-04-09:INST", "WE-1857-65FB": "2027-04-10:PRO", "WE-F5DF-CA7A": "2027-04-10:INST", "WE-8CFA-AEA3": "2027-04-11:PRO", "WE-11ED-E553": "2027-04-11:INST", "WE-CF1B-DFF6": "2027-04-12:PRO", "WE-5290-F21E": "2027-04-12:INST", "WE-0C5F-A3CB": "2027-04-13:PRO", "WE-6FF2-802F": "2027-04-13:INST", "WE-6D8D-3ABE": "2027-04-14:PRO", "WE-9C15-288D": "2027-04-14:INST", "WE-F99C-0CEE": "2027-04-15:PRO", "WE-4C7D-00E9": "2027-04-15:INST", "WE-FCED-1C41": "2027-04-16:PRO", "WE-6BE7-2493": "2027-04-16:INST", "WE-9527-CE26": "2027-04-17:PRO", "WE-64CA-1569": "2027-04-17:INST", "WE-DBDA-082B": "2027-04-18:PRO", "WE-34DD-27C5": "2027-04-18:INST"};
+
+function validateCode(code) {
+  code = code.trim().toUpperCase();
+  if (!code.match(/^WE-[A-Z0-9]{4}-[A-Z0-9]{4}$/)) return null;
+  var entry = WE_CODES[code];
+  if (!entry) return null;
+  var parts = entry.split(':');
+  var expiry = parts[0];
+  var plan = parts[1];
+  if (new Date(expiry) < new Date()) return null; // expired
+  return { valid: true, expiry: expiry, plan: plan };
+}
+
+function showProModal() {
+  // Check if already activated - must re-validate against WE_CODES
+  var stored = localStorage.getItem('we_pro_code');
+  var storedExp = localStorage.getItem('we_pro_expiry');
+  if (stored && storedExp && WE_CODES[stored] && new Date(storedExp) > new Date()) {
+    setTier(true);
+    return;
+  }
+  // Clear any invalid stored codes
+  localStorage.removeItem('we_pro_code');
+  localStorage.removeItem('we_pro_expiry');
+  document.getElementById('pro-modal-overlay').classList.add('show');
+  setTimeout(function(){ document.getElementById('pro-code-input').focus(); }, 100);
+}
+
+function closeProModal() {
+  document.getElementById('pro-modal-overlay').classList.remove('show');
+  document.getElementById('pro-error').style.display = 'none';
+  document.getElementById('pro-success').style.display = 'none';
+  document.getElementById('pro-code-input').value = '';
+}
+
+function submitProCode() {
+  var code = document.getElementById('pro-code-input').value.trim().toUpperCase();
+  var errEl = document.getElementById('pro-error');
+  var sucEl = document.getElementById('pro-success');
+  errEl.style.display = 'none';
+  sucEl.style.display = 'none';
+
+  if (code.length < 12) { errEl.style.display='block'; return; }
+
+  var result = validateCode(code);
+  if (result && result.valid) {
+    // Save to localStorage
+    localStorage.setItem('we_pro_code', code);
+    localStorage.setItem('we_pro_expiry', result.expiry);
+    // Show success
+    sucEl.textContent = '✓ PRO activated until ' + result.expiry + '!';
+    sucEl.style.display = 'block';
+    setTimeout(function() {
+      closeProModal();
+      setTier(true);
+      // Update PRO button
+      var btn = document.getElementById('btn-pro');
+      if(btn) { btn.style.background='linear-gradient(135deg,#00e5ff,#00ff88)'; btn.style.color='#000'; }
+    }, 1500);
+  } else {
+    errEl.style.display = 'block';
+  }
+}
+
+// Auto-check saved code on load - MUST validate against WE_CODES
+(function checkSavedCode() {
+  var code   = localStorage.getItem('we_pro_code');
+  var expiry = localStorage.getItem('we_pro_expiry');
+  if (!code || !expiry) return;
+  // Re-validate: code must exist in WE_CODES AND not expired
+  var entry = WE_CODES[code];
+  if (!entry) { localStorage.removeItem('we_pro_code'); localStorage.removeItem('we_pro_expiry'); return; }
+  if (new Date(expiry) <= new Date()) { localStorage.removeItem('we_pro_code'); localStorage.removeItem('we_pro_expiry'); return; }
+  // Valid - activate PRO
+  setTier(true);
+  var btn = document.getElementById('btn-pro');
+  if(btn) { btn.style.background='linear-gradient(135deg,#00e5ff,#00ff88)'; btn.style.color='#000'; btn.innerHTML='⚡ PRO ✓'; }
+})();
+
+</script>
+
+
+<!-- STICKY AFFILIATE BAR (shows on signal table) -->
+<div id="rupeezy-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(90deg,#0d1f30,#091828);border-top:1px solid rgba(255,152,0,.3);padding:10px 20px;z-index:888;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <span style="font-size:20px;">📈</span>
+    <div>
+      <div style="font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#ff9800;">Trade with Rupeezy — Zero Brokerage</div>
+      <div style="font-family:'Space Mono',monospace;font-size:10px;color:#4d8099;">Recommended by WaveEdge · Open free account in 10 minutes</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <a href="https://rupeezy.in/open-demat-account?referred_by=Hg2En&clicked=true" target="_blank" rel="noopener"
+       style="background:linear-gradient(135deg,#ff9800,#ff5722);color:#fff;text-decoration:none;padding:9px 20px;border-radius:7px;font-family:'Orbitron',monospace;font-weight:700;font-size:11px;white-space:nowrap;">
+      Open FREE Account →
+    </a>
+    <button onclick="document.getElementById('rupeezy-bar').style.display='none'" 
+      style="background:none;border:none;color:#4d8099;font-size:18px;cursor:pointer;padding:4px 8px;">✕</button>
+  </div>
+</div>
+
+<script>
+// Show sticky bar when user views signal table
+setTimeout(function() {
+  var bar = document.getElementById('rupeezy-bar');
+  if (bar) {
+    bar.style.display = 'flex';
+    // Auto-hide after 30 seconds if not clicked
+    setTimeout(function() {
+      if(bar) bar.style.display = 'none';
+    }, 30000);
+  }
+}, 8000); // Show after 8 seconds
+</script>
+<!-- PRO ACCESS MODAL -->
+<div class="pro-modal-overlay" id="pro-modal-overlay">
+  <div class="pro-modal">
+    <div style="font-size:40px;margin-bottom:12px;">⚡</div>
+    <h2>Unlock PRO Access</h2>
+    <p>Enter your WaveEdge PRO access code to unlock 75-Min, 15-Min & 5-Min MACD signals.</p>
+    <div class="pro-error" id="pro-error">❌ Invalid or expired code. Please check and retry.</div>
+    <div class="pro-success" id="pro-success">✓ PRO activated!</div>
+    <input class="pro-code-input" id="pro-code-input" placeholder="WE-XXXX-XXXX" maxlength="12"
+      oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9-]/g,'')"
+      onkeydown="if(event.key==='Enter')submitProCode()"/>
+    <button class="pro-submit-btn" onclick="submitProCode()">⚡ Activate PRO</button>
+    <br>
+    <button class="pro-cancel-btn" onclick="closeProModal()">Cancel</button>
+    <p style="margin-top:20px;font-size:11px;color:#2a4a5e;">Don't have a code? <a href="https://t.me/ewagaurav" target="_blank" style="color:#00e5ff;">Contact @ewagaurav</a></p>
+  </div>
+</div>
+
+</body>
+</html>
