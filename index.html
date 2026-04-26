@@ -357,6 +357,7 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
     <li><a onclick="showPage('signals2')" id="nav-signals2">⚡ AI Signals</a></li>
     <li><a onclick="scrollTo_('#pricing')" id="nav-pricing">Pricing</a></li>
     <li><a onclick="showPage('tools')" id="nav-tools" style="color:var(--gold);">🛠 Tools</a></li>
+    <li><a onclick="showPage('fii')" id="nav-fii" style="color:#60a5fa;">📊 FII Data</a></li>
   </ul>
 
   <div class="nav-right">
@@ -1677,6 +1678,11 @@ function s2_cellHTML(data, locked) {
 
 </script>
 
+<!-- FII/DII DATA PAGE -->
+<div class="page" id="page-fii" style="min-height:100vh;background:var(--bg);">
+  <iframe src="/fii.html" style="width:100%;height:calc(100vh - 64px);border:none;display:block;" id="fii-iframe"></iframe>
+</div>
+
 <!-- TOOLS PAGE -->
 <div class="page" id="page-tools" style="min-height:100vh;background:var(--bg);padding:40px;">
   <div style="color:#00e5ff;font-size:28px;font-family:monospace;margin-bottom:20px;">🛠 Tools Loading...</div>
@@ -1719,7 +1725,7 @@ function initTools() {
     <span style="font-size:22px;">📈</span>
     <div>
       <div style="font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:#ff9800;letter-spacing:.5px;">Open FREE Rupeezy Demat Account</div>
-      <div style="font-family:'Space Mono',monospace;font-size:10px;color:#6b9a4d;">₹0 delivery brokerage on delivery · 10-min setup · Free account</div>
+      <div style="font-family:'Space Mono',monospace;font-size:10px;color:#6b9a4d;">₹0 delivery brokerage · 10-min setup · Free account</div>
     </div>
   </div>
   <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
