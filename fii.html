@@ -327,27 +327,35 @@ function loadAll() {
 var BACKEND = 'https://waveedgebackflask-kexj.onrender.com';
 
 function fetchParticipantData() {
-  // Fetch from our Flask backend (server-side, no CORS issue)
-  Promise.all([
-    fetch(BACKEND + '/fii', {cache:'no-cache'}).then(function(r){ return r.json(); }),
-    fetch(BACKEND + '/pcr', {cache:'no-cache'}).then(function(r){ return r.json(); })
-  ])
-  .then(function(results) {
-    var fiiData = results[0];
-    var pcrData = results[1];
-    if (fiiData.error) { useDemoData(); return; }
-    // Merge PCR into fii data
-    if (pcrData && !pcrData.error) {
-      fiiData.pcr = pcrData.pcr;
-      fiiData.peOI = pcrData.pe_oi;
-      fiiData.ceOI = pcrData.ce_oi;
-    }
-    processNSEData(fiiData);
-  })
-  .catch(function(e) {
-    console.log('Backend fetch failed:', e);
-    useDemoData();
-  });
+  document.getElementById('live-status').textContent = 'Fetching from NSE via backend...';
+
+  // Fetch FII data
+  fetch(BACKEND + '/fii', {cache:'no-cache'})
+    .then(function(r) {
+      if (!r.ok) throw new Error('Backend returned ' + r.status);
+      return r.json();
+    })
+    .then(function(fiiData) {
+      if (fiiData.error || !fiiData.data) {
+        console.warn('NSE blocked:', fiiData.message || fiiData.error);
+        useDemoData();
+        return;
+      }
+      // Also fetch PCR separately
+      fetch(BACKEND + '/pcr', {cache:'no-cache'})
+        .then(function(r2){ return r2.json(); })
+        .then(function(pcrData) {
+          if (pcrData && !pcrData.error) {
+            fiiData.pcr = pcrData.pcr;
+          }
+          processNSEData(fiiData);
+        })
+        .catch(function() { processNSEData(fiiData); });
+    })
+    .catch(function(e) {
+      console.log('Backend error:', e);
+      useDemoData();
+    });
 }
 
 function processNSEData(data) {
@@ -428,7 +436,20 @@ function updateSpotBar(data) {
   var fiiNet = fiiLong - fiiShort;
   var fiiPct = fiiLong + fiiShort > 0 ? (fiiLong / (fiiLong + fiiShort) * 100) : 0;
 
-  if (spot) { document.getElementById('spot-val').textContent = Math.round(spot).toLocaleString('en-IN'); document.getElementById('spot-chg').textContent = 'NSE Index'; }
+  if (spot && spot > 1000) {
+    document.getElementById('spot-val').textContent = Math.round(spot).toLocaleString('en-IN');
+    var chgPct = data.spotPct || 0;
+    var chgAmt = data.spotChange || 0;
+    document.getElementById('spot-chg').innerHTML = '<span style="color:' + (chgAmt>=0?'var(--green)':'var(--red)') + '">' + (chgAmt>=0?'+':'') + chgAmt.toFixed(2) + ' (' + (chgAmt>=0?'+':'') + chgPct.toFixed(2) + '%)</span>';
+  } else {
+    // Fallback: fetch spot from Upstox via backend
+    fetch(BACKEND + '/macd/NIFTY', {cache:'no-cache'})
+      .then(function(r){ return r.json(); })
+      .then(function(d) {
+        var ltp = d.price || d.ltp || 0;
+        if (ltp) { document.getElementById('spot-val').textContent = Math.round(ltp).toLocaleString('en-IN'); document.getElementById('spot-chg').textContent = 'Upstox Live'; }
+      }).catch(function(){});
+  }
   if (pcr)  {
     document.getElementById('pcr-val').textContent = pcr.toFixed(2);
     var pcrSig = pcr > 1.2 ? '🐂 Bullish' : pcr < 0.8 ? '🐻 Bearish' : '⚖️ Neutral';
