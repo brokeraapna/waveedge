@@ -324,28 +324,30 @@ function loadAll() {
   fetchParticipantData();
 }
 
-function fetchParticipantData() {
-  // NSE participant-wise OI data
-  var proxies = [
-    'https://api.allorigins.win/get?url=' + encodeURIComponent('https://www.nseindia.com/api/participant-wise-trading-data?type=oi'),
-    'https://corsproxy.io/?' + encodeURIComponent('https://www.nseindia.com/api/participant-wise-trading-data?type=oi'),
-  ];
-  tryFetch(proxies, 0);
-}
+var BACKEND = 'https://waveedgebackflask-kexj.onrender.com';
 
-function tryFetch(proxies, idx) {
-  if (idx >= proxies.length) {
+function fetchParticipantData() {
+  // Fetch from our Flask backend (server-side, no CORS issue)
+  Promise.all([
+    fetch(BACKEND + '/fii', {cache:'no-cache'}).then(function(r){ return r.json(); }),
+    fetch(BACKEND + '/pcr', {cache:'no-cache'}).then(function(r){ return r.json(); })
+  ])
+  .then(function(results) {
+    var fiiData = results[0];
+    var pcrData = results[1];
+    if (fiiData.error) { useDemoData(); return; }
+    // Merge PCR into fii data
+    if (pcrData && !pcrData.error) {
+      fiiData.pcr = pcrData.pcr;
+      fiiData.peOI = pcrData.pe_oi;
+      fiiData.ceOI = pcrData.ce_oi;
+    }
+    processNSEData(fiiData);
+  })
+  .catch(function(e) {
+    console.log('Backend fetch failed:', e);
     useDemoData();
-    return;
-  }
-  fetch(proxies[idx], {cache:'no-cache'})
-    .then(function(r){ return r.json(); })
-    .then(function(d) {
-      var data = d.contents ? JSON.parse(d.contents) : d;
-      if (!data || !data.data) { tryFetch(proxies, idx+1); return; }
-      processNSEData(data);
-    })
-    .catch(function(){ tryFetch(proxies, idx+1); });
+  });
 }
 
 function processNSEData(data) {
@@ -452,7 +454,7 @@ function updateSpotBar(data) {
 function useDemoData() {
   document.getElementById('today-loading').style.display = 'none';
   document.getElementById('today-content').style.display = 'block';
-  document.getElementById('live-status').textContent = '● Demo Data (NSE API restricted)';
+  document.getElementById('live-status').textContent = '⚠ Backend offline — showing demo data';
   document.getElementById('live-status').style.color = 'var(--gold)';
   document.getElementById('last-update').textContent = '22 Apr 2026 · EOD';
 
