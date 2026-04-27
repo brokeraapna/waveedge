@@ -336,7 +336,20 @@ function fetchParticipantData() {
       return r.json();
     })
     .then(function(fiiData) {
-      if (fiiData.error || !fiiData.data) {
+      // If NSE blocked but we have Upstox spot price
+      if (fiiData.spotOnly) {
+        useDemoData(); // show demo participant data
+        // But update spot with real Upstox data
+        if (fiiData.spotPrice) {
+          document.getElementById('spot-val').textContent = Math.round(fiiData.spotPrice).toLocaleString('en-IN');
+          document.getElementById('spot-chg').innerHTML = '<span style="color:var(--cyan)">Upstox Live ✓</span>';
+        }
+        if (fiiData.pcr) {
+          document.getElementById('pcr-val').textContent = fiiData.pcr.toFixed(2);
+        }
+        return;
+      }
+      if (fiiData.error || !fiiData.data || !fiiData.data.length) {
         console.warn('NSE blocked:', fiiData.message || fiiData.error);
         useDemoData();
         return;
