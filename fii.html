@@ -319,76 +319,26 @@ function sentiment(n, type) {
 }
 
 // ── LOAD DATA ──
-function loadAll() {
-  document.getElementById('live-status').textContent = 'Fetching NSE data...';
-  fetchParticipantData();
-}
-
 var BACKEND = 'https://waveedgebackflask-kexj.onrender.com';
-var NSE_FII = 'https://www.nseindia.com/api/participant-wise-trading-data?type=oi';
-var NSE_OC  = 'https://www.nseindia.com/api/option-chain-indices?symbol=NIFTY';
 
 function fetchParticipantData() {
   document.getElementById('live-status').textContent = 'Fetching NSE data...';
-  // Try 3 CORS proxies in sequence
-  var proxies = [
-    'https://thingproxy.freeboard.io/fetch/' + NSE_FII,
-    'https://corsproxy.io/?' + encodeURIComponent(NSE_FII),
-    'https://api.allorigins.win/get?url=' + encodeURIComponent(NSE_FII),
-  ];
-  tryProxyChain(proxies, 0);
-}
-
-function tryProxyChain(proxies, idx) {
-  if (idx >= proxies.length) {
-    getUpstoxSpot();
-    useDemoData();
-    return;
-  }
-  fetch(proxies[idx], {cache:'no-cache'})
+  fetch(BACKEND + '/nse/fii-data', {cache:'no-cache'})
     .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
-    .then(function(d) {
-      var data = d.contents ? JSON.parse(d.contents) : d;
+    .then(function(data) {
       if (!data || !data.data || !data.data.length) throw new Error('empty');
-      // Success - also fetch PCR and Upstox spot
-      getUpstoxSpot();
-      fetchNSEpcr(data);
+      // Fetch PCR separately
+      fetch(BACKEND + '/nse/pcr', {cache:'no-cache'})
+        .then(function(r){ return r.json(); })
+        .then(function(p){ data.pcr = p.pcr || 0; processNSEData(data); })
+        .catch(function(){ processNSEData(data); });
     })
-    .catch(function(){ tryProxyChain(proxies, idx+1); });
+    .catch(function(e){
+      console.warn('Backend fetch failed:', e);
+      useDemoData();
+    });
 }
-
-function fetchNSEpcr(fiiData) {
-  var pcrProxies = [
-    'https://thingproxy.freeboard.io/fetch/' + NSE_OC,
-    'https://corsproxy.io/?' + encodeURIComponent(NSE_OC),
-  ];
-  fetch(pcrProxies[0], {cache:'no-cache'})
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      var oc = d.contents ? JSON.parse(d.contents) : d;
-      var f = oc.filtered || {};
-      var pe = (f.PE||{}).totOI||0, ce = (f.CE||{}).totOI||1;
-      fiiData.pcr = parseFloat((pe/ce).toFixed(4));
-      processNSEData(fiiData);
-    })
-    .catch(function(){ processNSEData(fiiData); });
 }
-
-function getUpstoxSpot() {
-  fetch(BACKEND + '/macd/NIFTY', {cache:'no-cache'})
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      var ltp = d.price || d.ltp || 0;
-      if (ltp > 1000) {
-        document.getElementById('spot-val').textContent = Math.round(ltp).toLocaleString('en-IN');
-        document.getElementById('spot-chg').innerHTML = '<span style="color:var(--green)">● Upstox Live</span>';
-      }
-    }).catch(function(){});
-}
-
-function processNSEData(data) {
-  _todayData = data;
-  document.getElementById('today-loading').style.display = 'none';
   document.getElementById('today-content').style.display = 'block';
   document.getElementById('live-status').textContent = '● Live NSE Data';
   document.getElementById('live-status').style.color = 'var(--green)';
@@ -555,7 +505,7 @@ function generateHistData() {
     fiiNet   += (Math.random() - 0.5) * 15000;
     pcr      += (Math.random() - 0.5) * 0.08;
     pcr       = Math.max(0.5, Math.min(1.8, pcr));
-    var fiiLPct = 50 + (fiiNet > 0 ? 8 : -8) + (Math.random()-0.5)*10;
+    var fiiLPct = 50 + (fiiNet > 0 ? 8 : -8) + (Math.random()-0.5)*10;document.getElementById('last-update').textContent = new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) + ' · Demo';
     fiiLPct   = Math.max(25, Math.min(78, fiiLPct));
     var diiNet = (Math.random()-0.4)*8000;
     var clientNet = -fiiNet * 0.6 + (Math.random()-0.5)*20000;
