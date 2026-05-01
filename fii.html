@@ -505,8 +505,7 @@ function generateHistData() {
     fiiNet   += (Math.random() - 0.5) * 15000;
     pcr      += (Math.random() - 0.5) * 0.08;
     pcr       = Math.max(0.5, Math.min(1.8, pcr));
-    var fiiLPct = 50 + (fiiNet > 0 ? 8 : -8) + (Math.random()-0.5)*10;document.getElementById('last-update').textContent = new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) + ' · Demo';
-    fiiLPct   = Math.max(25, Math.min(78, fiiLPct));
+document.getElementById('last-update').textContent = new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) + ' · Demo';    fiiLPct   = Math.max(25, Math.min(78, fiiLPct));
     var diiNet = (Math.random()-0.4)*8000;
     var clientNet = -fiiNet * 0.6 + (Math.random()-0.5)*20000;
 
