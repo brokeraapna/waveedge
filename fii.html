@@ -17,7 +17,6 @@
 html,body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden;}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 20%,rgba(0,229,255,.04),transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(0,255,136,.03),transparent 60%);pointer-events:none;z-index:0;}
 
-/* HEADER */
 .page-header{padding:28px 24px 20px;position:relative;z-index:1;}
 .ph-tag{font-family:var(--mono);font-size:10px;color:var(--cyan);letter-spacing:3px;margin-bottom:8px;}
 .ph-title{font-family:var(--orn);font-size:clamp(20px,3vw,32px);font-weight:900;margin-bottom:6px;}
@@ -31,29 +30,24 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .refresh-btn{background:var(--s1);border:1px solid var(--border);color:var(--cyan);padding:7px 16px;border-radius:6px;font-family:var(--mono);font-size:10px;cursor:pointer;letter-spacing:1px;transition:all .2s;}
 .refresh-btn:hover{border-color:var(--cyan);background:rgba(0,229,255,.06);}
 
-/* SPOT PCR ROW */
 .spot-bar{display:flex;gap:12px;flex-wrap:wrap;padding:0 24px 20px;position:relative;z-index:1;}
 .spot-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:14px 20px;min-width:130px;}
 .sc-lbl{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:4px;}
 .sc-val{font-family:var(--mono);font-size:20px;font-weight:700;}
 .sc-chg{font-family:var(--mono);font-size:10px;margin-top:3px;}
 
-/* TABS */
 .tabs{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 24px;position:relative;z-index:1;overflow-x:auto;}
 .tab{background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);padding:12px 20px;font-family:var(--mono);font-size:11px;cursor:pointer;white-space:nowrap;letter-spacing:1px;transition:all .2s;margin-bottom:-1px;}
 .tab:hover{color:var(--text);}
 .tab.active{color:var(--cyan);border-bottom-color:var(--cyan);}
 
-/* CONTENT */
 .content{padding:20px 24px;position:relative;z-index:1;}
 .tab-pane{display:none;}
 .tab-pane.active{display:block;}
 
-/* SECTION TITLE */
 .sec-title{font-family:var(--mono);font-size:10px;color:var(--cyan);letter-spacing:3px;margin-bottom:14px;margin-top:20px;}
 .sec-title:first-child{margin-top:0;}
 
-/* OI TABLE */
 .oi-wrap{overflow-x:auto;margin-bottom:24px;}
 .oi-table{width:100%;border-collapse:collapse;background:var(--s1);border:1px solid var(--border);border-radius:10px;overflow:hidden;font-family:var(--mono);font-size:11px;}
 .oi-table th{padding:10px 12px;background:var(--s2);color:var(--muted);text-align:center;font-size:9px;letter-spacing:1.5px;border-bottom:1px solid var(--border);white-space:nowrap;}
@@ -70,9 +64,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .pos{color:var(--green);}
 .neg{color:var(--red);}
 .neutral{color:var(--muted);}
-.seg-header{background:rgba(0,229,255,.06);font-family:var(--orn);font-size:10px;color:var(--cyan);padding:8px 12px;letter-spacing:2px;}
 
-/* CHART GRID */
 .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
 @media(max-width:700px){.chart-grid{grid-template-columns:1fr;}}
 .chart-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
@@ -81,7 +73,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .cch-sub{font-family:var(--mono);font-size:9px;color:var(--muted);}
 .chart-box{height:200px;}
 
-/* HISTORY TABLE */
 .hist-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px;}
 .hist-table th{padding:8px 12px;background:var(--s2);color:var(--muted);font-size:9px;letter-spacing:1.5px;text-align:right;border-bottom:1px solid var(--border);}
 .hist-table th:first-child{text-align:left;}
@@ -89,7 +80,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .hist-table td:first-child{text-align:left;color:var(--muted);}
 .hist-table tr:hover td{background:rgba(0,229,255,.02);}
 
-/* SENTIMENT BAR */
 .sentiment-wrap{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:20px;}
 .sent-title{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:14px;}
 .sent-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
@@ -99,12 +89,10 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .sent-bar-short{position:absolute;right:0;top:0;height:100%;border-radius:0 4px 4px 0;background:var(--red);}
 .sent-pct{font-family:var(--mono);font-size:10px;width:60px;text-align:right;flex-shrink:0;}
 
-/* LOADING */
 .loading{text-align:center;padding:40px;color:var(--muted);font-family:var(--mono);font-size:12px;}
 .spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* PERIOD BTNS */
 .period-row{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
 .period-btn{background:var(--s1);border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:5px;font-family:var(--mono);font-size:10px;cursor:pointer;transition:all .15s;}
 .period-btn.active{background:rgba(0,229,255,.1);border-color:var(--cyan);color:var(--cyan);}
@@ -117,7 +105,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="page-header">
   <div class="ph-tag">// PARTICIPANT DATA</div>
   <div class="ph-title">FII · DII · <span>Pro Clients</span> Positions</div>
@@ -129,7 +116,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   </div>
 </div>
 
-<!-- SPOT / PCR / SUMMARY -->
 <div class="spot-bar" id="spot-bar">
   <div class="spot-card"><div class="sc-lbl">NIFTY SPOT</div><div class="sc-val" id="spot-val">—</div><div class="sc-chg" id="spot-chg">—</div></div>
   <div class="spot-card"><div class="sc-lbl">PUT/CALL RATIO</div><div class="sc-val" id="pcr-val">—</div><div class="sc-chg" id="pcr-sig">—</div></div>
@@ -138,21 +124,20 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   <div class="spot-card"><div class="sc-lbl">MARKET MOOD</div><div class="sc-val" id="mood-val" style="font-size:14px;">—</div><div class="sc-chg" id="mood-sig">—</div></div>
 </div>
 
-<!-- TABS -->
 <div class="tabs">
-  <button class="tab active" onclick="showTab('today')">📊 Today's Data</button>
-  <button class="tab" onclick="showTab('history')">📈 Historical Charts</button>
-  <button class="tab" onclick="showTab('sentiment')">🎯 Sentiment</button>
+  <button class="tab active" onclick="showTab('today', event)">📊 Today's Data</button>
+  <button class="tab" onclick="showTab('history', event)">📈 Historical Charts</button>
+  <button class="tab" onclick="showTab('sentiment', event)">🎯 Sentiment</button>
 </div>
 
-<!-- TODAY TAB -->
 <div class="content">
+
+<!-- TODAY TAB -->
 <div class="tab-pane active" id="tab-today">
   <div id="today-loading" class="loading"><div class="spinner"></div>Fetching NSE participant data...</div>
   <div id="today-content" style="display:none;">
-
     <div class="sec-title">// INDEX FUTURES — OI CHANGES</div>
-    <div class="oi-wrap"><table class="oi-table" id="tbl-index-fut">
+    <div class="oi-wrap"><table class="oi-table">
       <thead><tr>
         <th class="left">PARTICIPANT</th>
         <th>LONG OI</th><th>SHORT OI</th>
@@ -163,7 +148,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </table></div>
 
     <div class="sec-title">// INDEX CALLS — OI CHANGES</div>
-    <div class="oi-wrap"><table class="oi-table" id="tbl-index-call">
+    <div class="oi-wrap"><table class="oi-table">
       <thead><tr>
         <th class="left">PARTICIPANT</th>
         <th>LONG OI</th><th>SHORT OI</th>
@@ -174,7 +159,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </table></div>
 
     <div class="sec-title">// INDEX PUTS — OI CHANGES</div>
-    <div class="oi-wrap"><table class="oi-table" id="tbl-index-put">
+    <div class="oi-wrap"><table class="oi-table">
       <thead><tr>
         <th class="left">PARTICIPANT</th>
         <th>LONG OI</th><th>SHORT OI</th>
@@ -185,7 +170,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </table></div>
 
     <div class="sec-title">// STOCK FUTURES — OI CHANGES</div>
-    <div class="oi-wrap"><table class="oi-table" id="tbl-stock-fut">
+    <div class="oi-wrap"><table class="oi-table">
       <thead><tr>
         <th class="left">PARTICIPANT</th>
         <th>LONG OI</th><th>SHORT OI</th>
@@ -235,19 +220,13 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div class="chart-box" id="chart-client"></div>
     </div>
   </div>
-
   <div class="sec-title">// HISTORICAL DAILY DATA</div>
   <div class="oi-wrap">
     <table class="hist-table">
       <thead><tr>
-        <th>DATE</th>
-        <th>NIFTY</th>
-        <th>FII NET FUT</th>
-        <th>FII LONG%</th>
-        <th>DII NET FUT</th>
-        <th>CLIENT NET</th>
-        <th>PCR</th>
-        <th>MOOD</th>
+        <th>DATE</th><th>NIFTY</th><th>FII NET FUT</th>
+        <th>FII LONG%</th><th>DII NET FUT</th>
+        <th>CLIENT NET</th><th>PCR</th><th>MOOD</th>
       </tr></thead>
       <tbody id="hist-tbody"></tbody>
     </table>
@@ -260,12 +239,10 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="sent-title">// LONG vs SHORT POSITIONS (TODAY)</div>
     <div id="sentiment-rows"></div>
   </div>
-
   <div class="sec-title">// FII POSITIONING ANALYSIS</div>
   <div style="background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;">
     <div id="fii-analysis" style="font-family:var(--mono);font-size:12px;color:var(--text);line-height:2;"></div>
   </div>
-
   <div class="sec-title">// WHAT FII DATA TELLS US</div>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
     <div style="background:var(--s1);border:1px solid rgba(0,255,136,.2);border-radius:10px;padding:16px;">
@@ -282,20 +259,22 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </div>
   </div>
 </div>
-</div>
+
+</div><!-- /content -->
 
 <script>
+var BACKEND = 'https://waveedgebackflask-kexj.onrender.com';
 var _period = 30;
 var _histData = [];
 var _todayData = null;
 var _charts = {};
 
 // ── TABS ──
-function showTab(id) {
+function showTab(id, evt) {
   document.querySelectorAll('.tab-pane').forEach(function(p){ p.classList.remove('active'); });
   document.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('active'); });
   document.getElementById('tab-' + id).classList.add('active');
-  event.target.classList.add('active');
+  if (evt && evt.target) evt.target.classList.add('active');
   if (id === 'history') buildHistoryCharts();
   if (id === 'sentiment') buildSentiment();
 }
@@ -311,61 +290,83 @@ function fmtChg(n) {
   return '<span class="' + cls + '">' + (n > 0 ? '+' : '') + Math.round(n).toLocaleString('en-IN') + '</span>';
 }
 function sentiment(n, type) {
-  // For futures: positive net = bullish. For puts: positive net short = bearish.
   var bull = type === 'put' ? n < 0 : n > 0;
-  var bear = type === 'put' ? n > 0 : n < 0;
   if (Math.abs(n) < 1000) return '<span class="badge badge-neut">NEUTRAL</span>';
   return bull ? '<span class="badge badge-bull">BULLISH</span>' : '<span class="badge badge-bear">BEARISH</span>';
 }
 
-// ── LOAD DATA ──
-var BACKEND = 'https://waveedgebackflask-kexj.onrender.com';
-
-function fetchParticipantData() {
+// ── MAIN LOAD ──
+function loadAll() {
   document.getElementById('live-status').textContent = 'Fetching NSE data...';
-  fetch(BACKEND + '/nse/fii-data', {cache:'no-cache'})
-    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
-    .then(function(data) {
-      if (!data || !data.data || !data.data.length) throw new Error('empty');
-      // Fetch PCR separately
-      fetch(BACKEND + '/nse/pcr', {cache:'no-cache'})
-        .then(function(r){ return r.json(); })
-        .then(function(p){ data.pcr = p.pcr || 0; processNSEData(data); })
-        .catch(function(){ processNSEData(data); });
+  document.getElementById('today-loading').style.display = 'block';
+  document.getElementById('today-content').style.display = 'none';
+
+  fetch(BACKEND + '/fii', { cache: 'no-cache' })
+    .then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
     })
-    .catch(function(e){
-      console.warn('Backend fetch failed:', e);
+    .then(function(data) {
+      if (data.error && !data.data) throw new Error(data.error);
+      if (!data.data || !data.data.length) throw new Error('no_data');
+
+      // Also fetch PCR from backend
+      fetch(BACKEND + '/pcr', { cache: 'no-cache' })
+        .then(function(r2) { return r2.json(); })
+        .then(function(pcrData) {
+          data.pcr = pcrData.pcr || 0;
+          processData(data);
+        })
+        .catch(function() {
+          processData(data);
+        });
+    })
+    .catch(function(err) {
+      console.warn('Backend fetch failed:', err.message);
       useDemoData();
     });
 }
-}
+
+// ── PROCESS LIVE DATA ──
+function processData(data) {
+  _todayData = data;
+  document.getElementById('today-loading').style.display = 'none';
   document.getElementById('today-content').style.display = 'block';
-  document.getElementById('live-status').textContent = '● Live NSE Data';
-  document.getElementById('live-status').style.color = 'var(--green)';
-  document.getElementById('last-update').textContent = '↻ ' + new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+
+  var dateLabel = data.dataDate || new Date().toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'});
+  var isDemo = data.spotOnly || false;
+
+  document.getElementById('live-status').textContent = isDemo ? '⚠ Live spot only — CSV pending' : '● Live NSE Data';
+  document.getElementById('live-status').style.color = isDemo ? 'var(--gold)' : 'var(--green)';
+  document.getElementById('last-update').textContent = dateLabel + ' · ' + new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
 
   var records = data.data || [];
-  // Group by segment
-  var segments = {indexFut:[], indexCall:[], indexPut:[], stockFut:[]};
+  var seg = { indexFut:[], indexCall:[], indexPut:[], stockFut:[] };
+
   records.forEach(function(r) {
-    var seg = (r.instrumentType || '').toLowerCase();
-    if (seg.includes('index') && seg.includes('future')) segments.indexFut.push(r);
-    else if (seg.includes('index') && seg.includes('call')) segments.indexCall.push(r);
-    else if (seg.includes('index') && seg.includes('put')) segments.indexPut.push(r);
-    else if (seg.includes('stock') && seg.includes('future')) segments.stockFut.push(r);
+    var t = (r.instrumentType || '').toLowerCase();
+    if (t.includes('index') && t.includes('future'))      seg.indexFut.push(r);
+    else if (t.includes('index') && t.includes('call'))   seg.indexCall.push(r);
+    else if (t.includes('index') && t.includes('put'))    seg.indexPut.push(r);
+    else if (t.includes('stock') && t.includes('future')) seg.stockFut.push(r);
   });
 
-  renderSegment('tbody-index-fut', segments.indexFut, 'fut');
-  renderSegment('tbody-index-call', segments.indexCall, 'call');
-  renderSegment('tbody-index-put', segments.indexPut, 'put');
-  renderSegment('tbody-stock-fut', segments.stockFut, 'fut');
+  renderSegment('tbody-index-fut',  seg.indexFut,  'fut');
+  renderSegment('tbody-index-call', seg.indexCall, 'call');
+  renderSegment('tbody-index-put',  seg.indexPut,  'put');
+  renderSegment('tbody-stock-fut',  seg.stockFut,  'fut');
   updateSpotBar(data);
+  generateHistData();
 }
 
+// ── RENDER TABLE ──
 function renderSegment(tbodyId, rows, type) {
   var tbody = document.getElementById(tbodyId);
   if (!tbody) return;
-  if (!rows || !rows.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px;">No data</td></tr>'; return; }
+  if (!rows || !rows.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px;">No data available</td></tr>';
+    return;
+  }
 
   var parts = ['Client','DII','FII','Pro'];
   var colMap = {'Client':'part-client','DII':'part-dii','FII':'part-fii','Pro':'part-pro'};
@@ -375,23 +376,26 @@ function renderSegment(tbodyId, rows, type) {
   parts.forEach(function(p) {
     var r = rows.find(function(x){ return (x.clientType||'').includes(p); });
     if (!r) return;
-    var lOI = r.futLongQty || r.longQuantity || 0;
-    var sOI = r.futShortQty || r.shortQuantity || 0;
-    var lChg = r.futLongChg || r.longChg || r.changeLongQuantity || 0;
-    var sChg = r.futShortChg || r.shortChg || r.changeShortQuantity || 0;
-    var net = lChg - sChg;
+    var lOI  = r.longQuantity  || 0;
+    var sOI  = r.shortQuantity || 0;
+    var lChg = r.changeLongQuantity  || 0;
+    var sChg = r.changeShortQuantity || 0;
+    var net  = lChg - sChg;
     totLong += lOI; totShort += sOI; totLChg += lChg; totSChg += sChg;
 
-    html += '<tr><td class="left ' + colMap[p] + '">' + p + '</td>'
+    html += '<tr>'
+      + '<td class="left ' + colMap[p] + '">' + p + '</td>'
       + '<td>' + fmt(lOI) + '</td>'
       + '<td>' + fmt(sOI) + '</td>'
       + '<td>' + fmtChg(lChg) + '</td>'
       + '<td>' + fmtChg(sChg) + '</td>'
       + '<td>' + fmtChg(net) + '</td>'
-      + '<td>' + sentiment(net, type) + '</td></tr>';
+      + '<td>' + sentiment(net, type) + '</td>'
+      + '</tr>';
   });
 
-  html += '<tr class="total-row"><td class="left">TOTAL</td>'
+  html += '<tr class="total-row">'
+    + '<td class="left">TOTAL</td>'
     + '<td>' + fmt(totLong) + '</td>'
     + '<td>' + fmt(totShort) + '</td>'
     + '<td>' + fmtChg(totLChg) + '</td>'
@@ -402,33 +406,28 @@ function renderSegment(tbodyId, rows, type) {
   tbody.innerHTML = html;
 }
 
+// ── SPOT BAR ──
 function updateSpotBar(data) {
-  var spot = data.underlyingValue || data.spotPrice || 0;
-  var pcr  = data.pcr || data.putCallRatio || 0;
-
-  // Calculate FII net from index futures
+  var spot = data.spotPrice || 0;
+  var pcr  = data.pcr || 0;
   var records = data.data || [];
-  var fiiRec = records.find(function(r){ return (r.clientType||'').includes('FII') && (r.instrumentType||'').toLowerCase().includes('index') && (r.instrumentType||'').toLowerCase().includes('future'); });
-  var fiiLong = fiiRec ? (fiiRec.futLongQty || fiiRec.longQuantity || 0) : 0;
-  var fiiShort = fiiRec ? (fiiRec.futShortQty || fiiRec.shortQuantity || 0) : 0;
-  var fiiNet = fiiLong - fiiShort;
-  var fiiPct = fiiLong + fiiShort > 0 ? (fiiLong / (fiiLong + fiiShort) * 100) : 0;
+
+  var fiiRec = records.find(function(r) {
+    return (r.clientType||'').includes('FII')
+      && (r.instrumentType||'').toLowerCase().includes('index')
+      && (r.instrumentType||'').toLowerCase().includes('future');
+  });
+
+  var fiiLong  = fiiRec ? (fiiRec.longQuantity  || 0) : 0;
+  var fiiShort = fiiRec ? (fiiRec.shortQuantity || 0) : 0;
+  var fiiNet   = fiiLong - fiiShort;
+  var fiiPct   = (fiiLong + fiiShort) > 0 ? (fiiLong / (fiiLong + fiiShort) * 100) : 0;
 
   if (spot && spot > 1000) {
     document.getElementById('spot-val').textContent = Math.round(spot).toLocaleString('en-IN');
-    var chgPct = data.spotPct || 0;
-    var chgAmt = data.spotChange || 0;
-    document.getElementById('spot-chg').innerHTML = '<span style="color:' + (chgAmt>=0?'var(--green)':'var(--red)') + '">' + (chgAmt>=0?'+':'') + chgAmt.toFixed(2) + ' (' + (chgAmt>=0?'+':'') + chgPct.toFixed(2) + '%)</span>';
-  } else {
-    // Fallback: fetch spot from Upstox via backend
-    fetch(BACKEND + '/macd/NIFTY', {cache:'no-cache'})
-      .then(function(r){ return r.json(); })
-      .then(function(d) {
-        var ltp = d.price || d.ltp || 0;
-        if (ltp) { document.getElementById('spot-val').textContent = Math.round(ltp).toLocaleString('en-IN'); document.getElementById('spot-chg').textContent = 'Upstox Live'; }
-      }).catch(function(){});
+    document.getElementById('spot-chg').innerHTML = '<span style="color:var(--green)">● Live</span>';
   }
-  if (pcr)  {
+  if (pcr) {
     document.getElementById('pcr-val').textContent = pcr.toFixed(2);
     var pcrSig = pcr > 1.2 ? '🐂 Bullish' : pcr < 0.8 ? '🐻 Bearish' : '⚖️ Neutral';
     var pcrCol = pcr > 1.2 ? 'var(--green)' : pcr < 0.8 ? 'var(--red)' : 'var(--gold)';
@@ -437,78 +436,73 @@ function updateSpotBar(data) {
   if (fiiNet) {
     document.getElementById('fii-net').textContent = (fiiNet > 0 ? '+' : '') + Math.round(fiiNet).toLocaleString('en-IN');
     document.getElementById('fii-net').style.color = fiiNet > 0 ? 'var(--green)' : 'var(--red)';
-    document.getElementById('fii-sig').innerHTML = fiiNet > 0 ? '<span style="color:var(--green)">Net Long</span>' : '<span style="color:var(--red)">Net Short</span>';
+    document.getElementById('fii-sig').innerHTML = fiiNet > 0
+      ? '<span style="color:var(--green)">Net Long</span>'
+      : '<span style="color:var(--red)">Net Short</span>';
   }
   if (fiiPct) {
     document.getElementById('fii-long-pct').textContent = fiiPct.toFixed(1) + '%';
     document.getElementById('fii-long-pct').style.color = fiiPct > 55 ? 'var(--green)' : fiiPct < 45 ? 'var(--red)' : 'var(--gold)';
   }
 
-  var mood = fiiNet > 5000 && pcr > 1.0 ? '🐂 BULLISH' : fiiNet < -5000 && pcr < 0.9 ? '🐻 BEARISH' : '⚖️ NEUTRAL';
+  var mood    = fiiNet > 5000 && pcr > 1.0 ? '🐂 BULLISH' : fiiNet < -5000 && pcr < 0.9 ? '🐻 BEARISH' : '⚖️ NEUTRAL';
   var moodCol = mood.includes('BULL') ? 'var(--green)' : mood.includes('BEAR') ? 'var(--red)' : 'var(--gold)';
   document.getElementById('mood-val').innerHTML = '<span style="color:'+moodCol+'">'+mood+'</span>';
 }
 
-// ── DEMO DATA (when NSE blocks CORS) ──
+// ── DEMO DATA (fallback when backend is cold/down) ──
 function useDemoData() {
   document.getElementById('today-loading').style.display = 'none';
   document.getElementById('today-content').style.display = 'block';
-  document.getElementById('live-status').textContent = '⚠ Backend offline — showing demo data';
+  document.getElementById('live-status').textContent = '⚠ Backend warming up — demo data';
   document.getElementById('live-status').style.color = 'var(--gold)';
-  document.getElementById('last-update').textContent = '22 Apr 2026 · EOD';
+  var today = new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  document.getElementById('last-update').textContent = today + ' · Demo';
 
-  // Realistic data based on screenshot
   var demo = {
-    spotPrice: 24367.35, pcr: 0.9620,
+    spotPrice: 24367, pcr: 0.96,
     data: [
-      // Index Futures
-      {clientType:'Client',instrumentType:'Index Futures',longQuantity:124139,shortQuantity:130215,changeLongQuantity:12447,changeShortQuantity:-218},
-      {clientType:'DII',instrumentType:'Index Futures',longQuantity:58953,shortQuantity:56475,changeLongQuantity:-218,changeShortQuantity:150},
-      {clientType:'FII',instrumentType:'Index Futures',longQuantity:70406,shortQuantity:253720,changeLongQuantity:-1702,changeShortQuantity:7664},
-      {clientType:'Pro',instrumentType:'Index Futures',longQuantity:222,shortQuantity:3071,changeLongQuantity:-4653,changeShortQuantity:3576},
-      // Index Calls
-      {clientType:'Client',instrumentType:'Index Calls',longQuantity:114543,shortQuantity:42256,changeLongQuantity:598140,changeShortQuantity:486417},
-      {clientType:'DII',instrumentType:'Index Calls',longQuantity:4028,shortQuantity:2336,changeLongQuantity:11,changeShortQuantity:11},
-      {clientType:'FII',instrumentType:'Index Calls',longQuantity:-208551,shortQuantity:-180010,changeLongQuantity:33066,changeShortQuantity:110304},
-      {clientType:'Pro',instrumentType:'Index Calls',longQuantity:89981,shortQuantity:135418,changeLongQuantity:134350,changeShortQuantity:168833},
-      // Index Puts
-      {clientType:'Client',instrumentType:'Index Puts',longQuantity:-519012,shortQuantity:-491272,changeLongQuantity:154146,changeShortQuantity:292464},
-      {clientType:'DII',instrumentType:'Index Puts',longQuantity:54133,shortQuantity:51666,changeLongQuantity:-2550,changeShortQuantity:0},
-      {clientType:'FII',instrumentType:'Index Puts',longQuantity:345946,shortQuantity:296845,changeLongQuantity:83601,changeShortQuantity:37986},
-      {clientType:'Pro',instrumentType:'Index Puts',longQuantity:118931,shortQuantity:142760,changeLongQuantity:126404,changeShortQuantity:31153},
-      // Stock Futures
-      {clientType:'Client',instrumentType:'Stock Futures',longQuantity:2468205,shortQuantity:2384048,changeLongQuantity:87323,changeShortQuantity:4134},
-      {clientType:'DII',instrumentType:'Stock Futures',longQuantity:-3642380,shortQuantity:-3636158,changeLongQuantity:347,changeShortQuantity:2318},
-      {clientType:'FII',instrumentType:'Stock Futures',longQuantity:1038731,shortQuantity:1011730,changeLongQuantity:-15045,changeShortQuantity:54153},
-      {clientType:'Pro',instrumentType:'Stock Futures',longQuantity:204642,shortQuantity:240380,changeLongQuantity:50457,changeShortQuantity:62477},
+      {clientType:'Client', instrumentType:'Index Futures', longQuantity:124139, shortQuantity:130215, changeLongQuantity:12447,  changeShortQuantity:-218},
+      {clientType:'DII',    instrumentType:'Index Futures', longQuantity:58953,  shortQuantity:56475,  changeLongQuantity:-218,   changeShortQuantity:150},
+      {clientType:'FII',    instrumentType:'Index Futures', longQuantity:70406,  shortQuantity:253720, changeLongQuantity:-1702,  changeShortQuantity:7664},
+      {clientType:'Pro',    instrumentType:'Index Futures', longQuantity:222,    shortQuantity:3071,   changeLongQuantity:-4653,  changeShortQuantity:3576},
+      {clientType:'Client', instrumentType:'Index Calls',   longQuantity:114543, shortQuantity:42256,  changeLongQuantity:598140, changeShortQuantity:486417},
+      {clientType:'DII',    instrumentType:'Index Calls',   longQuantity:4028,   shortQuantity:2336,   changeLongQuantity:11,     changeShortQuantity:11},
+      {clientType:'FII',    instrumentType:'Index Calls',   longQuantity:208551, shortQuantity:180010, changeLongQuantity:33066,  changeShortQuantity:110304},
+      {clientType:'Pro',    instrumentType:'Index Calls',   longQuantity:89981,  shortQuantity:135418, changeLongQuantity:134350, changeShortQuantity:168833},
+      {clientType:'Client', instrumentType:'Index Puts',    longQuantity:519012, shortQuantity:491272, changeLongQuantity:154146, changeShortQuantity:292464},
+      {clientType:'DII',    instrumentType:'Index Puts',    longQuantity:54133,  shortQuantity:51666,  changeLongQuantity:-2550,  changeShortQuantity:0},
+      {clientType:'FII',    instrumentType:'Index Puts',    longQuantity:345946, shortQuantity:296845, changeLongQuantity:83601,  changeShortQuantity:37986},
+      {clientType:'Pro',    instrumentType:'Index Puts',    longQuantity:118931, shortQuantity:142760, changeLongQuantity:126404, changeShortQuantity:31153},
+      {clientType:'Client', instrumentType:'Stock Futures', longQuantity:2468205,shortQuantity:2384048,changeLongQuantity:87323,  changeShortQuantity:4134},
+      {clientType:'DII',    instrumentType:'Stock Futures', longQuantity:364238, shortQuantity:363615, changeLongQuantity:347,    changeShortQuantity:2318},
+      {clientType:'FII',    instrumentType:'Stock Futures', longQuantity:1038731,shortQuantity:1011730,changeLongQuantity:-15045, changeShortQuantity:54153},
+      {clientType:'Pro',    instrumentType:'Stock Futures', longQuantity:204642, shortQuantity:240380, changeLongQuantity:50457,  changeShortQuantity:62477},
     ]
   };
-  processNSEData(demo);
-  generateHistData();
+  processData(demo);
 }
 
-// ── HISTORICAL DATA (generate realistic) ──
+// ── HISTORICAL DATA ──
 function generateHistData() {
   _histData = [];
   var now = new Date();
-  var spot = 24367;
+  var spot   = 24367;
   var fiiNet = -183314;
-  var pcr = 0.96;
+  var pcr    = 0.96;
 
   for (var i = 365; i >= 0; i--) {
     var d = new Date(now);
     d.setDate(d.getDate() - i);
-    // Skip weekends
     if (d.getDay() === 0 || d.getDay() === 6) continue;
-
-    spot     += (Math.random() - 0.47) * 120;
-    fiiNet   += (Math.random() - 0.5) * 15000;
-    pcr      += (Math.random() - 0.5) * 0.08;
-    pcr       = Math.max(0.5, Math.min(1.8, pcr));
-document.getElementById('last-update').textContent = new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) + ' · Demo';    fiiLPct   = Math.max(25, Math.min(78, fiiLPct));
-    var diiNet = (Math.random()-0.4)*8000;
-    var clientNet = -fiiNet * 0.6 + (Math.random()-0.5)*20000;
-
+    spot   += (Math.random() - 0.47) * 120;
+    fiiNet += (Math.random() - 0.5) * 15000;
+    pcr    += (Math.random() - 0.5) * 0.08;
+    pcr     = Math.max(0.5, Math.min(1.8, pcr));
+    var fiiLPct  = 50 + (fiiNet > 0 ? 8 : -8) + (Math.random()-0.5)*10;
+    fiiLPct      = Math.max(25, Math.min(78, fiiLPct));
+    var diiNet   = (Math.random()-0.4)*8000;
+    var clientNet= -fiiNet * 0.6 + (Math.random()-0.5)*20000;
     _histData.push({
       date: d,
       dateStr: d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'}),
@@ -521,7 +515,6 @@ document.getElementById('last-update').textContent = new Date().toLocaleDateStri
       pcr: parseFloat(pcr.toFixed(2)),
     });
   }
-  buildHistoryCharts();
   buildHistTable();
 }
 
@@ -536,7 +529,6 @@ function setPeriod(days, el) {
 function buildHistoryCharts() {
   if (!_histData.length) return;
   var slice = _histData.slice(-_period);
-
   buildChart('chart-fii-fut', slice.map(function(d){ return {time:d.ts, value:d.fiiNet}; }), 'fiiNet');
   buildChart('chart-fii-pct', slice.map(function(d){ return {time:d.ts, value:d.fiiLPct}; }), 'pct');
   buildChart('chart-pcr',     slice.map(function(d){ return {time:d.ts, value:d.pcr}; }),    'pcr');
@@ -572,16 +564,11 @@ function buildChart(containerId, data, type) {
     priceFormat: {type:'number', precision: type==='pcr'?2:0, minMove: type==='pcr'?0.01:1}
   });
   series.setData(data);
-
-  // Zero line for net positions
   if (type === 'fiiNet' || type === 'clientNet') {
-    var priceLine = series.createPriceLine({price:0, color:'rgba(255,255,255,.2)', lineWidth:1, lineStyle:2, axisLabelVisible:false});
+    series.createPriceLine({price:0, color:'rgba(255,255,255,.2)', lineWidth:1, lineStyle:2, axisLabelVisible:false});
   }
-
   chart.timeScale().fitContent();
   _charts[containerId] = chart;
-
-  // Resize
   new ResizeObserver(function(){ chart.applyOptions({width:el.clientWidth}); }).observe(el);
 }
 
@@ -611,24 +598,26 @@ function buildHistTable() {
 function buildSentiment() {
   if (!_todayData) return;
   var records = _todayData.data || [];
-
   var parts = ['FII','DII','Client','Pro'];
   var colMap = {'FII':'var(--cyan)','DII':'#60a5fa','Client':'#a78bfa','Pro':'var(--gold)'};
   var html = '';
 
   parts.forEach(function(p) {
-    var recs = records.filter(function(r){ return (r.clientType||'').includes(p) && (r.instrumentType||'').toLowerCase().includes('future'); });
+    var recs = records.filter(function(r){
+      return (r.clientType||'').includes(p) && (r.instrumentType||'').toLowerCase().includes('future');
+    });
     var totalLong = 0, totalShort = 0;
-    recs.forEach(function(r){ totalLong += Math.abs(r.longQuantity||r.futLongQty||0); totalShort += Math.abs(r.shortQuantity||r.futShortQty||0); });
+    recs.forEach(function(r){ totalLong += Math.abs(r.longQuantity||0); totalShort += Math.abs(r.shortQuantity||0); });
     var total = totalLong + totalShort;
     if (!total) return;
-    var longPct = (totalLong/total*100).toFixed(1);
-    var shortPct = (totalShort/total*100).toFixed(1);
-
+    var longPct  = (totalLong  / total * 100).toFixed(1);
+    var shortPct = (totalShort / total * 100).toFixed(1);
     html += '<div class="sent-row">'
       + '<span class="sent-label" style="color:' + colMap[p] + '">' + p + '</span>'
-      + '<div class="sent-bar-wrap"><div class="sent-bar-long" style="width:' + longPct + '%"></div>'
-      + '<div class="sent-bar-short" style="width:' + shortPct + '%"></div></div>'
+      + '<div class="sent-bar-wrap">'
+      + '<div class="sent-bar-long" style="width:' + longPct + '%"></div>'
+      + '<div class="sent-bar-short" style="width:' + shortPct + '%"></div>'
+      + '</div>'
       + '<span class="sent-pct" style="color:var(--green)">' + longPct + '%L</span>'
       + '<span class="sent-pct" style="color:var(--red)">' + shortPct + '%S</span>'
       + '</div>';
@@ -636,19 +625,24 @@ function buildSentiment() {
 
   document.getElementById('sentiment-rows').innerHTML = html || '<div style="color:var(--muted);font-family:var(--mono);font-size:12px;">Load today\'s data first</div>';
 
-  // FII Analysis text
-  var fiiRec = records.find(function(r){ return (r.clientType||'').includes('FII') && (r.instrumentType||'').toLowerCase().includes('index') && (r.instrumentType||'').toLowerCase().includes('future'); });
+  var fiiRec = records.find(function(r){
+    return (r.clientType||'').includes('FII')
+      && (r.instrumentType||'').toLowerCase().includes('index')
+      && (r.instrumentType||'').toLowerCase().includes('future');
+  });
   if (fiiRec) {
-    var net = (fiiRec.changeLongQuantity||0) - (fiiRec.changeShortQuantity||0);
-    var total = (fiiRec.longQuantity||0) + (fiiRec.shortQuantity||0);
-    var lPct = total > 0 ? ((fiiRec.longQuantity||0)/total*100).toFixed(1) : 0;
-    var signal = net > 5000 ? '🐂 BULLISH — FII adding longs aggressively. High probability of upside continuation.' :
-                 net < -5000 ? '🐻 BEARISH — FII adding shorts. Market may face headwinds.' :
-                 '⚖️ NEUTRAL — FII positioning mixed. Wait for clearer direction.';
+    var net   = (fiiRec.changeLongQuantity||0) - (fiiRec.changeShortQuantity||0);
+    var total2= (fiiRec.longQuantity||0) + (fiiRec.shortQuantity||0);
+    var lPct  = total2 > 0 ? ((fiiRec.longQuantity||0)/total2*100).toFixed(1) : 0;
+    var signal= net > 5000  ? '🐂 BULLISH — FII adding longs aggressively. High probability of upside continuation.' :
+                net < -5000 ? '🐻 BEARISH — FII adding shorts. Market may face headwinds.' :
+                              '⚖️ NEUTRAL — FII positioning mixed. Wait for clearer direction.';
     var analysis = signal + '\n\n'
       + '▸ FII Net Change (Index Fut): ' + (net>0?'+':'') + Math.round(net).toLocaleString('en-IN') + ' contracts\n'
       + '▸ FII Long %: ' + lPct + '% of total FII futures positions\n'
-      + '▸ Elliott Wave Context: ' + (net>5000?'Consistent with Wave 3 impulse — FII fueling the move.':net<-5000?'Consistent with distribution phase — possible Wave 5 top or correction.':'Consolidation phase — possible Wave 4 or complex correction in progress.');
+      + '▸ Elliott Wave Context: ' + (net>5000 ? 'Consistent with Wave 3 impulse — FII fueling the move.' :
+        net<-5000 ? 'Consistent with distribution phase — possible Wave 5 top or correction.' :
+        'Consolidation phase — possible Wave 4 or complex correction in progress.');
     document.getElementById('fii-analysis').style.whiteSpace = 'pre-line';
     document.getElementById('fii-analysis').textContent = analysis;
   }
@@ -656,8 +650,6 @@ function buildSentiment() {
 
 // ── INIT ──
 loadAll();
-setTimeout(generateHistData, 500);
-// Auto-refresh every 5 min
 setInterval(loadAll, 300000);
 </script>
 </body>
