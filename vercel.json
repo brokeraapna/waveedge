@@ -5,6 +5,10 @@
       "dest": "/fii.html"
     },
     {
+      "src": "/scanner.html",
+      "dest": "/scanner.html"
+    },
+    {
       "src": "/sitemap.xml",
       "dest": "/sitemap.xml"
     },
