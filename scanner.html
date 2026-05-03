@@ -1,4 +1,11 @@
-<!DOCTYPE html>
+Razorpay subscription backend:
+
+/subscription/create-order — creates payment order
+/subscription/verify — verifies payment, generates access code like WE-A1B2C3
+/subscription/check/WE-A1B2C3 — validates code
+/subscription/admin?key=waveedge2024 — view all subscribers
+
+Next step — add Razorpay keys to Render environment, then I'll build the payment flow on the pricing page.<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -205,6 +212,7 @@ td.col-scrip{padding:12px 16px;}
       onkeydown="if(event.key==='Enter') addScrip()"/>
     <button class="btn btn-add" onclick="addScrip()" style="flex-shrink:0;">+ ADD</button>
     <button class="btn btn-refresh" id="refresh-btn" onclick="refreshAll()" style="flex-shrink:0;">↻</button>
+    <button class="btn" onclick="promptAccessCode()" style="flex-shrink:0;background:rgba(255,201,64,.15);border:1px solid var(--gold);color:var(--gold);" id="pro-btn">🔒 Pro</button>
     <span class="recent-label" style="flex-shrink:0;">RECENT:</span>
     <span id="recent-chips" style="display:flex;gap:6px;overflow-x:auto;"></span>
   </div>
@@ -246,7 +254,36 @@ td.col-scrip{padding:12px 16px;}
 <script>
 var BACKEND = 'https://waveedgebackflask-kexj.onrender.com';
 
+// ── SUBSCRIPTION ──
+var _accessCode = localStorage.getItem('we_access_code') || '';
+var _isPro = false;
+var PRO_TFS = ['tf75', 'tf15', 'tf5'];
+var FREE_TFS = ['monthly', 'weekly', 'daily'];
+
+function checkSubscription(cb) {
+  if (!_accessCode) { _isPro = false; cb(); return; }
+  fetch(BACKEND + '/subscription/check/' + _accessCode)
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      _isPro = d.valid === true;
+      cb();
+    })
+    .catch(function(){ _isPro = false; cb(); });
+}
+
+function promptAccessCode() {
+  var code = prompt('Enter your WaveEdge Pro access code:\n(Purchase at waveedge.in/pricing)');
+  if (code && code.trim()) {
+    _accessCode = code.trim().toUpperCase();
+    localStorage.setItem('we_access_code', _accessCode);
+    checkSubscription(function(){ refreshAll(); });
+  }
+}
+
+
+
 var TF_KEYS = ['monthly','weekly','daily','tf75','tf15','tf5'];
+var ALL_TF_KEYS = ['monthly','weekly','daily','tf75','tf15','tf5'];
 var TF_NAMES= {monthly:'Monthly',weekly:'Weekly',daily:'Daily',tf75:'1H',tf15:'15 MIN',tf5:'5 MIN'};
 
 var SCRIP_NAMES = {
@@ -278,11 +315,17 @@ function init() {
 }
 
 function checkConnection() {
+  checkSubscription(function(){
+  updateProUI();
+  });
   fetch(BACKEND + '/health', {cache:'no-cache'})
     .then(function(r){ return r.json(); })
     .then(function(d){
       _isConnected = d.connected;
       setDot(_isConnected ? 'live' : 'demo', _isConnected ? 'API Live' : 'API Offline');
+      var pb = document.getElementById('pro-btn');
+      if (pb) pb.innerHTML = _isPro ? '✅ Pro Active' : '🔒 Unlock Pro';
+      if (pb) pb.style.color = _isPro ? 'var(--green)' : 'var(--gold)';
       refreshAll();
     })
     .catch(function(){
@@ -432,9 +475,10 @@ function loadingRowHtml(sym) {
 function rowHtml(sym, data) {
   var name = SCRIP_NAMES[sym] || 'NSE Equity';
   var tfs = data.timeframes || {};
-  var tds = TF_KEYS.map(function(tf){
+  var tds = ALL_TF_KEYS.map(function(tf){
+    if (PRO_TFS.includes(tf) && !_isPro) return proLockedCell();
     var sig = tfs[tf];
-    if (!sig) return '<td class="sig-cell"><div class="sig-badge locked"><span class="sig-label">🔒</span></div></td>';
+    if (!sig) return '<td class="sig-cell"><div class="sig-badge locked"><span class="sig-label">—</span></div></td>';
     return '<td class="sig-cell">' + badgeHtml(sig, tf) + '</td>';
   }).join('');
   return '<tr id="row-'+sym+'">'
@@ -504,6 +548,29 @@ function addLoadingRow(sym) {
 
 function emptyHtml() {
   return '<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📡</div><div>Add a scrip above to get started</div></div></td></tr>';
+}
+
+
+function updateProUI() {
+  // Update column headers
+  var ths = document.querySelectorAll('th.tf-col');
+  var proLabels = ['1H 🔒','15 MIN 🔒','5 MIN 🔒'];
+  if (!_isPro) {
+    ths[3] && (ths[3].innerHTML = proLabels[0] + '<br><span style="font-size:8px;color:var(--gold)">PRO</span>');
+    ths[4] && (ths[4].innerHTML = proLabels[1] + '<br><span style="font-size:8px;color:var(--gold)">PRO</span>');
+    ths[5] && (ths[5].innerHTML = proLabels[2] + '<br><span style="font-size:8px;color:var(--gold)">PRO</span>');
+  } else {
+    ths[3] && (ths[3].innerHTML = '1H');
+    ths[4] && (ths[4].innerHTML = '15 MIN');
+    ths[5] && (ths[5].innerHTML = '5 MIN');
+  }
+}
+
+function proLockedCell() {
+  return '<td class="sig-cell" onclick="promptAccessCode()" style="cursor:pointer;">'
+    + '<div class="sig-badge locked" title="Click to unlock Pro">'
+    + '<span class="sig-label" style="color:var(--gold);font-size:9px;">🔒 PRO</span>'
+    + '</div></td>';
 }
 
 function updateFooter() {
