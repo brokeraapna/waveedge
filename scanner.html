@@ -282,7 +282,7 @@ function checkConnection() {
     .then(function(r){ return r.json(); })
     .then(function(d){
       _isConnected = d.connected;
-      setDot(_isConnected ? 'live' : 'demo', _isConnected ? 'Upstox Live' : 'Token needed');
+      setDot(_isConnected ? 'live' : 'demo', _isConnected ? 'API Live' : 'API Offline');
       refreshAll();
     })
     .catch(function(){
@@ -444,7 +444,7 @@ function rowHtml(sym, data) {
 
 function badgeHtml(sig, tf) {
   if (!sig || sig.signal === '—' || sig.error) {
-    var errMsg = sig && sig.error === 'upstox_not_connected' ? 'No token' : sig && sig.error === 'insufficient_data' ? 'No data' : '—';
+    var errMsg = sig && sig.error === 'upstox_not_connected' ? 'Not mapped' : sig && sig.error === 'insufficient_data' ? 'No data' : '—';
     return '<div class="sig-badge loading"><span class="sig-label" style="font-size:9px">'+errMsg+'</span></div>';
   }
 
