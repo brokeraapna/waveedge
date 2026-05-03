@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>WaveEdge Admin</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#020c14;color:#d8eef8;font-family:'Courier New',monospace;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.box{background:#061525;border:1px solid #173348;border-radius:14px;padding:36px;width:100%;max-width:520px;}
+h1{font-size:20px;color:#00e5ff;margin-bottom:4px;}
+.sub{font-size:11px;color:#3d7a99;margin-bottom:28px;}
+label{display:block;font-size:10px;color:#3d7a99;letter-spacing:2px;margin-bottom:6px;margin-top:16px;}
+input,select{width:100%;background:#0a1f30;border:1px solid #173348;color:#d8eef8;padding:10px 14px;border-radius:7px;font-size:13px;font-family:monospace;outline:none;}
+input:focus,select:focus{border-color:#00e5ff;}
+select option{background:#0a1f30;}
+.btn{width:100%;background:linear-gradient(135deg,#00e5ff,#00ff88);color:#000;border:none;padding:13px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;margin-top:20px;font-family:monospace;letter-spacing:1px;}
+.btn:hover{opacity:.9;}
+.result{margin-top:20px;background:#0a1f30;border:1px solid #173348;border-radius:8px;padding:16px;display:none;}
+.code{font-size:24px;font-weight:700;color:#00ff88;letter-spacing:3px;text-align:center;padding:12px;background:#061525;border-radius:6px;margin:10px 0;cursor:pointer;}
+.code:hover{background:#0a1f30;}
+.copy-hint{font-size:10px;color:#3d7a99;text-align:center;}
+.info{font-size:11px;color:#3d7a99;margin-top:8px;line-height:1.8;}
+.err{color:#ff4060;font-size:12px;margin-top:12px;display:none;}
+.history{margin-top:28px;border-top:1px solid #173348;padding-top:20px;}
+.history h2{font-size:12px;color:#3d7a99;letter-spacing:2px;margin-bottom:12px;}
+.sub-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #0f2235;font-size:11px;}
+.sub-code{color:#00e5ff;font-weight:700;}
+.sub-plan{color:#ffc940;}
+.sub-exp{color:#3d7a99;}
+.badge-active{color:#00ff88;}
+.badge-expired{color:#ff4060;}
+.admin-key-wrap{margin-bottom:20px;}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>⚡ WaveEdge Admin</h1>
+  <div class="sub">Subscription Code Generator</div>
+
+  <div class="admin-key-wrap">
+    <label>ADMIN KEY</label>
+    <input type="password" id="admin-key" placeholder="Enter admin key" value=""/>
+  </div>
+
+  <label>CUSTOMER EMAIL</label>
+  <input type="email" id="email" placeholder="customer@email.com"/>
+
+  <label>PLAN</label>
+  <select id="plan">
+    <option value="professional">Professional — ₹2,499/month (30 days)</option>
+    <option value="institutional">Institutional — ₹7,499/year (365 days)</option>
+  </select>
+
+  <label>PAYMENT REFERENCE (optional)</label>
+  <input type="text" id="payref" placeholder="Razorpay payment ID or UPI ref"/>
+
+  <button class="btn" onclick="generate()">⚡ GENERATE ACCESS CODE</button>
+
+  <div class="err" id="err"></div>
+
+  <div class="result" id="result">
+    <div style="font-size:10px;color:#3d7a99;letter-spacing:2px;margin-bottom:6px;">ACCESS CODE GENERATED</div>
+    <div class="code" id="code-display" onclick="copyCode()" title="Click to copy">—</div>
+    <div class="copy-hint">Click code to copy</div>
+    <div class="info" id="result-info"></div>
+  </div>
+
+  <div class="history">
+    <h2>// RECENT SUBSCRIPTIONS</h2>
+    <div id="history-list"><div style="color:#3d7a99;font-size:11px;">Enter admin key and load history</div></div>
+    <button class="btn" style="margin-top:12px;background:var(--s2);color:#00e5ff;background:#0a1f30;border:1px solid #173348;" onclick="loadHistory()">↻ Load History</button>
+  </div>
+</div>
+
+<script>
+var BACKEND = 'https://waveedgebackflask-kexj.onrender.com';
+
+function adminKey() {
+  return document.getElementById('admin-key').value.trim();
+}
+
+function generate() {
+  var email  = document.getElementById('email').value.trim();
+  var plan   = document.getElementById('plan').value;
+  var payref = document.getElementById('payref').value.trim();
+  var key    = adminKey();
+
+  if (!key)   { showErr('Enter admin key first'); return; }
+  if (!email) { showErr('Enter customer email'); return; }
+
+  hideErr();
+
+  fetch(BACKEND + '/subscription/create-code', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({admin_key: key, email: email, plan: plan, payment_ref: payref})
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if (d.error) { showErr(d.error); return; }
+    var code = d.access_code;
+    document.getElementById('code-display').textContent = code;
+    document.getElementById('result').style.display = 'block';
+
+    var planName = plan === 'institutional' ? 'Institutional (1 Year)' : 'Professional (30 Days)';
+    document.getElementById('result-info').innerHTML =
+      '▸ Plan: ' + planName + '<br>' +
+      '▸ Email: ' + email + '<br>' +
+      '▸ Expires: ' + d.expires_at.split('T')[0] + '<br>' +
+      '▸ Send this code to the customer via WhatsApp/Telegram';
+
+    // Build WhatsApp message
+    var msg = encodeURIComponent(
+      '✅ WaveEdge Pro Access\n\n' +
+      'Your access code: ' + code + '\n\n' +
+      'How to activate:\n' +
+      '1. Go to waveedge.in/scanner\n' +
+      '2. Click 🔒 Unlock Pro button\n' +
+      '3. Enter code: ' + code + '\n\n' +
+      'Plan: ' + planName + '\n' +
+      'Valid till: ' + d.expires_at.split('T')[0] + '\n\n' +
+      'Happy trading! 📈\n— WaveEdge Team'
+    );
+    document.getElementById('result-info').innerHTML +=
+      '<br><br><a href="https://wa.me/?text=' + msg + '" target="_blank" style="color:#00ff88;text-decoration:none;">📱 Send via WhatsApp →</a>';
+
+    loadHistory();
+  })
+  .catch(function(e){ showErr('Request failed: ' + e.message); });
+}
+
+function copyCode() {
+  var code = document.getElementById('code-display').textContent;
+  navigator.clipboard.writeText(code).then(function(){
+    document.getElementById('code-display').textContent = '✅ COPIED!';
+    setTimeout(function(){ document.getElementById('code-display').textContent = code; }, 1500);
+  });
+}
+
+function loadHistory() {
+  var key = adminKey();
+  if (!key) { showErr('Enter admin key first'); return; }
+  fetch(BACKEND + '/subscription/admin?key=' + key)
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.error) { showErr(d.error); return; }
+      var subs = d.subscriptions || {};
+      var keys = Object.keys(subs).reverse().slice(0, 20);
+      if (!keys.length) {
+        document.getElementById('history-list').innerHTML = '<div style="color:#3d7a99;font-size:11px;">No subscriptions yet</div>';
+        return;
+      }
+      var html = keys.map(function(code){
+        var s = subs[code];
+        var exp = new Date(s.expires_at);
+        var active = s.active && exp > new Date();
+        var badge = active ? '<span class="badge-active">● Active</span>' : '<span class="badge-expired">● Expired</span>';
+        var planLabel = s.plan === 'institutional' ? 'Institutional' : 'Pro';
+        return '<div class="sub-row">'
+          + '<span class="sub-code">' + code + '</span>'
+          + '<span class="sub-plan">' + planLabel + '</span>'
+          + '<span class="sub-exp">' + s.expires_at.split('T')[0] + '</span>'
+          + badge
+          + '</div>';
+      }).join('');
+      document.getElementById('history-list').innerHTML = html;
+    })
+    .catch(function(e){ showErr('Load failed: ' + e.message); });
+}
+
+function showErr(msg) {
+  var el = document.getElementById('err');
+  el.textContent = '⚠ ' + msg;
+  el.style.display = 'block';
+}
+function hideErr() {
+  document.getElementById('err').style.display = 'none';
+}
+</script>
+</body>
+</html>
