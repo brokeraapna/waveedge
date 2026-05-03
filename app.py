@@ -150,7 +150,6 @@ INSTRUMENTS = {
 }
 
 # ── TIMEFRAME CONFIG ──────────────────────────────────────
-# Upstox supported intervals: 1minute,30minute,day,week,month
 TF = {
     "monthly": {"interval": "month",     "days": 1825},
     "weekly":  {"interval": "week",      "days": 730},
@@ -167,6 +166,57 @@ DEFAULT_SCRIPS = [
 ]
 
 # ── CACHE ─────────────────────────────────────────────────
+
+# DYNAMIC INSTRUMENT LOOKUP
+_instrument_map    = {}
+_instrument_loaded = False
+INSTRUMENT_FILE    = "nse_instruments.json"
+
+def load_instrument_file():
+    global _instrument_map, _instrument_loaded
+    try:
+        if os.path.exists(INSTRUMENT_FILE):
+            age = time.time() - os.path.getmtime(INSTRUMENT_FILE)
+            if age < 86400:
+                with open(INSTRUMENT_FILE) as f:
+                    _instrument_map = json.load(f)
+                log.info(f"Instruments loaded from cache: {len(_instrument_map)} symbols")
+                _instrument_loaded = True
+                return
+        log.info("Downloading Upstox NSE instruments...")
+        r = requests.get(
+            "https://assets.upstox.com/market-quote/instruments/exchange/NSE.json.gz",
+            timeout=30
+        )
+        if r.status_code == 200:
+            import gzip, io
+            with gzip.open(io.BytesIO(r.content)) as f:
+                instruments = json.load(f)
+            mp = {}
+            for inst in instruments:
+                if inst.get("instrument_type") == "EQ" and inst.get("segment") == "NSE_EQ":
+                    sym  = inst.get("trading_symbol", "").upper()
+                    ikey = inst.get("instrument_key", "")
+                    if sym and ikey:
+                        mp[sym] = ikey
+            _instrument_map = mp
+            with open(INSTRUMENT_FILE, 'w') as f:
+                json.dump(mp, f)
+            log.info(f"Downloaded {len(mp)} NSE EQ instruments")
+            _instrument_loaded = True
+        else:
+            log.warning(f"Instrument download failed: {r.status_code}")
+    except Exception as e:
+        log.error(f"Instrument load error: {e}")
+
+def resolve_instrument(ticker):
+    ticker = ticker.upper().strip()
+    if ticker in INSTRUMENTS:
+        return INSTRUMENTS[ticker]
+    if ticker in _instrument_map:
+        return _instrument_map[ticker]
+    return None
+
 _cache    = {}
 _cache_ts = {}
 CACHE_TTL = 300  # 5 min
@@ -201,7 +251,6 @@ def fetch_candles(instrument_key, interval, days):
             candles = r.json().get("data", {}).get("candles", [])
             if not candles:
                 return None, "no_data"
-            # [timestamp, open, high, low, close, volume, oi]
             closes = [c[4] for c in candles]
             _cache[key]    = closes
             _cache_ts[key] = now
@@ -236,7 +285,7 @@ EMPTY_SIG = {"signal": "—", "zero": "—", "crossover": False, "histogram": 0}
 
 def get_signals(ticker, timeframes):
     ticker = ticker.upper().strip()
-    ikey   = INSTRUMENTS.get(ticker)
+    ikey   = resolve_instrument(ticker)
     result = {"symbol": ticker, "timeframes": {}, "timestamp": datetime.utcnow().isoformat()}
 
     if not ikey:
@@ -264,14 +313,12 @@ def get_signals(ticker, timeframes):
 
 # ── ELLIOTT WAVE PATTERN DETECTION ────────────────────────
 def detect_ew_pattern(closes):
-    """Simple Elliott Wave pattern detection from price action."""
     if not closes or len(closes) < 50:
         return {"pattern": "Insufficient Data", "wave": "—", "confidence": 0}
 
     prices = closes[-50:]
     n = len(prices)
 
-    # Find recent pivots
     highs, lows = [], []
     for i in range(2, n-2):
         if prices[i] > prices[i-1] and prices[i] > prices[i+1] and prices[i] > prices[i-2] and prices[i] > prices[i+2]:
@@ -283,39 +330,33 @@ def detect_ew_pattern(closes):
     start = prices[0]
     trend_pct = (curr - start) / start * 100
 
-    # Simple pattern classification
     if len(highs) >= 2 and len(lows) >= 2:
         last_high = highs[-1][1]
         last_low  = lows[-1][1]
         prev_high = highs[-2][1] if len(highs) >= 2 else last_high
         prev_low  = lows[-2][1]  if len(lows)  >= 2 else last_low
 
-        # Impulse: higher highs + higher lows
         if last_high > prev_high and last_low > prev_low and trend_pct > 2:
             if trend_pct > 8:
-                return {"pattern": "Impulse 5-Wave",  "wave": "Wave ③", "confidence": 85, "bias": "bullish"}
-            return     {"pattern": "Wave 3 Breakout", "wave": "Wave ③", "confidence": 78, "bias": "bullish"}
+                return {"pattern": "Impulse 5-Wave",  "wave": "Wave 3", "confidence": 85, "bias": "bullish"}
+            return     {"pattern": "Wave 3 Breakout", "wave": "Wave 3", "confidence": 78, "bias": "bullish"}
 
-        # Correction: lower highs + lower lows
         if last_high < prev_high and last_low < prev_low and trend_pct < -2:
             return     {"pattern": "ABC Correction",  "wave": "Wave C",  "confidence": 74, "bias": "bearish"}
 
-        # Sideways = triangle or wave 4
         if abs(trend_pct) < 2:
-            return     {"pattern": "Triangle Pattern", "wave": "Wave ④", "confidence": 65, "bias": "neutral"}
+            return     {"pattern": "Triangle Pattern", "wave": "Wave 4", "confidence": 65, "bias": "neutral"}
 
-        # Ending diagonal
         if last_high > prev_high and last_low < prev_low:
-            return     {"pattern": "Ending Diagonal",  "wave": "Wave ⑤", "confidence": 70, "bias": "bearish"}
+            return     {"pattern": "Ending Diagonal",  "wave": "Wave 5", "confidence": 70, "bias": "bearish"}
 
     if trend_pct > 5:
-        return {"pattern": "Impulse 5-Wave",  "wave": "Wave ③", "confidence": 72, "bias": "bullish"}
+        return {"pattern": "Impulse 5-Wave",  "wave": "Wave 3", "confidence": 72, "bias": "bullish"}
     if trend_pct < -5:
         return {"pattern": "ABC Correction",  "wave": "Wave A",  "confidence": 68, "bias": "bearish"}
-    return     {"pattern": "Consolidation",   "wave": "Wave ④", "confidence": 60, "bias": "neutral"}
+    return     {"pattern": "Consolidation",   "wave": "Wave 4", "confidence": 60, "bias": "neutral"}
 
 def get_ltp(instrument_key):
-    """Get last traded price from Upstox."""
     token = get_token()
     if not token:
         return None
@@ -335,12 +376,10 @@ def get_ltp(instrument_key):
     return None
 
 def scan_ticker(ticker):
-    """Full scan for one ticker: EW pattern + MACD daily."""
-    ikey = INSTRUMENTS.get(ticker.upper())
+    ikey = resolve_instrument(ticker.upper())
     if not ikey:
         return None
 
-    # Get daily closes for EW detection
     closes, err = fetch_candles(ikey, "day", 200)
     if not closes:
         return None
@@ -349,7 +388,6 @@ def scan_ticker(ticker):
     macd    = calc_macd(closes) or EMPTY_SIG
     ltp     = get_ltp(ikey)
 
-    # Price change estimate from closes
     chg_pct = 0
     if len(closes) >= 2:
         chg_pct = round((closes[-1] - closes[-2]) / closes[-2] * 100, 2)
@@ -378,6 +416,29 @@ def save_posts(posts):
         with open(POSTS_FILE, 'w') as f: json.dump(posts[:100], f, indent=2)
     except: pass
 
+# ── HELPERS ───────────────────────────────────────────────
+def _safe_int(val):
+    try:
+        return int(str(val).replace(",", "").strip() or 0)
+    except:
+        return 0
+
+def _html_page(title, msg, color, link, link_text):
+    c = "#00ff88" if color == "green" else "#ff1744"
+    bc= "rgba(0,255,136,.06)" if color=="green" else "rgba(255,23,68,.06)"
+    return f"""<!DOCTYPE html><html><head><meta charset=UTF-8>
+    <meta name=viewport content="width=device-width,initial-scale=1">
+    <title>{title} | WaveEdge</title>
+    <style>*{{box-sizing:border-box;margin:0;padding:0}}
+    body{{background:#020c14;color:#dff0f8;font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}}
+    .box{{background:#061525;border:2px solid {c};border-radius:16px;padding:48px 40px;text-align:center;max-width:440px;width:100%;background:{bc}}}
+    h1{{font-size:28px;margin-bottom:14px;color:{c}}}
+    p{{color:#4d8099;font-size:15px;line-height:1.7;margin-bottom:28px}}
+    a{{display:inline-block;background:{c};color:#000;padding:13px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px}}
+    </style></head><body>
+    <div class=box><h1>{title}</h1><p>{msg}</p><a href="{link}">{link_text}</a></div>
+    </body></html>"""
+
 # ── BACKGROUND THREADS ────────────────────────────────────
 def bg_warm_cache():
     time.sleep(20)
@@ -403,7 +464,10 @@ def bg_keep_alive():
         except: pass
         time.sleep(600)
 
+# ══════════════════════════════════════════════════════════
 # ── ROUTES ────────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════
+
 @app.route("/")
 def index():
     token = get_token()
@@ -414,7 +478,7 @@ def index():
     )
     return jsonify({
         "name":        "WaveEdge API — Upstox Edition",
-        "version":     "5.0",
+        "version":     "5.1",
         "connected":   bool(token),
         "login_url":   login_url if not token else "already_connected",
         "endpoints": {
@@ -428,6 +492,8 @@ def index():
             "/scan/<ticker>":    "Scan single ticker",
             "/symbols":          "List all mapped symbols",
             "/blog":             "Blog posts",
+            "/fii":              "FII/DII participant OI data",
+            "/pcr":              "Nifty Put/Call Ratio",
         }
     })
 
@@ -440,9 +506,9 @@ def health():
         "cached":    len(_cache),
     })
 
+# ── UPSTOX AUTH ───────────────────────────────────────────
 @app.route("/upstox/token", methods=["GET","POST"])
 def manual_token():
-    """Manually set access token — use when OAuth redirect fails."""
     if request.method == "POST":
         data  = request.get_json() or {}
         token = data.get("access_token","").strip()
@@ -454,7 +520,6 @@ def manual_token():
         save_token({"access_token": token, "expires_at": date.today().isoformat()})
         return jsonify({"success": True, "message": "Token saved!"})
 
-    # GET — show a simple form to paste token
     return """<!DOCTYPE html><html><head><meta charset=UTF-8>
     <title>Set Upstox Token | WaveEdge</title>
     <style>*{box-sizing:border-box;margin:0;padding:0}body{background:#020c14;color:#dff0f8;font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}.box{background:#061525;border:1px solid #00e5ff;border-radius:14px;padding:36px;width:100%;max-width:500px}h2{color:#00e5ff;margin-bottom:8px}p{color:#4d8099;font-size:13px;margin-bottom:20px;line-height:1.6}label{display:block;font-size:11px;color:#4d8099;letter-spacing:1px;margin-bottom:5px;text-transform:uppercase}input,textarea{width:100%;background:#0a1f30;border:1px solid #173348;color:#dff0f8;padding:11px;border-radius:7px;font-size:13px;margin-bottom:14px;font-family:monospace}button{width:100%;background:linear-gradient(135deg,#00e5ff,#00ff88);color:#000;border:none;padding:13px;border-radius:7px;font-weight:700;font-size:15px;cursor:pointer}#msg{margin-top:12px;text-align:center;font-size:13px}</style>
@@ -480,7 +545,6 @@ def manual_token():
     }
     </script></body></html>"""
 
-# ── UPSTOX AUTH ───────────────────────────────────────────
 @app.route("/upstox/login")
 def upstox_login():
     login_url = (
@@ -507,7 +571,6 @@ def upstox_callback():
             "Real-time NSE data is now live on WaveEdge.<br>Token refreshes daily — click Reconnect each morning.",
             "green", "https://waveedge.in", "Go to WaveEdge →"
         )
-    # Show detailed debug info
     debug_info = f"""
     Error: {err}<br><br>
     Client ID: {CLIENT_ID[:8]}...{CLIENT_ID[-4:]}<br>
@@ -534,22 +597,6 @@ def upstox_status():
         "expires_at": _tok.get("expires_at", ""),
         "login_url":  login_url,
     })
-
-def _html_page(title, msg, color, link, link_text):
-    c = "#00ff88" if color == "green" else "#ff1744"
-    bc= "rgba(0,255,136,.06)" if color=="green" else "rgba(255,23,68,.06)"
-    return f"""<!DOCTYPE html><html><head><meta charset=UTF-8>
-    <meta name=viewport content="width=device-width,initial-scale=1">
-    <title>{title} | WaveEdge</title>
-    <style>*{{box-sizing:border-box;margin:0;padding:0}}
-    body{{background:#020c14;color:#dff0f8;font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}}
-    .box{{background:#061525;border:2px solid {c};border-radius:16px;padding:48px 40px;text-align:center;max-width:440px;width:100%;background:{bc}}}
-    h1{{font-size:28px;margin-bottom:14px;color:{c}}}
-    p{{color:#4d8099;font-size:15px;line-height:1.7;margin-bottom:28px}}
-    a{{display:inline-block;background:{c};color:#000;padding:13px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px}}
-    </style></head><body>
-    <div class=box><h1>{title}</h1><p>{msg}</p><a href="{link}">{link_text}</a></div>
-    </body></html>"""
 
 # ── MACD ROUTES ───────────────────────────────────────────
 @app.route("/macd/<ticker>")
@@ -667,15 +714,159 @@ def symbols():
         "symbols": list(INSTRUMENTS.keys()),
     })
 
+# ── FII / DII DATA ────────────────────────────────────────
+@app.route("/fii")
+def fii_data():
+    """
+    FII/DII participant OI data.
+    Source 1: NSE public archive CSV (published ~6pm daily, no auth needed).
+    Source 2: Upstox for Nifty spot price.
+    Falls back to spot-only if CSV not yet published (before 6pm).
+    """
+    result = {
+        "data": [],
+        "spotPrice": 0, "spotChange": 0, "spotPct": 0,
+        "pcr": 0, "source": "unknown", "dataDate": ""
+    }
+
+    # 1. Nifty spot from Upstox
+    token = get_token()
+    if token:
+        try:
+            sr = requests.get(
+                "https://api.upstox.com/v2/market-quote/ltp",
+                params={"instrument_key": "NSE_INDEX|Nifty 50"},
+                headers={"Authorization": f"Bearer {token}", "Accept": "application/json"},
+                timeout=5
+            )
+            if sr.status_code == 200:
+                ltp = sr.json().get("data", {}).get("NSE_INDEX:Nifty 50", {}).get("last_price", 0)
+                result["spotPrice"] = ltp
+                result["source"] = "upstox_spot"
+        except Exception as e:
+            log.warning(f"Upstox spot error: {e}")
+
+    # 2. Participant OI from NSE public archive CSV
+    csv_headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        "Accept": "text/csv,*/*",
+    }
+
+    participant_data = []
+    for days_back in range(0, 8):
+        check_date = datetime.now() - timedelta(days=days_back)
+        if check_date.weekday() >= 5:
+            continue
+        date_str = check_date.strftime("%d%m%Y")
+        year_str = check_date.strftime("%Y")
+        mon_str  = check_date.strftime("%b").upper()
+        csv_url  = f"https://archives.nseindia.com/content/historical/DERIVATIVES/{year_str}/{mon_str}/fao_participant_oi_{date_str}.csv"
+
+        try:
+            r = requests.get(csv_url, headers=csv_headers, timeout=10)
+            if r.status_code == 200 and "Client" in r.text:
+                import csv, io
+                reader = csv.DictReader(io.StringIO(r.text))
+                rows = list(reader)
+                if rows:
+                    participant_data = rows
+                    result["dataDate"] = check_date.strftime("%d-%b-%Y")
+                    result["source"]   = "nse_csv"
+                    log.info(f"FII CSV loaded for {result['dataDate']}")
+                    break
+        except Exception as e:
+            log.warning(f"CSV fetch error for {date_str}: {e}")
+            continue
+
+    if participant_data:
+        mapped = []
+        for row in participant_data:
+            ct = row.get("Client Type", "").strip()
+            if not ct or ct.lower() == "total":
+                continue
+            mapped.append({
+                "clientType":          ct,
+                "instrumentType":      "Index Futures",
+                "longQuantity":        _safe_int(row.get("Future Index Long", 0)),
+                "shortQuantity":       _safe_int(row.get("Future Index Short", 0)),
+                "changeLongQuantity":  _safe_int(row.get("Future Index Long Change", 0)),
+                "changeShortQuantity": _safe_int(row.get("Future Index Short Change", 0)),
+            })
+            mapped.append({
+                "clientType":          ct,
+                "instrumentType":      "Index Calls",
+                "longQuantity":        _safe_int(row.get("Option Index Call Long", 0)),
+                "shortQuantity":       _safe_int(row.get("Option Index Call Short", 0)),
+                "changeLongQuantity":  _safe_int(row.get("Option Index Call Long Change", 0)),
+                "changeShortQuantity": _safe_int(row.get("Option Index Call Short Change", 0)),
+            })
+            mapped.append({
+                "clientType":          ct,
+                "instrumentType":      "Index Puts",
+                "longQuantity":        _safe_int(row.get("Option Index Put Long", 0)),
+                "shortQuantity":       _safe_int(row.get("Option Index Put Short", 0)),
+                "changeLongQuantity":  _safe_int(row.get("Option Index Put Long Change", 0)),
+                "changeShortQuantity": _safe_int(row.get("Option Index Put Short Change", 0)),
+            })
+            mapped.append({
+                "clientType":          ct,
+                "instrumentType":      "Stock Futures",
+                "longQuantity":        _safe_int(row.get("Future Stock Long", 0)),
+                "shortQuantity":       _safe_int(row.get("Future Stock Short", 0)),
+                "changeLongQuantity":  _safe_int(row.get("Future Stock Long Change", 0)),
+                "changeShortQuantity": _safe_int(row.get("Future Stock Short Change", 0)),
+            })
+
+        result["data"] = mapped
+        return jsonify(result)
+
+    # All CSV attempts failed
+    if result["spotPrice"]:
+        result["spotOnly"] = True
+        result["error"] = "NSE CSV unavailable — may be holiday or published after 6pm"
+        return jsonify(result)
+
+    return jsonify({"error": "All data sources failed"}), 503
+
+
+@app.route("/pcr")
+def pcr_data():
+    """Fetch Nifty PCR from NSE option chain."""
+    try:
+        session = requests.Session()
+        session.headers.update({
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "Accept": "*/*",
+            "Accept-Language": "en-US,en;q=0.9",
+        })
+        session.get("https://www.nseindia.com", timeout=8)
+        r = session.get(
+            "https://www.nseindia.com/api/option-chain-indices?symbol=NIFTY",
+            headers={"Referer": "https://www.nseindia.com/option-chain"},
+            timeout=10
+        )
+        r.raise_for_status()
+        data     = r.json()
+        filtered = data.get("filtered", {})
+        pe_oi    = filtered.get("PE", {}).get("totOI", 0)
+        ce_oi    = filtered.get("CE", {}).get("totOI", 1)
+        pcr      = round(pe_oi / max(ce_oi, 1), 4)
+        return jsonify({"pcr": pcr, "pe_oi": pe_oi, "ce_oi": ce_oi})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 503
+
+
 # ── STARTUP ───────────────────────────────────────────────
+load_token()
+threading.Thread(target=load_instrument_file, daemon=True).start()
+threading.Thread(target=bg_warm_cache, daemon=True).start()
+threading.Thread(target=bg_keep_alive, daemon=True).start()
+log.info("=" * 50)
+log.info("WaveEdge API v5.1 — Upstox Edition")
+log.info(f"Token valid: {bool(get_token())}")
+if not get_token():
+    log.info(f"LOGIN URL: {SELF_URL}/upstox/login")
+log.info("=" * 50)
+
 if __name__ == "__main__":
-    load_token()
-    threading.Thread(target=bg_warm_cache, daemon=True).start()
-    threading.Thread(target=bg_keep_alive, daemon=True).start()
-    log.info("=" * 50)
-    log.info("WaveEdge API v5 — Upstox Edition")
-    log.info(f"Token valid: {bool(get_token())}")
-    if not get_token():
-        log.info(f"LOGIN URL: {SELF_URL}/upstox/login")
-    log.info("=" * 50)
     app.run(host="0.0.0.0", port=5000, debug=False)
