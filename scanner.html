@@ -200,19 +200,15 @@ td.col-scrip{padding:12px 16px;}
 <!-- ── MAIN ── -->
 <main class="main">
 
-  <!-- TOPBAR -->
-  <div class="topbar">
-    <div class="topbar-title">Elliott <span>Wave</span> Scanner</div>
+  <!-- TOPBAR + RECENT combined -->
+  <div class="recent-row" style="padding:10px 16px;gap:10px;flex-wrap:nowrap;">
     <input class="add-input" id="scrip-input" type="text" placeholder="Add scrip (e.g. INFY)" maxlength="20"
+      style="width:160px;flex-shrink:0;"
       onkeydown="if(event.key==='Enter') addScrip()"/>
-    <button class="btn btn-add" onclick="addScrip()">+ ADD</button>
-    <button class="btn btn-refresh" id="refresh-btn" onclick="refreshAll()">↻ REFRESH</button>
-  </div>
-
-  <!-- RECENT CHIPS -->
-  <div class="recent-row">
-    <span class="recent-label">RECENT:</span>
-    <span id="recent-chips"></span>
+    <button class="btn btn-add" onclick="addScrip()" style="flex-shrink:0;">+ ADD</button>
+    <button class="btn btn-refresh" id="refresh-btn" onclick="refreshAll()" style="flex-shrink:0;">↻</button>
+    <span class="recent-label" style="flex-shrink:0;">RECENT:</span>
+    <span id="recent-chips" style="display:flex;gap:6px;overflow-x:auto;"></span>
   </div>
 
   <!-- TABLE -->
