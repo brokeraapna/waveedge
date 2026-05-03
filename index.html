@@ -599,12 +599,12 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
   <div class="wrap sec" id="pricing">
     <div class="sec-lbl">// Pricing Plans</div>
     <h2 class="sec-title">Start reading<br>the <em>market's language.</em></h2>
-    <p class="sec-desc">All plans include a 14-day free trial. No credit card required to start.</p>
+    <p class="sec-desc">NSE F&O Elliott Wave scanner · AI signals · FII data · All timeframes</p>
     <div class="price-grid">
       <!-- STARTER -->
       <div class="price-card">
-        <div class="p-plan">Starter</div>
-        <div class="p-amt">₹999<span>/mo</span></div>
+        <div class="p-plan">Professional</div>
+        <div class="p-amt">₹2,499<span>/mo</span></div>
         <div class="p-period">Billed monthly · 14-day free trial</div>
         <ul class="p-feats">
           <li>500 symbols (NSE/BSE only)</li>
@@ -614,8 +614,8 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
           <li>Email alerts only</li>
           <li>TradingView basic chart</li>
         </ul>
-        <a href="https://rzp.io/rzp/uM8NL2F" target="_blank" style="text-decoration:none;display:block;">
-          <button class="btn-lg outline" style="width:100%;padding:12px;font-size:14px;">Pay ₹999/mo →</button>
+        <a href="https://rzp.io/rzp/bvQxATOd" target="_blank" style="text-decoration:none;display:block;">
+          <button class="btn-lg outline" style="width:100%;padding:12px;font-size:14px;">Pay ₹2,499/mo →</button>
         </a>
       </div>
       <!-- PROFESSIONAL -->
@@ -633,7 +633,7 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
           <li>Backtesting engine (15yr data)</li>
           <li>TradingView advanced chart</li>
         </ul>
-        <a href="https://rzp.io/rzp/VMsJmBwc" target="_blank" style="text-decoration:none;display:block;">
+        <a href="https://rzp.io/rzp/bvQxATOd" target="_blank" style="text-decoration:none;display:block;">
           <button class="btn-lg primary" style="width:100%;padding:12px;font-size:14px;">Pay ₹2,499/mo →</button>
         </a>
       </div>
@@ -652,7 +652,7 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
           <li>Telegram & WhatsApp signals</li>
           <li>White-label option</li>
         </ul>
-        <a href="https://rzp.io/rzp/jhulNmN" target="_blank" style="text-decoration:none;display:block;">
+        <a href="https://rzp.io/rzp/wAfZMAY" target="_blank" style="text-decoration:none;display:block;">
           <button class="btn-lg gold" style="width:100%;padding:12px;font-size:14px;">Pay ₹7,499/mo →</button>
         </a>
       </div>
@@ -986,7 +986,7 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
           <li>30 recorded sessions + PDF workbook</li>
           <li>30-day Telegram support group access</li>
         </ul>
-        <a href="https://rzp.io/rzp/jhulNmN" target="_blank" style="text-decoration:none;display:block;">
+        <a href="https://rzp.io/rzp/wAfZMAY" target="_blank" style="text-decoration:none;display:block;">
           <button class="btn-lg gold" style="width:100%;font-size:14px;padding:13px;">Enroll Now — ₹7,499 →</button>
         </a>
       </div>
@@ -1005,7 +1005,7 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
           <li>API & broker integration support</li>
           <li>Team access (5 users)</li>
         </ul>
-        <a href="https://rzp.io/rzp/jhulNmN" target="_blank" style="text-decoration:none;display:block;">
+        <a href="https://rzp.io/rzp/wAfZMAY" target="_blank" style="text-decoration:none;display:block;">
           <button class="btn-lg primary" style="width:100%;font-size:14px;padding:13px;">Subscribe — ₹7,499/mo →</button>
         </a>
       </div>
@@ -1228,10 +1228,9 @@ var _origShowPage = window.showPage;
         <div class="f-grp"><label class="f-lbl">Password</label><input class="f-inp" type="password" placeholder="Min 8 characters" id="s-pw"/></div>
         <div class="f-grp">
           <label class="f-lbl">Choose Plan</label>
-          <div class="plan-sel">
-            <div class="plan-opt" onclick="selPlan(this,0)"><div class="plan-opt-n">Starter</div><div class="plan-opt-p">₹999/mo</div></div>
-            <div class="plan-opt sel" onclick="selPlan(this,1)"><div class="plan-opt-n">Pro</div><div class="plan-opt-p">₹2,499/mo</div></div>
-            <div class="plan-opt" onclick="selPlan(this,2)"><div class="plan-opt-n">Institutional</div><div class="plan-opt-p">₹7,499/mo</div></div>
+          <div class="plan-sel" style="grid-template-columns:repeat(2,1fr);">
+            <div class="plan-opt sel" onclick="selPlan(this,0)"><div class="plan-opt-n">Professional</div><div class="plan-opt-p">₹2,499/mo</div></div>
+            <div class="plan-opt" onclick="selPlan(this,1)"><div class="plan-opt-n">Institutional</div><div class="plan-opt-p">₹7,499/mo</div></div>
           </div>
         </div>
         <button class="btn-auth" onclick="doSignup()">Start 14-Day Free Trial →</button>
@@ -1447,7 +1446,7 @@ function analyzeRow(s){if(!currentUser){showPage('auth');showToast('⚡ Log in t
 // ─── AUTH ───
 let currentUser=null;
 let selPlanIdx=1;
-const rzpLinks=['https://rzp.io/rzp/uM8NL2F','https://rzp.io/rzp/VMsJmBwc','https://rzp.io/rzp/jhulNmN'];
+const rzpLinks=['https://rzp.io/rzp/bvQxATOd','https://rzp.io/rzp/wAfZMAY'];
 
 function switchTab(tab){
   document.getElementById('login-form').style.display=tab==='login'?'flex':'none';
