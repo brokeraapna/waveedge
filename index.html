@@ -1323,7 +1323,7 @@ function showPage(id){
     var el = document.getElementById('nav-'+id);
     if(el) el.classList.add('active-link');
     window.scrollTo({top:0});
-    if(id==='scanner' && typeof renderScCards==='function') renderScCards();
+    // scanner now in iframe
     if(id==='chart' && typeof renderSymGrid==='function') setTimeout(renderSymGrid, 50);
     if(id==='blog') { setTimeout(function(){
       if(typeof blogSeed==='function') blogSeed();
@@ -1341,187 +1341,18 @@ function scrollTo_(id){
 }
 
 // ─── SCANNER ───
-function renderScCards(){
-  const w=document.getElementById('sc-cards');
-  w.innerHTML=SCANNERS.map((s,i)=>`
-    <div class="sc-card${scIdx===i?' sel':''}" onclick="selSc(${i})">
-      <div class="sc-ico">${s.i}</div>
-      <div class="sc-nm">${s.n}</div>
-      <div class="sc-ds">${s.d}</div>
-      <span style="display:inline-block;padding:2px 9px;border-radius:100px;background:${s.tc};color:${s.tcc};font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:1px;border:1px solid ${s.tcc}40">${s.t}</span>
-    </div>`).join('');
-  renderResults();
-}
-
-function selSc(i){scIdx=scIdx===i?null:i;renderScCards();}
-function setMkt(m,el){mkt=m;document.querySelectorAll('.mkt-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderResults();}
-function setConf(c,el){conf=c;document.querySelectorAll('.f-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderResults();}
+// old scanner functions removed
+function setMkt(m,el){mkt=m;document.querySelectorAll('.mkt-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');// renderResults removed}
+function setConf(c,el){conf=c;document.querySelectorAll('.f-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');// renderResults removed}
 
 // ── LIVE API INTEGRATION ──────────────────────────────
 // Once your backend is deployed, set this URL:
 var API_URL = 'https://waveedgebackflask-kexj.onrender.com';
 var _apiLoaded = false;
 
-async function fetchLiveData() {
-  if (!API_URL) return; // no backend set yet, use demo data
-  try {
-    document.getElementById('res-title').textContent = 'FETCHING LIVE DATA...';
-    var mkt = mkt === 'all' ? '' : '?market=' + mkt;
-    var res = await fetch(API_URL + '/scan?force=true&t=' + Date.now());
-    if (!res.ok) throw new Error('API error');
-    var data = await res.json();
-    if (data.results && data.results.length > 0) {
-      // Map API results to display format
-      var liveData = data.results.map(function(r) {
-        var mkt_raw = r.market || 'NSE';
-        var price = r.price ? (r.price > 1000 ? '₹' + Math.round(r.price).toLocaleString('en-IN') : r.price > 1 ? r.price.toFixed(2) : r.price.toFixed(4)) : '—';
-        var chgPct = r.change_pct || 0;
-        return {
-          s: r.symbol,
-          n: r.symbol,
-          m: mkt_raw,
-          mc: 'mb-' + mkt_raw.toLowerCase(),
-          p: r.pattern || 'Wave Analysis',
-          pc: r.bias === 'bullish' ? 'wp-i' : r.bias === 'bearish' ? 'wp-a' : 'wp-e',
-          w: r.wave || 'Wave Analysis',
-          wc: r.bias === 'bullish' ? '#00e5ff' : r.bias === 'bearish' ? '#ff4060' : '#ffd700',
-          tgt: price,
-          tf: r.timeframe || '1D',
-          c: r.confidence || 70,
-          chg: (chgPct >= 0 ? '+' : '') + chgPct + '%',
-          up: chgPct >= 0,
-          nw: r.signal === 'BUY' || r.signal === 'SELL'
-        };
-      });
-      renderResultsWithData(liveData);
-      _apiLoaded = true;
-      var ts = data.last_scan ? ' · Last scan: ' + new Date(data.last_scan).toLocaleTimeString() : '';
-      document.getElementById('res-title').textContent = 'LIVE DATA — ' + data.count + ' PATTERNS' + ts;
-      return;
-    }
-  } catch(e) {
-    console.log('API unavailable, using demo data:', e.message);
-  }
-  renderResults(); // fallback to demo
-}
+async // fetchLiveData removed - scanner in iframe
 
-function renderResults(){renderResultsWithData(SCAN_DATA);}
-function renderResultsWithData(data){
-  let d=[...SCAN_DATA];
-  if(mkt==='nse') d=d.filter(r=>r.m==='NSE'||r.m==='BSE');
-  else if(mkt==='crypto') d=d.filter(r=>r.m==='CRYPTO');
-  else if(mkt==='forex') d=d.filter(r=>r.m==='FOREX');
-  else if(mkt==='us') d=d.filter(r=>r.m==='US');
-  if(conf==='high') d=d.filter(r=>r.c>=80);
-  else if(conf==='med') d=d.filter(r=>r.c>=60&&r.c<80);
-  else if(conf==='new') d=d.filter(r=>r.nw);
-
-  var lbl = _apiLoaded ? 'LIVE' : 'DEMO';
-  document.getElementById('res-title').textContent='SHOWING '+d.length+' RESULT'+(d.length!==1?'S':'')+' — '+lbl+' SCAN';
-  document.getElementById('sc-tbody').innerHTML=d.map(r=>`
-    <tr onclick="analyzeRow('${r.s}')">
-      <td><div class="sym">${r.s}</div><div class="sym-n">${r.n}</div></td>
-      <td><span class="mb ${r.mc}">${r.m}</span></td>
-      <td><span class="wp ${r.pc}">${r.p}</span></td>
-      <td style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:${r.wc}">${r.w}</td>
-      <td><span class="tgt">${r.tgt}</span></td>
-      <td style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted)">${r.tf}</td>
-      <td><div class="conf-w"><div class="c-track"><div class="c-fill" style="width:${r.c}%"></div></div><span class="c-pct">${r.c}%</span></div></td>
-      <td class="${r.up?'up':'dn'}">${r.chg}</td>
-      <td><button class="a-btn">Analyze →</button></td>
-    </tr>`).join('');
-}
-
-function runScan(){
-  if(API_URL){
-    fetchLiveData();
-    showToast('↻ Fetching live scan from backend...');
-  } else {
-    renderResults();
-    showToast('↻ Demo data refreshed. Set API_URL to connect live backend.');
-  }
-}
-function analyzeRow(s){if(!currentUser){showPage('auth');showToast('⚡ Log in to view full wave analysis');return;}showToast('📊 Loading '+s+' Elliott Wave analysis…');}
-
-// ─── AUTH ───
-let currentUser=null;
-let selPlanIdx=1;
-const rzpLinks=['https://rzp.io/rzp/bvQxATOd','https://rzp.io/rzp/wAfZMAY'];
-
-function switchTab(tab){
-  document.getElementById('login-form').style.display=tab==='login'?'flex':'none';
-  document.getElementById('signup-form').style.display=tab==='signup'?'flex':'none';
-  document.getElementById('tab-login').classList.toggle('active',tab==='login');
-  document.getElementById('tab-signup').classList.toggle('active',tab==='signup');
-}
-function selPlan(el,i){document.querySelectorAll('.plan-opt').forEach(p=>p.classList.remove('sel'));el.classList.add('sel');selPlanIdx=i;}
-
-function doLogin(){
-  const em=document.getElementById('l-email').value.trim();
-  const pw=document.getElementById('l-pass').value;
-  if(!em||!pw){showToast('⚠ Please fill all fields');return;}
-  currentUser={name:em.split('@')[0],email:em};
-  updateNav();showPage('scanner');showToast('✦ Welcome back to WaveEdge!');
-}
-function doSignup(){
-  const fn=document.getElementById('s-fn').value.trim();
-  const em=document.getElementById('s-em').value.trim();
-  const pw=document.getElementById('s-pw').value;
-  if(!fn||!em||!pw){showToast('⚠ Please fill required fields');return;}
-  currentUser={name:fn,email:em};
-  updateNav();showPage('scanner');showToast('✦ Welcome '+fn+'! 14-day trial started.');
-}
-function socialLogin(p){currentUser={name:'Trader',email:'trader@waveedge.in'};updateNav();showPage('scanner');showToast('✦ Signed in with '+p);}
-function logout(){currentUser=null;updateNav();showPage('home');showToast('Logged out. See you soon!');}
-
-function updateNav(){
-  const pill=document.getElementById('user-pill');
-  document.getElementById('nav-login').style.display=currentUser?'none':'';
-  document.getElementById('nav-signup').style.display=currentUser?'none':'';
-  pill.style.display=currentUser?'flex':'none';
-  if(currentUser){
-    document.getElementById('u-nm').textContent=currentUser.name;
-    document.getElementById('u-av').textContent=currentUser.name[0].toUpperCase();
-  }
-}
-
-// ─── TOAST ───
-function showToast(msg){
-  const t=document.getElementById('toast');
-  document.getElementById('t-msg').textContent=msg;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3400);
-}
-
-// ─── SCROLL ANIM ───
-const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.1});
-document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
-
-// ─── API INFO MODAL ───
-function showApiInfo(){
-  var deployed = API_URL ? true : false;
-  var msg = deployed
-    ? '✦ Connected to live backend: ' + API_URL
-    : '⚙ Backend not connected yet.\n\nTo connect live data:\n1. Deploy the Python backend (see waveedge_backend folder)\n2. Set API_URL in the scanner JS to your Railway/Render URL\n3. Click Refresh to load live wave data\n\nCurrently showing demo data.';
-  alert(msg);
-}
-
-// Update API status badge
-function updateApiStatus(){
-  var el = document.getElementById('api-status-txt');
-  if(!el) return;
-  if(API_URL){
-    el.textContent = 'Live API';
-    document.getElementById('api-status').style.color = 'var(--green)';
-  } else {
-    el.textContent = 'Live API Connected';
-    document.getElementById('api-status').style.color = 'var(--green)';
-  }
-}
-
-// ─── INIT ───
-updateApiStatus();
-renderResults();
+// old scanner render removed
 
 // Check Upstox API status
 function checkUpstoxStatus() {
@@ -1575,7 +1406,6 @@ if(API_URL) {
     .then(function(r){ 
       if(r.ok) {
         if(statusEl) statusEl.textContent = 'Live API Connected';
-        fetchLiveData();
       }
     })
     .catch(function(){
@@ -1583,7 +1413,6 @@ if(API_URL) {
       if(statusEl) statusEl.textContent = 'API starting (~60s)...';
       setTimeout(function(){
         if(statusEl) statusEl.textContent = 'Live API Connected';
-        fetchLiveData();
       }, 55000);
     });
 
