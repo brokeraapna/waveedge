@@ -71,6 +71,103 @@ select option{background:#0a1f30;}
     <div id="history-list"><div style="color:#3d7a99;font-size:11px;">Enter admin key and load history</div></div>
     <button class="btn" style="margin-top:12px;background:var(--s2);color:#00e5ff;background:#0a1f30;border:1px solid #173348;" onclick="loadHistory()">↻ Load History</button>
   </div>
+
+  <!-- WAVE COUNT POSTER -->
+  <div style="margin-top:28px;border-top:1px solid #173348;padding-top:24px;">
+    <div style="font-size:10px;color:#3d7a99;letter-spacing:2px;margin-bottom:16px;">// POST DAILY WAVE COUNT</div>
+
+    <label>WAVE SUMMARY (add multiple symbols)</label>
+    <div id="waves-wrap">
+      <div class="wave-row" style="display:grid;grid-template-columns:1fr 1fr 1fr 2fr;gap:8px;margin-bottom:8px;">
+        <input type="text" placeholder="NIFTY" class="sym-inp" style="background:#0a1f30;border:1px solid #173348;color:#d8eef8;padding:8px;border-radius:6px;font-family:monospace;font-size:11px;"/>
+        <input type="text" placeholder="Wave 3" class="wave-inp" style="background:#0a1f30;border:1px solid #173348;color:#d8eef8;padding:8px;border-radius:6px;font-family:monospace;font-size:11px;"/>
+        <select class="bias-inp" style="background:#0a1f30;border:1px solid #173348;color:#d8eef8;padding:8px;border-radius:6px;font-family:monospace;font-size:11px;">
+          <option value="bullish">🐂 Bullish</option>
+          <option value="bearish">🐻 Bearish</option>
+          <option value="neutral">⚖️ Neutral</option>
+        </select>
+        <input type="text" placeholder="Brief note..." class="note-inp" style="background:#0a1f30;border:1px solid #173348;color:#d8eef8;padding:8px;border-radius:6px;font-family:monospace;font-size:11px;"/>
+      </div>
+    </div>
+    <button onclick="addWaveRow()" style="background:#0a1f30;border:1px solid #173348;color:#00e5ff;padding:6px 14px;border-radius:6px;font-family:monospace;font-size:10px;cursor:pointer;margin-bottom:14px;">+ Add Symbol</button>
+
+    <label>ANALYSIS TEXT</label>
+    <textarea id="wc-analysis" rows="5" placeholder="Nifty is in Wave 3 of the impulse sequence. Watch for continuation above 24500..." style="width:100%;background:#0a1f30;border:1px solid #173348;color:#d8eef8;padding:10px;border-radius:7px;font-size:13px;font-family:monospace;margin-bottom:14px;resize:vertical;"></textarea>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+      <div>
+        <label>SUPPORT LEVELS (one per line, format: "Label: 24200")</label>
+        <textarea id="wc-support" rows="3" placeholder="Wave 4 Low: 24100&#10;50 EMA: 23800&#10;Wave 2 Low: 23400" style="width:100%;background:#0a1f30;border:1px solid #173348;color:#d8eef8;padding:10px;border-radius:7px;font-size:12px;font-family:monospace;resize:vertical;"></textarea>
+      </div>
+      <div>
+        <label>RESISTANCE LEVELS (one per line)</label>
+        <textarea id="wc-resist" rows="3" placeholder="Wave 3 Target: 25000&#10;Wave 5 Target: 26000&#10;ATH: 26277" style="width:100%;background:#0a1f30;border:1px solid #173348;color:#d8eef8;padding:10px;border-radius:7px;font-size:12px;font-family:monospace;resize:vertical;"></textarea>
+      </div>
+    </div>
+
+    <button onclick="postWaveCount()" style="width:100%;background:linear-gradient(135deg,#00e5ff,#00ff88);color:#000;border:none;padding:13px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;font-family:monospace;letter-spacing:1px;">📡 POST WAVE COUNT</button>
+    <div id="wc-msg" style="margin-top:10px;text-align:center;font-size:12px;font-family:monospace;"></div>
+  </div>
+
+  <script>
+  function addWaveRow() {
+    var html = '<div class="wave-row" style="display:grid;grid-template-columns:1fr 1fr 1fr 2fr;gap:8px;margin-bottom:8px;">'
+      + '<input type="text" placeholder="SYMBOL" class="sym-inp" style="background:#0a1f30;border:1px solid #173348;color:#d8eef8;padding:8px;border-radius:6px;font-family:monospace;font-size:11px;"/>'
+      + '<input type="text" placeholder="Wave X" class="wave-inp" style="background:#0a1f30;border:1px solid #173348;color:#d8eef8;padding:8px;border-radius:6px;font-family:monospace;font-size:11px;"/>'
+      + '<select class="bias-inp" style="background:#0a1f30;border:1px solid #173348;color:#d8eef8;padding:8px;border-radius:6px;font-family:monospace;font-size:11px;">'
+      + '<option value="bullish">🐂 Bullish</option>'
+      + '<option value="bearish">🐻 Bearish</option>'
+      + '<option value="neutral">⚖️ Neutral</option>'
+      + '</select>'
+      + '<input type="text" placeholder="Brief note..." class="note-inp" style="background:#0a1f30;border:1px solid #173348;color:#d8eef8;padding:8px;border-radius:6px;font-family:monospace;font-size:11px;"/>'
+      + '</div>';
+    document.getElementById('waves-wrap').insertAdjacentHTML('beforeend', html);
+  }
+
+  function parseLines(text) {
+    return text.trim().split('\n').filter(Boolean).map(function(line){
+      var parts = line.split(':');
+      return {label: (parts[0]||'').trim(), value: (parts.slice(1).join(':') || '').trim()};
+    }).filter(function(l){ return l.label && l.value; });
+  }
+
+  function postWaveCount() {
+    var key = document.getElementById('admin-key').value.trim();
+    if (!key) { document.getElementById('wc-msg').innerHTML='<span style="color:#ff4060">Enter admin key first</span>'; return; }
+
+    var waves = [];
+    document.querySelectorAll('.wave-row').forEach(function(row){
+      var sym  = row.querySelector('.sym-inp').value.trim().toUpperCase();
+      var wave = row.querySelector('.wave-inp').value.trim();
+      var bias = row.querySelector('.bias-inp').value;
+      var note = row.querySelector('.note-inp').value.trim();
+      if (sym) waves.push({symbol:sym, wave:wave, bias:bias, note:note});
+    });
+
+    var data = {
+      waves:      waves,
+      analysis:   document.getElementById('wc-analysis').value.trim(),
+      support:    parseLines(document.getElementById('wc-support').value),
+      resistance: parseLines(document.getElementById('wc-resist').value),
+    };
+
+    fetch('https://waveedgebackflask-kexj.onrender.com/wavecounts/post', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','X-Admin-Key': key},
+      body: JSON.stringify(data)
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.success) {
+        document.getElementById('wc-msg').innerHTML='<span style="color:#00ff88">✅ Wave count posted! View at waveedge.in → Wave Counts</span>';
+      } else {
+        document.getElementById('wc-msg').innerHTML='<span style="color:#ff4060">Error: '+d.error+'</span>';
+      }
+    })
+    .catch(function(e){ document.getElementById('wc-msg').innerHTML='<span style="color:#ff4060">Failed: '+e.message+'</span>'; });
+  }
+  </script>
+
 </div>
 
 <script>

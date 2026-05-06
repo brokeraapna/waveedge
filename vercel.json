@@ -37,6 +37,10 @@
       "dest": "/admin.html"
     },
     {
+      "src": "/wavecounts.html",
+      "dest": "/wavecounts.html"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }

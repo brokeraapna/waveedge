@@ -357,7 +357,7 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
     <li><a onclick="showPage('signals2')" id="nav-signals2">⚡ AI Signals</a></li>
     <li><a onclick="scrollTo_('#pricing')" id="nav-pricing">Pricing</a></li>
     <li><a onclick="showPage('tools')" id="nav-tools" style="color:var(--gold);">🛠 Tools</a></li>
-    <li><a onclick="showPage('fii')" id="nav-fii" style="color:#60a5fa;">📊 FII Data</a></li>
+    <li><a onclick="showPage('wavecounts')" id="nav-wavecounts" style="color:var(--cyan);">〰️ Wave Counts</a></li>
   </ul>
 
   <div class="nav-right">
@@ -1701,9 +1701,42 @@ function s2_cellHTML(data, locked) {
 
 </script>
 
-<!-- FII/DII DATA PAGE -->
-<div class="page" id="page-fii" style="min-height:100vh;background:var(--bg);">
-  <iframe src="/fii.html" style="width:100%;height:calc(100vh - 64px);border:none;display:block;" id="fii-iframe" loading="lazy"></iframe>
+<!-- WAVE COUNTS PAGE -->
+<div class="page" id="page-wavecounts" style="min-height:100vh;background:var(--bg);padding-top:64px;overflow-y:auto;">
+  <div style="max-width:900px;margin:0 auto;padding:32px 24px;">
+
+    <!-- Header -->
+    <div style="margin-bottom:32px;">
+      <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--cyan);letter-spacing:3px;margin-bottom:8px;">// DAILY WAVE ANALYSIS</div>
+      <div style="font-family:'Orbitron',monospace;font-size:28px;font-weight:900;margin-bottom:6px;">Wave <span style="color:var(--cyan);">Counts</span></div>
+      <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">Updated daily by Gaurav · 20 years Elliott Wave experience · @ewagaurav</div>
+    </div>
+
+    <!-- Today's Analysis -->
+    <div id="wc-today" style="background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--cyan);letter-spacing:2px;">TODAY'S ANALYSIS</div>
+        <div id="wc-date" style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);"></div>
+      </div>
+      <div id="wc-loading" style="text-align:center;padding:40px;color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;">
+        <div style="width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;"></div>
+        Loading analysis...
+      </div>
+      <div id="wc-content" style="display:none;"></div>
+    </div>
+
+    <!-- Archive -->
+    <div style="background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:24px;">
+      <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--cyan);letter-spacing:2px;margin-bottom:16px;">// RECENT ANALYSIS</div>
+      <div id="wc-archive"></div>
+    </div>
+
+    <!-- Telegram CTA -->
+    <div style="background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.15);border-radius:12px;padding:20px;margin-top:20px;text-align:center;">
+      <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text);margin-bottom:8px;">Get daily wave analysis on Telegram</div>
+      <a href="https://t.me/ewagaurav" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#00e5ff,#00ff88);color:#000;padding:10px 24px;border-radius:8px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;text-decoration:none;letter-spacing:1px;">JOIN @ewagaurav →</a>
+    </div>
+  </div>
 </div>
 
 <!-- TOOLS PAGE -->
