@@ -1554,12 +1554,16 @@ function checkUpstoxStatus() {
     })
     .catch(function() {
       var txt = document.getElementById('upstox-txt');
-      if(txt){ txt.textContent='Waking up...'; }
-      setTimeout(checkUpstoxStatus, 15000);
+      var dot = document.getElementById('upstox-dot');
+      if(txt){ txt.textContent='Connecting...'; txt.style.color='#ffc940'; }
+      if(dot){ dot.style.background='#ffc940'; }
+      setTimeout(checkUpstoxStatus, 8000);
     });
 }
-setTimeout(checkUpstoxStatus, 1000);
-setInterval(checkUpstoxStatus, 300000);
+var _initTxt = document.getElementById('upstox-txt');
+if(_initTxt){ _initTxt.textContent='Checking...'; }
+setTimeout(checkUpstoxStatus, 500);
+setInterval(checkUpstoxStatus, 60000);
 
 // Wake up Render backend then fetch live data
 if(API_URL) {
