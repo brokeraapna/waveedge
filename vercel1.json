@@ -1,0 +1,48 @@
+{
+  "routes": [
+    {
+      "src": "/fii.html",
+      "dest": "/fii.html"
+    },
+    {
+      "src": "/scanner.html",
+      "dest": "/scanner.html"
+    },
+    {
+      "src": "/sitemap.xml",
+      "dest": "/sitemap.xml"
+    },
+    {
+      "src": "/blog.html",
+      "dest": "/blog.html"
+    },
+    {
+      "src": "/signals.html",
+      "dest": "/signals.html"
+    },
+    {
+      "src": "/tools.html",
+      "dest": "/tools.html"
+    },
+    {
+      "src": "/elliott-wave-ai-scanner-nse",
+      "dest": "/elliott-wave-ai-scanner-nse.html"
+    },
+    {
+      "src": "/elliott-wave-ai-scanner-nse.html",
+      "dest": "/elliott-wave-ai-scanner-nse.html"
+    },
+    {
+      "src": "/admin.html",
+      "dest": "/admin.html"
+    },
+    {
+      "src": "/wavecounts.html",
+      "dest": "/wavecounts.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
