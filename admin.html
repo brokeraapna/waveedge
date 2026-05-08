@@ -76,6 +76,9 @@ select option{background:#0a1f30;}
   <div style="margin-top:28px;border-top:1px solid #173348;padding-top:24px;">
     <div style="font-size:10px;color:#3d7a99;letter-spacing:2px;margin-bottom:16px;">// POST DAILY WAVE COUNT</div>
 
+    <label>ADMIN KEY</label>
+    <input type="password" id="wc-admin-key" placeholder="Enter admin key" style="width:100%;background:#0a1f30;border:1px solid #173348;color:#d8eef8;padding:10px 14px;border-radius:7px;font-size:13px;font-family:monospace;margin-bottom:14px;"/>
+
     <label>WAVE SUMMARY (add multiple symbols)</label>
     <div id="waves-wrap">
       <div class="wave-row" style="display:grid;grid-template-columns:1fr 1fr 1fr 2fr;gap:8px;margin-bottom:8px;">
@@ -132,7 +135,7 @@ select option{background:#0a1f30;}
   }
 
   function postWaveCount() {
-    var key = document.getElementById('admin-key').value.trim();
+    var key = document.getElementById('wc-admin-key').value.trim() || document.getElementById('admin-key').value.trim();
     if (!key) { document.getElementById('wc-msg').innerHTML='<span style="color:#ff4060">Enter admin key first</span>'; return; }
 
     var waves = [];
