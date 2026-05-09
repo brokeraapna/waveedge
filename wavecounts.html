@@ -1,309 +1,99 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Wave Counts | WaveEdge</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Orbitron:wght@700;900&family=DM+Sans:wght@300;400;600;700&display=swap" rel="stylesheet"/>
-<style>
-*{box-sizing:border-box;margin:0;padding:0;}
-:root{
-  --bg:#020c14;--s1:#061525;--s2:#0a1f30;--border:#173348;--border2:#0f2235;
-  --cyan:#00e5ff;--green:#00ff88;--gold:#ffc940;--red:#ff4060;--purple:#a78bfa;
-  --text:#d8eef8;--muted:#3d7a99;
-  --mono:'Space Mono',monospace;--sans:'DM Sans',sans-serif;--orn:'Orbitron',monospace;
-}
-html,body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden;}
-
-/* ── HEADER ── */
-.header{padding:24px 28px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-.header-left{}
-.tag{font-family:var(--mono);font-size:9px;color:var(--cyan);letter-spacing:3px;margin-bottom:6px;}
-.title{font-family:var(--orn);font-size:clamp(18px,2.5vw,28px);font-weight:900;margin-bottom:4px;}
-.title span{color:var(--cyan);}
-.subtitle{font-family:var(--mono);font-size:10px;color:var(--muted);}
-.header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.date-badge{background:var(--s1);border:1px solid var(--border);border-radius:7px;padding:6px 14px;font-family:var(--mono);font-size:10px;color:var(--muted);}
-.analyst-badge{display:flex;align-items:center;gap:8px;background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.15);border-radius:7px;padding:6px 14px;}
-.analyst-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
-.analyst-name{font-family:var(--mono);font-size:10px;color:var(--cyan);}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-
-/* ── MARKET OVERVIEW CARDS ── */
-.overview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;padding:20px 28px;}
-.ov-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:14px 18px;}
-.ov-label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:6px;}
-.ov-val{font-family:var(--mono);font-size:22px;font-weight:700;margin-bottom:4px;}
-.ov-wave{font-family:var(--mono);font-size:11px;}
-.ov-bias{font-family:var(--mono);font-size:10px;margin-top:4px;}
-.bull{color:var(--green);}
-.bear{color:var(--red);}
-.neut{color:var(--gold);}
-
-/* ── MAIN GRID ── */
-.main-grid{display:grid;grid-template-columns:1fr 340px;gap:16px;padding:0 28px 28px;}
-@media(max-width:900px){.main-grid{grid-template-columns:1fr;}}
-
-/* ── ANALYSIS CARDS ── */
-.analysis-section{}
-.sec-hdr{font-family:var(--mono);font-size:9px;color:var(--cyan);letter-spacing:3px;margin:20px 0 12px;}
-
-.wave-card{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:14px;}
-.wc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.wc-symbol{font-family:var(--orn);font-size:16px;font-weight:700;}
-.wc-tf{font-family:var(--mono);font-size:10px;color:var(--muted);background:var(--s2);padding:3px 8px;border-radius:4px;}
-.wc-wave-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:6px;font-family:var(--mono);font-size:11px;font-weight:700;margin-bottom:12px;}
-.wc-wave-badge.bull{background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.25);color:var(--green);}
-.wc-wave-badge.bear{background:rgba(255,64,96,.1);border:1px solid rgba(255,64,96,.25);color:var(--red);}
-.wc-wave-badge.neut{background:rgba(255,201,64,.1);border:1px solid rgba(255,201,64,.2);color:var(--gold);}
-.wc-analysis{font-size:13px;color:var(--text);line-height:1.7;margin-bottom:14px;}
-.wc-levels{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.level-box{background:var(--s2);border:1px solid var(--border2);border-radius:7px;padding:10px 12px;}
-.level-lbl{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px;}
-.level-val{font-family:var(--mono);font-size:12px;font-weight:700;}
-.level-val.sup{color:var(--green);}
-.level-val.res{color:var(--red);}
-.level-val.tgt{color:var(--cyan);}
-.level-val.sl{color:var(--gold);}
-
-.wave-diagram{display:flex;align-items:flex-end;gap:4px;height:60px;margin:12px 0;}
-.wd-bar{flex:1;border-radius:3px 3px 0 0;display:flex;align-items:flex-end;justify-content:center;font-family:var(--mono);font-size:9px;padding-bottom:3px;transition:all .3s;}
-.wd-bar.w1{background:rgba(0,229,255,.15);border-top:2px solid var(--cyan);color:var(--cyan);}
-.wd-bar.w2{background:rgba(255,64,96,.1);border-top:2px solid var(--red);color:var(--red);}
-.wd-bar.w3{background:rgba(0,255,136,.2);border-top:2px solid var(--green);color:var(--green);}
-.wd-bar.w4{background:rgba(255,201,64,.1);border-top:2px solid var(--gold);color:var(--gold);}
-.wd-bar.w5{background:rgba(167,139,250,.15);border-top:2px solid var(--purple);color:var(--purple);}
-.wd-bar.active{box-shadow:0 0 12px currentColor;}
-
-/* ── SIDEBAR ── */
-.sidebar{}
-
-.outlook-card{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px;}
-.oc-title{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:14px;}
-.oc-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border2);font-family:var(--mono);font-size:11px;}
-.oc-row:last-child{border-bottom:none;}
-.oc-sym{color:var(--text);}
-.oc-badge{padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:1px;}
-.oc-badge.bull{background:rgba(0,255,136,.15);color:var(--green);}
-.oc-badge.bear{background:rgba(255,64,96,.15);color:var(--red);}
-.oc-badge.neut{background:rgba(255,201,64,.1);color:var(--gold);}
-.oc-wave{color:var(--muted);font-size:10px;}
-
-.telegram-card{background:linear-gradient(135deg,rgba(0,229,255,.06),rgba(0,255,136,.04));border:1px solid rgba(0,229,255,.15);border-radius:12px;padding:18px;margin-bottom:14px;text-align:center;}
-.tg-icon{font-size:28px;margin-bottom:8px;}
-.tg-title{font-family:var(--orn);font-size:13px;color:var(--cyan);margin-bottom:6px;}
-.tg-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:14px;line-height:1.6;}
-.tg-btn{display:block;background:var(--cyan);color:#000;padding:10px 20px;border-radius:7px;text-decoration:none;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;transition:opacity .2s;}
-.tg-btn:hover{opacity:.85;}
-
-.disclaimer{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:14px;font-family:var(--mono);font-size:9px;color:var(--muted);line-height:1.7;}
-.disclaimer strong{color:var(--gold);}
-
-/* ── UPDATE BANNER ── */
-.update-bar{background:rgba(0,229,255,.04);border-bottom:1px solid var(--border);padding:8px 28px;display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:10px;color:var(--muted);}
-.update-bar .dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
-</style>
-</head>
-<body>
-
-<div class="header">
-  <div class="header-left">
-    <div class="tag">// ELLIOTT WAVE ANALYSIS</div>
-    <div class="title">Daily <span>Wave Counts</span></div>
-    <div class="subtitle">NSE · Nifty · BankNifty · Key Stocks · Updated Daily by Gaurav Malhotra</div>
-  </div>
-  <div class="header-right">
-    <div class="date-badge" id="date-badge">Loading...</div>
-    <div class="analyst-badge"><div class="analyst-dot"></div><div class="analyst-name">GAURAV MALHOTRA · 20Y EW</div></div>
-  </div>
-</div>
-
-<div class="update-bar">
-  <div class="dot"></div>
-  <span id="update-time">Analysis updated daily before market open · Next update tomorrow 9:00 AM IST</span>
-</div>
-
-<!-- MARKET OVERVIEW -->
-<div class="overview-grid" id="overview-grid">
-  <!-- Populated by JS from backend -->
-</div>
-
-<div class="main-grid">
-
-  <!-- ANALYSIS SECTION -->
-  <div class="analysis-section">
-    <div class="sec-hdr">// TODAY'S WAVE ANALYSIS</div>
-    <div id="analysis-cards"><!-- Populated by JS --></div>
-  </div>
-
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <div class="sec-hdr">// MARKET OUTLOOK</div>
-
-    <div class="outlook-card">
-      <div class="oc-title">QUICK OUTLOOK — ALL TIMEFRAMES</div>
-      <div id="outlook-rows"><!-- Populated by JS --></div>
-    </div>
-
-    <div class="telegram-card">
-      <div class="tg-icon">📡</div>
-      <div class="tg-title">Daily Wave Analysis</div>
-      <div class="tg-sub">Get Gaurav's Elliott Wave analysis on Telegram — posted every morning before market open.</div>
-      <a href="https://t.me/ewagaurav" target="_blank" class="tg-btn">Join @ewagaurav →</a>
-    </div>
-
-    <div class="disclaimer">
-      <strong>⚠ SEBI Disclaimer:</strong> This analysis is for educational purposes only. Not investment advice. Elliott Wave analysis involves subjective interpretation. Please consult a SEBI registered advisor before investing. Past wave counts do not guarantee future performance.
-    </div>
-  </div>
-
-</div>
-
 <script>
 var BACKEND = 'https://waveedgebackflask-kexj.onrender.com';
 
-// ── DATE ──
 var now = new Date();
 document.getElementById('date-badge').textContent =
   now.toLocaleDateString('en-IN',{weekday:'long',day:'2-digit',month:'short',year:'numeric'});
 
-// ── WAVE ANALYSIS DATA ──
-// This is your daily analysis — update via admin or Telegram sync
-var WAVE_DATA = {
-  lastUpdated: new Date().toLocaleDateString('en-IN'),
-  overview: [
-    {symbol:'NIFTY 50',   value:'24,367', wave:'Wave 4', bias:'neut', trend:'Corrective ABC'},
-    {symbol:'BANK NIFTY', value:'54,863', wave:'Wave C', bias:'bear', trend:'Downside risk'},
-    {symbol:'FIN NIFTY',  value:'25,657', wave:'Wave 4', bias:'neut', trend:'Watch 25,200'},
-    {symbol:'INDIA VIX',  value:'18.46',  wave:'Rising', bias:'bear', trend:'Caution zone'},
-  ],
-  analyses: [
-    {
-      symbol: 'NIFTY 50',
-      timeframe: 'Daily · Weekly',
-      wave: 'Wave 4 Correction',
-      bias: 'neut',
-      analysis: 'Nifty is currently in a Wave 4 corrective phase following the completion of Wave 3 at 26,277. The correction appears to be an ABC zigzag structure. Wave A completed near 21,964, Wave B retraced to 25,235, and Wave C is underway targeting the 61.8% retracement zone.\n\nMACK signal line shows bearish divergence on the weekly timeframe confirming correction. Zero-line is below on daily MACD indicating sellers are in control short-term.',
-      support: '23,500 · 23,100',
-      resistance: '24,800 · 25,235',
-      target: '23,200 (Wave C)',
-      stopLoss: '25,400',
-      waveProgress: [80, 40, 100, 65, 0], // W1-W5 height %
-      activeWave: 3, // 0-indexed, W4 = index 3
-    },
-    {
-      symbol: 'BANK NIFTY',
-      timeframe: 'Daily',
-      wave: 'Wave C Decline',
-      bias: 'bear',
-      analysis: 'BankNifty completed a 5-wave impulse from 39,000 to 54,467 (Wave 5 top). Currently in Wave C of a larger ABC correction. Wave A fell to 48,700, Wave B bounced to 52,500, and Wave C is now targeting the 1:1 extension with Wave A around 46,733.\n\nMACD signal line has crossed below zero on daily — bearish. Key watch: if 53,500 is reclaimed on closing basis, wave count needs revision.',
-      support: '52,800 · 51,500',
-      resistance: '54,500 · 55,800',
-      target: '51,000 (Wave C ext)',
-      stopLoss: '55,600',
-      waveProgress: [70, 35, 100, 80, 0],
-      activeWave: 3,
-    },
-    {
-      symbol: 'RELIANCE',
-      timeframe: 'Weekly',
-      wave: 'Wave 2 Retest',
-      bias: 'bull',
-      analysis: 'Reliance appears to be completing a Wave 2 correction near the 1,280-1,300 zone which is the 61.8% retracement of Wave 1 (1,016 to 1,608). If this support holds, expect a powerful Wave 3 to begin targeting 1,900+.\n\nMACD signal line showing bullish divergence on weekly — a classic Wave 2 bottom signature. Watch for zero-line crossover to confirm Wave 3 initiation.',
-      support: '1,280 · 1,240',
-      resistance: '1,420 · 1,500',
-      target: '1,900 (Wave 3 proj)',
-      stopLoss: '1,220',
-      waveProgress: [60, 100, 0, 0, 0],
-      activeWave: 1,
-    },
-  ],
-  outlook: [
-    {sym:'NIFTY',     wave:'Wave 4', bias:'neut'},
-    {sym:'BANKNIFTY', wave:'Wave C', bias:'bear'},
-    {sym:'FINNIFTY',  wave:'Wave 4', bias:'neut'},
-    {sym:'RELIANCE',  wave:'Wave 2', bias:'bull'},
-    {sym:'TCS',       wave:'Wave C', bias:'bear'},
-    {sym:'HDFCBANK',  wave:'Wave 2', bias:'bull'},
-    {sym:'INFY',      wave:'Wave C', bias:'bear'},
-    {sym:'SBIN',      wave:'Wave 3', bias:'bull'},
-  ]
-};
-
-// ── RENDER OVERVIEW ──
-function renderOverview() {
-  var html = WAVE_DATA.overview.map(function(d) {
+function renderOverview(waves) {
+  if (!waves || !waves.length) { document.getElementById('overview-grid').innerHTML = ''; return; }
+  var html = waves.map(function(d) {
+    var bc = d.bias === 'bullish' ? 'bull' : d.bias === 'bearish' ? 'bear' : 'neut';
     return '<div class="ov-card">'
       + '<div class="ov-label">' + d.symbol + '</div>'
-      + '<div class="ov-val ' + d.bias + '">' + d.value + '</div>'
-      + '<div class="ov-wave ' + d.bias + '">▸ ' + d.wave + '</div>'
-      + '<div class="ov-bias ' + d.bias + '" style="font-family:var(--mono);font-size:9px;margin-top:4px;color:var(--muted)">' + d.trend + '</div>'
+      + '<div class="ov-val ' + bc + '">' + d.wave + '</div>'
+      + '<div style="font-family:var(--mono);font-size:9px;margin-top:4px;color:var(--muted)">' + (d.note||'') + '</div>'
       + '</div>';
   }).join('');
   document.getElementById('overview-grid').innerHTML = html;
 }
 
-// ── RENDER ANALYSIS CARDS ──
-function renderAnalysis() {
-  var html = WAVE_DATA.analyses.map(function(a) {
-    // Wave diagram
-    var bars = ['W1','W2','W3','W4','W5'];
-    var classes = ['w1','w2','w3','w4','w5'];
-    var diagram = bars.map(function(w, i) {
-      var h = a.waveProgress[i] || 20;
-      var active = i === a.activeWave ? ' active' : '';
-      return '<div class="wd-bar ' + classes[i] + active + '" style="height:' + h + '%">' + w + '</div>';
-    }).join('');
+function renderAnalysis(data) {
+  var waves = data.waves || [];
+  var analysis = data.analysis || '';
+  var support = data.support || [];
+  var resistance = data.resistance || [];
 
+  var supHtml = support.map(function(s) {
+    return '<div style="font-family:var(--mono);font-size:11px;color:var(--green);margin-bottom:3px;">▸ ' + s.label + ': ' + s.value + '</div>';
+  }).join('') || '<div style="color:var(--muted);font-size:11px;font-family:var(--mono);">—</div>';
+
+  var resHtml = resistance.map(function(r) {
+    return '<div style="font-family:var(--mono);font-size:11px;color:var(--red);margin-bottom:3px;">▸ ' + r.label + ': ' + r.value + '</div>';
+  }).join('') || '<div style="color:var(--muted);font-size:11px;font-family:var(--mono);">—</div>';
+
+  var waveCards = waves.map(function(w) {
+    var bc = w.bias === 'bullish' ? 'bull' : w.bias === 'bearish' ? 'bear' : 'neut';
     return '<div class="wave-card">'
-      + '<div class="wc-top">'
-      + '<div class="wc-symbol">' + a.symbol + '</div>'
-      + '<div class="wc-tf">' + a.timeframe + '</div>'
-      + '</div>'
-      + '<div class="wc-wave-badge ' + a.bias + '">〰 ' + a.wave + '</div>'
-      + '<div class="wave-diagram">' + diagram + '</div>'
-      + '<div class="wc-analysis">' + a.analysis.replace(/\n\n/g,'<br><br>') + '</div>'
-      + '<div class="wc-levels">'
-      + '<div class="level-box"><div class="level-lbl">SUPPORT</div><div class="level-val sup">' + a.support + '</div></div>'
-      + '<div class="level-box"><div class="level-lbl">RESISTANCE</div><div class="level-val res">' + a.resistance + '</div></div>'
-      + '<div class="level-box"><div class="level-lbl">TARGET</div><div class="level-val tgt">' + a.target + '</div></div>'
-      + '<div class="level-box"><div class="level-lbl">STOP LOSS</div><div class="level-val sl">' + a.stopLoss + '</div></div>'
-      + '</div>'
+      + '<div class="wc-top"><div class="wc-symbol">' + w.symbol + '</div><div class="wc-tf">Daily</div></div>'
+      + '<div class="wc-wave-badge ' + bc + '">〰 ' + w.wave + '</div>'
+      + '<div class="wc-analysis">' + (w.note||'') + '</div>'
       + '</div>';
   }).join('');
-  document.getElementById('analysis-cards').innerHTML = html;
+
+  var mainCard = '<div class="wave-card">'
+    + '<div class="sec-hdr" style="margin-top:0;">// ANALYSIS</div>'
+    + '<div class="wc-analysis">' + analysis.replace(/\n/g,'<br>') + '</div>'
+    + '<div class="wc-levels">'
+    + '<div class="level-box"><div class="level-lbl">SUPPORT</div>' + supHtml + '</div>'
+    + '<div class="level-box"><div class="level-lbl">RESISTANCE</div>' + resHtml + '</div>'
+    + '</div></div>';
+
+  document.getElementById('analysis-cards').innerHTML = waveCards + mainCard;
 }
 
-// ── RENDER OUTLOOK ──
-function renderOutlook() {
-  var html = WAVE_DATA.outlook.map(function(o) {
+function renderOutlook(waves) {
+  if (!waves || !waves.length) {
+    document.getElementById('outlook-rows').innerHTML = '<div style="color:var(--muted);font-size:11px;font-family:var(--mono);">No data</div>';
+    return;
+  }
+  var html = waves.map(function(o) {
+    var bc = o.bias === 'bullish' ? 'bull' : o.bias === 'bearish' ? 'bear' : 'neut';
+    var bl = o.bias === 'bullish' ? 'BULLISH' : o.bias === 'bearish' ? 'BEARISH' : 'NEUTRAL';
     return '<div class="oc-row">'
-      + '<span class="oc-sym">' + o.sym + '</span>'
+      + '<span class="oc-sym">' + o.symbol + '</span>'
       + '<span class="oc-wave">' + o.wave + '</span>'
-      + '<span class="oc-badge ' + o.bias + '">' + (o.bias==='bull'?'BULLISH':o.bias==='bear'?'BEARISH':'NEUTRAL') + '</span>'
+      + '<span class="oc-badge ' + bc + '">' + bl + '</span>'
       + '</div>';
   }).join('');
   document.getElementById('outlook-rows').innerHTML = html;
 }
 
-// ── TRY FETCH LIVE SPOT FOR OVERVIEW ──
-function fetchLiveSpot() {
-  fetch(BACKEND + '/health', {cache:'no-cache'})
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      if (d.connected) {
-        document.getElementById('update-time').textContent =
-          '● Live · Analysis by Gaurav Malhotra · ' + WAVE_DATA.lastUpdated + ' · Next update tomorrow 9:00 AM IST';
-      }
-    })
-    .catch(function(){});
+function showError(msg) {
+  document.getElementById('analysis-cards').innerHTML =
+    '<div style="text-align:center;padding:40px;color:var(--red);font-family:var(--mono);font-size:12px;background:var(--s1);border:1px solid var(--border);border-radius:12px;">⚠ ' + msg + '</div>';
+  document.getElementById('outlook-rows').innerHTML =
+    '<div style="color:var(--muted);font-size:11px;font-family:var(--mono);">—</div>';
 }
 
-// ── INIT ──
-renderOverview();
-renderAnalysis();
-renderOutlook();
-fetchLiveSpot();
+fetch(BACKEND + '/wavecounts/latest', {cache:'no-cache'})
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if (!d || d.error) {
+      showError('No analysis posted yet. Check back after 9 AM IST.');
+      return;
+    }
+    renderOverview(d.waves);
+    renderAnalysis(d);
+    renderOutlook(d.waves);
+    if (d.date) {
+      var t = new Date(d.date);
+      document.getElementById('update-time').textContent =
+        '● Last updated: ' + t.toLocaleString('en-IN') + ' IST · Next update tomorrow 9:00 AM IST';
+    }
+  })
+  .catch(function(e){
+    showError('Failed to load analysis. Please refresh.');
+    console.error(e);
+  });
 </script>
-</body>
-</html>
