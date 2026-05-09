@@ -1331,7 +1331,7 @@ function showPage(id){
     }, 50); }
     if(id==='signals2' && typeof x_refreshAll==='function') setTimeout(x_refreshAll, 80);
     if(id==='tools' && typeof initTools==='function') setTimeout(initTools, 50);
-    if(id==='signals' && typeof initSignals==='function') setTimeout(initSignals, 80);
+    if(id==='signals' && typeof initSignals==='function') setTimeout(initSignals, 80);if(id==='wavecount') setTimeout(loadWaveCount, 80);
   } catch(e) { console.error('showPage error:', e); }
 }
 
@@ -1621,7 +1621,135 @@ function s2_cellHTML(data, locked) {
 }
 
 
-</script>
+function loadWaveCount() {
+  var loading = document.getElementById('wc-loading');
+  var content = document.getElementById('wc-content');
+  if (!loading || !content) return;
+  loading.style.display = 'block';
+  content.style.display = 'none';
+
+  fetch('https://waveedgebackflask-kexj.onrender.com/wavecounts/latest', {cache:'no-cache'})
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      loading.style.display = 'none';
+      if (!d || d.error) {
+        content.innerHTML = '<div style="text-align:center;padding:40px;color:#ff4060;font-family:monospace;font-size:12px;">No analysis posted yet. Check back after 9 AM IST.</div>';
+        content.style.display = 'block';
+        return;
+      }
+      var waves = d.waves || [];
+      var html = '';
+      waves.forEach(function(w) {
+        var bc = w.bias==='bullish'?'#00ff88':w.bias==='bearish'?'#ff4060':'#ffc940';
+        html += '<div style="background:#0a1f30;border:1px solid #173348;border-radius:10px;padding:16px;margin-bottom:12px;">'
+          + '<div style="font-family:monospace;font-size:14px;font-weight:700;color:'+bc+';margin-bottom:6px;">'+w.symbol+' — '+w.wave+'</div>'
+          + '<div style="font-size:12px;color:#3d7a99;font-family:monospace;">'+w.bias.toUpperCase()+' · '+(w.note||'')+'</div>'
+          + '</div>';
+      });
+      if (d.analysis) {
+        html += '<div style="background:#0a1f30;border:1px solid #173348;border-radius:10px;padding:16px;margin-bottom:12px;">'
+          + '<div style="font-family:monospace;font-size:9px;color:#00e5ff;letter-spacing:2px;margin-bottom:10px;">// ANALYSIS</div>'
+          + '<div style="font-size:13px;color:#d8eef8;line-height:1.7;">'+d.analysis.replace(/\n/g,'<br>')+'</div>'
+          + '</div>';
+      }
+      if ((d.support&&d.support.length)||(d.resistance&&d.resistance.length)) {
+        html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">';
+        if (d.support&&d.support.length) {
+          html += '<div style="background:#0a1f30;border:1px solid #173348;border-radius:10px;padding:14px;">'
+            + '<div style="font-family:monospace;font-size:9px;color:#3d7a99;margin-bottom:8px;">SUPPORT</div>';
+          d.support.forEach(function(s){ html += '<div style="font-family:monospace;font-size:11px;color:#00ff88;margin-bottom:3px;">▸ '+s.label+': '+s.value+'</div>'; });
+          html += '</div>';
+        }
+        if (d.resistance&&d.resistance.length) {
+          html += '<div style="background:#0a1f30;border:1px solid #173348;border-radius:10px;padding:14px;">'
+            + '<div style="font-family:monospace;font-size:9px;color:#3d7a99;margin-bottom:8px;">RESISTANCE</div>';
+          d.resistance.forEach(function(r){ html += '<div style="font-family:monospace;font-size:11px;color:#ff4060;margin-bottom:3px;">▸ '+r.label+': '+r.value+'</div>'; });
+          html += '</div>';
+        }
+        html += '</div>';
+      }
+      content.innerHTML = html;
+      content.style.display = 'block';
+      if (d.date) {
+        var t = new Date(d.date);
+        var dateEl = document.getElementById('wc-date');
+        if (dateEl) dateEl.textContent = 'Last updated: ' + t.toLocaleString('en-IN') + ' IST';
+      }
+    })
+    .catch(function(e){
+      loading.style.display = 'none';
+      content.innerHTML = '<div style="text-align:center;padding:40px;color:#ff4060;font-family:monospace;font-size:12px;">Failed to load. Please refresh.</div>';
+      content.style.display = 'block';
+    });
+}function loadWaveCount() {
+  var loading = document.getElementById('wc-loading');
+  var content = document.getElementById('wc-content');
+  if (!loading || !content) return;
+  loading.style.display = 'block';
+  content.style.display = 'none';
+
+  fetch('https://waveedgebackflask-kexj.onrender.com/wavecounts/latest', {cache:'no-cache'})
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      loading.style.display = 'none';
+      if (!d || d.error) {
+        content.innerHTML = '<div style="text-align:center;padding:40px;color:#ff4060;font-family:monospace;font-size:12px;">No analysis posted yet. Check back after 9 AM IST.</div>';
+        content.style.display = 'block';
+        return;
+      }
+      var waves = d.waves || [];
+      var html = '';
+
+      // Wave symbol cards
+      waves.forEach(function(w) {
+        var bc = w.bias==='bullish'?'#00ff88':w.bias==='bearish'?'#ff4060':'#ffc940';
+        html += '<div style="background:#0a1f30;border:1px solid #173348;border-radius:10px;padding:16px;margin-bottom:12px;">'
+          + '<div style="font-family:Space Mono,monospace;font-size:14px;font-weight:700;color:'+bc+';margin-bottom:6px;">'+w.symbol+' — '+w.wave+'</div>'
+          + '<div style="font-size:12px;color:#3d7a99;font-family:monospace;">'+w.bias.toUpperCase()+' · '+(w.note||'')+'</div>'
+          + '</div>';
+      });
+
+      // Main analysis
+      if (d.analysis) {
+        html += '<div style="background:#0a1f30;border:1px solid #173348;border-radius:10px;padding:16px;margin-bottom:12px;">'
+          + '<div style="font-family:Space Mono,monospace;font-size:9px;color:#00e5ff;letter-spacing:2px;margin-bottom:10px;">// ANALYSIS</div>'
+          + '<div style="font-size:13px;color:#d8eef8;line-height:1.7;">'+d.analysis.replace(/\n/g,'<br>')+'</div>'
+          + '</div>';
+      }
+
+      // Support & Resistance
+      if ((d.support && d.support.length) || (d.resistance && d.resistance.length)) {
+        html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">';
+        if (d.support && d.support.length) {
+          html += '<div style="background:#0a1f30;border:1px solid #173348;border-radius:10px;padding:14px;">'
+            + '<div style="font-family:monospace;font-size:9px;color:#3d7a99;margin-bottom:8px;">SUPPORT</div>';
+          d.support.forEach(function(s){ html += '<div style="font-family:monospace;font-size:11px;color:#00ff88;margin-bottom:3px;">▸ '+s.label+': '+s.value+'</div>'; });
+          html += '</div>';
+        }
+        if (d.resistance && d.resistance.length) {
+          html += '<div style="background:#0a1f30;border:1px solid #173348;border-radius:10px;padding:14px;">'
+            + '<div style="font-family:monospace;font-size:9px;color:#3d7a99;margin-bottom:8px;">RESISTANCE</div>';
+          d.resistance.forEach(function(r){ html += '<div style="font-family:monospace;font-size:11px;color:#ff4060;margin-bottom:3px;">▸ '+r.label+': '+r.value+'</div>'; });
+          html += '</div>';
+        }
+        html += '</div>';
+      }
+
+      content.innerHTML = html;
+      content.style.display = 'block';
+
+      if (d.date) {
+        var t = new Date(d.date);
+        var dateEl = document.getElementById('wc-date');
+        if (dateEl) dateEl.textContent = 'Last updated: ' + t.toLocaleString('en-IN') + ' IST';
+      }
+    })
+    .catch(function(e){
+      loading.style.display = 'none';
+      content.innerHTML = '<div style="text-align:center;padding:40px;color:#ff4060;font-family:monospace;font-size:12px;">Failed to load. Please refresh.</div>';
+      content.style.display = 'block';
+    });
+}</script>
 
 <!-- WAVE COUNTS PAGE -->
 <div class="page" id="page-wavecount" style="min-height:100vh;background:var(--bg);padding-top:64px;overflow-y:auto;">
