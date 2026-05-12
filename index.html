@@ -357,7 +357,7 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
     <li><a onclick="showPage('signals2')" id="nav-signals2">⚡ AI Signals</a></li>
     <li><a onclick="scrollTo_('#pricing')" id="nav-pricing">Pricing</a></li>
     <li><a onclick="showPage('tools')" id="nav-tools" style="color:var(--gold);">🛠 Tools</a></li>
-    <li><a onclick="showPage('wavecount')" id="nav-wavecount" style="color:var(--cyan);">〰️ Wave Counts</a></li>
+    <li><a onclick="showPage('fii')" id="nav-fii" style="color:#60a5fa;">📊 FII Data</a></li>
   </ul>
 
   <div class="nav-right">
@@ -599,12 +599,12 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
   <div class="wrap sec" id="pricing">
     <div class="sec-lbl">// Pricing Plans</div>
     <h2 class="sec-title">Start reading<br>the <em>market's language.</em></h2>
-    <p class="sec-desc">NSE F&O Elliott Wave scanner · AI signals · FII data · All timeframes</p>
+    <p class="sec-desc">All plans include a 14-day free trial. No credit card required to start.</p>
     <div class="price-grid">
       <!-- STARTER -->
       <div class="price-card">
-        <div class="p-plan">Professional</div>
-        <div class="p-amt">₹2,499<span>/mo</span></div>
+        <div class="p-plan">Starter</div>
+        <div class="p-amt">₹999<span>/mo</span></div>
         <div class="p-period">Billed monthly · 14-day free trial</div>
         <ul class="p-feats">
           <li>500 symbols (NSE/BSE only)</li>
@@ -614,8 +614,8 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
           <li>Email alerts only</li>
           <li>TradingView basic chart</li>
         </ul>
-        <a href="https://rzp.io/rzp/bvQxATOd" target="_blank" style="text-decoration:none;display:block;">
-          <button class="btn-lg outline" style="width:100%;padding:12px;font-size:14px;">Pay ₹2,499/mo →</button>
+        <a href="#" onclick="alert('Payment gateway updating soon. Contact us on WhatsApp: +91-7715858526');return false;" target="_blank" style="text-decoration:none;display:block;">
+          <button class="btn-lg outline" style="width:100%;padding:12px;font-size:14px;">Coming Soon — Contact Us</button>
         </a>
       </div>
       <!-- PROFESSIONAL -->
@@ -633,8 +633,8 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
           <li>Backtesting engine (15yr data)</li>
           <li>TradingView advanced chart</li>
         </ul>
-        <a href="https://rzp.io/rzp/bvQxATOd" target="_blank" style="text-decoration:none;display:block;">
-          <button class="btn-lg primary" style="width:100%;padding:12px;font-size:14px;">Pay ₹2,499/mo →</button>
+        <a href="#" onclick="alert('Payment gateway updating soon. Contact us on WhatsApp: +91-7715858526');return false;" target="_blank" style="text-decoration:none;display:block;">
+          <button class="btn-lg primary" style="width:100%;padding:12px;font-size:14px;">Coming Soon — Contact Us</button>
         </a>
       </div>
       <!-- INSTITUTIONAL + COURSE -->
@@ -652,8 +652,8 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
           <li>Telegram & WhatsApp signals</li>
           <li>White-label option</li>
         </ul>
-        <a href="https://rzp.io/rzp/wAfZMAY" target="_blank" style="text-decoration:none;display:block;">
-          <button class="btn-lg gold" style="width:100%;padding:12px;font-size:14px;">Pay ₹7,499/mo →</button>
+        <a href="#" onclick="alert('Payment gateway updating soon. Contact us on WhatsApp: +91-7715858526');return false;" target="_blank" style="text-decoration:none;display:block;">
+          <button class="btn-lg gold" style="width:100%;padding:12px;font-size:14px;">Coming Soon — Contact Us</button>
         </a>
       </div>
     </div>
@@ -691,13 +691,51 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
 <!-- ════════════════════════════════════════════════
      SCANNER PAGE
 ════════════════════════════════════════════════ -->
-<div class="page" id="page-scanner" style="padding-top:64px;">
-  <iframe id="scanner-iframe"
-    src="scanner.html"
-    style="width:100%;height:calc(100vh - 64px);border:none;display:block;"
-    loading="lazy"
-    title="Elliott Wave Scanner">
-  </iframe>
+<div class="page" id="page-scanner">
+<div class="scanner-wrap">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">
+    <div>
+      <div class="sec-lbl" style="margin-bottom:4px;">// Live Wave Scanner</div>
+      <div style="font-family:'Orbitron',monospace;font-size:24px;font-weight:900;">Pattern <span style="color:var(--cyan)">Detection</span></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div id="api-status" class="live-tag" style="cursor:pointer;" onclick="showApiInfo()"><div class="pulse"></div><span id="api-status-txt">Demo Mode</span></div>
+      <button class="btn-cta" onclick="runScan()">↻ Refresh</button>
+    </div>
+  </div>
+
+  <!-- MARKET TABS -->
+  <div class="mkt-tabs">
+    <button class="mkt-tab active" onclick="setMkt('all',this)"><div class="pulse" style="width:6px;height:6px;background:var(--cyan)"></div>All Markets</button>
+    <button class="mkt-tab" onclick="setMkt('nse',this)"><div style="width:6px;height:6px;border-radius:50%;background:var(--cyan)"></div>NSE / BSE</button>
+    <button class="mkt-tab" onclick="setMkt('crypto',this)"><div style="width:6px;height:6px;border-radius:50%;background:var(--gold)"></div>Crypto</button>
+    <button class="mkt-tab" onclick="setMkt('forex',this)"><div style="width:6px;height:6px;border-radius:50%;background:var(--purple)"></div>Forex</button>
+    <button class="mkt-tab" onclick="setMkt('us',this)"><div style="width:6px;height:6px;border-radius:50%;background:var(--green)"></div>US Markets</button>
+  </div>
+
+  <!-- SCANNER CARDS -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+    <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">SELECT SCANNER — 14 TYPES</div>
+  </div>
+  <div class="sc-cards" id="sc-cards"></div>
+
+  <!-- RESULTS -->
+  <div class="res-wrap">
+    <div class="res-bar">
+      <span class="res-title" id="res-title">SHOWING ALL — 427 PATTERNS DETECTED</span>
+      <div class="f-btns">
+        <button class="f-btn active" onclick="setConf('all',this)">All</button>
+        <button class="f-btn" onclick="setConf('high',this)">80%+ Conf</button>
+        <button class="f-btn" onclick="setConf('med',this)">60–80%</button>
+        <button class="f-btn" onclick="setConf('new',this)">New Today</button>
+      </div>
+    </div>
+    <table class="rt">
+      <thead><tr><th>Symbol</th><th>Market</th><th>Pattern</th><th>Wave</th><th>Target</th><th>TF</th><th>Confidence</th><th>Chg</th><th></th></tr></thead>
+      <tbody id="sc-tbody"></tbody>
+    </table>
+  </div>
+</div>
 </div><!-- END SCANNER -->
 
 
@@ -986,7 +1024,7 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
           <li>30 recorded sessions + PDF workbook</li>
           <li>30-day Telegram support group access</li>
         </ul>
-        <a href="https://rzp.io/rzp/wAfZMAY" target="_blank" style="text-decoration:none;display:block;">
+        <a href="#" onclick="alert('Payment gateway updating soon. Contact us on WhatsApp: +91-7715858526');return false;" target="_blank" style="text-decoration:none;display:block;">
           <button class="btn-lg gold" style="width:100%;font-size:14px;padding:13px;">Enroll Now — ₹7,499 →</button>
         </a>
       </div>
@@ -1005,7 +1043,7 @@ table.rt td{padding:14px 15px;vertical-align:middle;}
           <li>API & broker integration support</li>
           <li>Team access (5 users)</li>
         </ul>
-        <a href="https://rzp.io/rzp/wAfZMAY" target="_blank" style="text-decoration:none;display:block;">
+        <a href="#" onclick="alert('Payment gateway updating soon. Contact us on WhatsApp: +91-7715858526');return false;" target="_blank" style="text-decoration:none;display:block;">
           <button class="btn-lg primary" style="width:100%;font-size:14px;padding:13px;">Subscribe — ₹7,499/mo →</button>
         </a>
       </div>
@@ -1228,9 +1266,10 @@ var _origShowPage = window.showPage;
         <div class="f-grp"><label class="f-lbl">Password</label><input class="f-inp" type="password" placeholder="Min 8 characters" id="s-pw"/></div>
         <div class="f-grp">
           <label class="f-lbl">Choose Plan</label>
-          <div class="plan-sel" style="grid-template-columns:repeat(2,1fr);">
-            <div class="plan-opt sel" onclick="selPlan(this,0)"><div class="plan-opt-n">Professional</div><div class="plan-opt-p">₹2,499/mo</div></div>
-            <div class="plan-opt" onclick="selPlan(this,1)"><div class="plan-opt-n">Institutional</div><div class="plan-opt-p">₹7,499/mo</div></div>
+          <div class="plan-sel">
+            <div class="plan-opt" onclick="selPlan(this,0)"><div class="plan-opt-n">Starter</div><div class="plan-opt-p">₹999/mo</div></div>
+            <div class="plan-opt sel" onclick="selPlan(this,1)"><div class="plan-opt-n">Pro</div><div class="plan-opt-p">₹2,499/mo</div></div>
+            <div class="plan-opt" onclick="selPlan(this,2)"><div class="plan-opt-n">Institutional</div><div class="plan-opt-p">₹7,499/mo</div></div>
           </div>
         </div>
         <button class="btn-auth" onclick="doSignup()">Start 14-Day Free Trial →</button>
@@ -1323,7 +1362,7 @@ function showPage(id){
     var el = document.getElementById('nav-'+id);
     if(el) el.classList.add('active-link');
     window.scrollTo({top:0});
-    // scanner in iframe - no JS needed
+    if(id==='scanner' && typeof renderScCards==='function') renderScCards();
     if(id==='chart' && typeof renderSymGrid==='function') setTimeout(renderSymGrid, 50);
     if(id==='blog') { setTimeout(function(){
       if(typeof blogSeed==='function') blogSeed();
@@ -1331,7 +1370,7 @@ function showPage(id){
     }, 50); }
     if(id==='signals2' && typeof x_refreshAll==='function') setTimeout(x_refreshAll, 80);
     if(id==='tools' && typeof initTools==='function') setTimeout(initTools, 50);
-    if(id==='signals' && typeof initSignals==='function') setTimeout(initSignals, 80);if(id==='wavecount') setTimeout(loadWaveCount, 80);
+    if(id==='signals' && typeof initSignals==='function') setTimeout(initSignals, 80);
   } catch(e) { console.error('showPage error:', e); }
 }
 
@@ -1341,22 +1380,100 @@ function scrollTo_(id){
 }
 
 // ─── SCANNER ───
-// function removed
+function renderScCards(){
+  const w=document.getElementById('sc-cards');
+  w.innerHTML=SCANNERS.map((s,i)=>`
+    <div class="sc-card${scIdx===i?' sel':''}" onclick="selSc(${i})">
+      <div class="sc-ico">${s.i}</div>
+      <div class="sc-nm">${s.n}</div>
+      <div class="sc-ds">${s.d}</div>
+      <span style="display:inline-block;padding:2px 9px;border-radius:100px;background:${s.tc};color:${s.tcc};font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:1px;border:1px solid ${s.tcc}40">${s.t}</span>
+    </div>`).join('');
+  renderResults();
+}
 
-// function removed
-// function removed
+function selSc(i){scIdx=scIdx===i?null:i;renderScCards();}
+function setMkt(m,el){mkt=m;document.querySelectorAll('.mkt-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderResults();}
+function setConf(c,el){conf=c;document.querySelectorAll('.f-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderResults();}
+
 // ── LIVE API INTEGRATION ──────────────────────────────
 // Once your backend is deployed, set this URL:
 var API_URL = 'https://waveedgebackflask-kexj.onrender.com';
 var _apiLoaded = false;
 
-// function removed
+async function fetchLiveData() {
+  if (!API_URL) return; // no backend set yet, use demo data
+  try {
+    document.getElementById('res-title').textContent = 'FETCHING LIVE DATA...';
+    var mkt = mkt === 'all' ? '' : '?market=' + mkt;
+    var res = await fetch(API_URL + '/scan?force=true&t=' + Date.now());
+    if (!res.ok) throw new Error('API error');
+    var data = await res.json();
+    if (data.results && data.results.length > 0) {
+      // Map API results to display format
+      var liveData = data.results.map(function(r) {
+        var mkt_raw = r.market || 'NSE';
+        var price = r.price ? (r.price > 1000 ? '₹' + Math.round(r.price).toLocaleString('en-IN') : r.price > 1 ? r.price.toFixed(2) : r.price.toFixed(4)) : '—';
+        var chgPct = r.change_pct || 0;
+        return {
+          s: r.symbol,
+          n: r.symbol,
+          m: mkt_raw,
+          mc: 'mb-' + mkt_raw.toLowerCase(),
+          p: r.pattern || 'Wave Analysis',
+          pc: r.bias === 'bullish' ? 'wp-i' : r.bias === 'bearish' ? 'wp-a' : 'wp-e',
+          w: r.wave || 'Wave Analysis',
+          wc: r.bias === 'bullish' ? '#00e5ff' : r.bias === 'bearish' ? '#ff4060' : '#ffd700',
+          tgt: price,
+          tf: r.timeframe || '1D',
+          c: r.confidence || 70,
+          chg: (chgPct >= 0 ? '+' : '') + chgPct + '%',
+          up: chgPct >= 0,
+          nw: r.signal === 'BUY' || r.signal === 'SELL'
+        };
+      });
+      renderResultsWithData(liveData);
+      _apiLoaded = true;
+      var ts = data.last_scan ? ' · Last scan: ' + new Date(data.last_scan).toLocaleTimeString() : '';
+      document.getElementById('res-title').textContent = 'LIVE DATA — ' + data.count + ' PATTERNS' + ts;
+      return;
+    }
+  } catch(e) {
+    console.log('API unavailable, using demo data:', e.message);
+  }
+  renderResults(); // fallback to demo
+}
 
-// function removed
+function renderResults(){renderResultsWithData(SCAN_DATA);}
+function renderResultsWithData(data){
+  let d=[...SCAN_DATA];
+  if(mkt==='nse') d=d.filter(r=>r.m==='NSE'||r.m==='BSE');
+  else if(mkt==='crypto') d=d.filter(r=>r.m==='CRYPTO');
+  else if(mkt==='forex') d=d.filter(r=>r.m==='FOREX');
+  else if(mkt==='us') d=d.filter(r=>r.m==='US');
+  if(conf==='high') d=d.filter(r=>r.c>=80);
+  else if(conf==='med') d=d.filter(r=>r.c>=60&&r.c<80);
+  else if(conf==='new') d=d.filter(r=>r.nw);
+
+  var lbl = _apiLoaded ? 'LIVE' : 'DEMO';
+  document.getElementById('res-title').textContent='SHOWING '+d.length+' RESULT'+(d.length!==1?'S':'')+' — '+lbl+' SCAN';
+  document.getElementById('sc-tbody').innerHTML=d.map(r=>`
+    <tr onclick="analyzeRow('${r.s}')">
+      <td><div class="sym">${r.s}</div><div class="sym-n">${r.n}</div></td>
+      <td><span class="mb ${r.mc}">${r.m}</span></td>
+      <td><span class="wp ${r.pc}">${r.p}</span></td>
+      <td style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:${r.wc}">${r.w}</td>
+      <td><span class="tgt">${r.tgt}</span></td>
+      <td style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted)">${r.tf}</td>
+      <td><div class="conf-w"><div class="c-track"><div class="c-fill" style="width:${r.c}%"></div></div><span class="c-pct">${r.c}%</span></div></td>
+      <td class="${r.up?'up':'dn'}">${r.chg}</td>
+      <td><button class="a-btn">Analyze →</button></td>
+    </tr>`).join('');
+}
 
 function runScan(){
   if(API_URL){
-    // fetchLiveData removed
+    fetchLiveData();
     showToast('↻ Fetching live scan from backend...');
   } else {
     renderResults();
@@ -1368,7 +1485,7 @@ function analyzeRow(s){if(!currentUser){showPage('auth');showToast('⚡ Log in t
 // ─── AUTH ───
 let currentUser=null;
 let selPlanIdx=1;
-const rzpLinks=['https://rzp.io/rzp/bvQxATOd','https://rzp.io/rzp/wAfZMAY'];
+const rzpLinks=['#','#','#'];
 
 function switchTab(tab){
   document.getElementById('login-form').style.display=tab==='login'?'flex':'none';
@@ -1443,7 +1560,7 @@ function updateApiStatus(){
 
 // ─── INIT ───
 updateApiStatus();
-// renderResults removed
+renderResults();
 
 // Check Upstox API status
 function checkUpstoxStatus() {
@@ -1476,16 +1593,12 @@ function checkUpstoxStatus() {
     })
     .catch(function() {
       var txt = document.getElementById('upstox-txt');
-      var dot = document.getElementById('upstox-dot');
-      if(txt){ txt.textContent='Connecting...'; txt.style.color='#ffc940'; }
-      if(dot){ dot.style.background='#ffc940'; }
-      setTimeout(checkUpstoxStatus, 8000);
+      if(txt){ txt.textContent='Waking up...'; }
+      setTimeout(checkUpstoxStatus, 15000);
     });
 }
-var _initTxt = document.getElementById('upstox-txt');
-if(_initTxt){ _initTxt.textContent='Checking...'; }
-setTimeout(checkUpstoxStatus, 500);
-setInterval(checkUpstoxStatus, 60000);
+setTimeout(checkUpstoxStatus, 1000);
+setInterval(checkUpstoxStatus, 300000);
 
 // Wake up Render backend then fetch live data
 if(API_URL) {
@@ -1497,7 +1610,7 @@ if(API_URL) {
     .then(function(r){ 
       if(r.ok) {
         if(statusEl) statusEl.textContent = 'Live API Connected';
-    // fetchLiveData removed
+        fetchLiveData();
       }
     })
     .catch(function(){
@@ -1505,7 +1618,7 @@ if(API_URL) {
       if(statusEl) statusEl.textContent = 'API starting (~60s)...';
       setTimeout(function(){
         if(statusEl) statusEl.textContent = 'Live API Connected';
-    // fetchLiveData removed
+        fetchLiveData();
       }, 55000);
     });
 
@@ -1621,172 +1734,11 @@ function s2_cellHTML(data, locked) {
 }
 
 
-function loadWaveCount() {
-  var loading = document.getElementById('wc-loading');
-  var content = document.getElementById('wc-content');
-  if (!loading || !content) return;
-  loading.style.display = 'block';
-  content.style.display = 'none';
+</script>
 
-  fetch('https://waveedgebackflask-kexj.onrender.com/wavecounts/latest', {cache:'no-cache'})
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      loading.style.display = 'none';
-      if (!d || d.error) {
-        content.innerHTML = '<div style="text-align:center;padding:40px;color:#ff4060;font-family:monospace;font-size:12px;">No analysis posted yet. Check back after 9 AM IST.</div>';
-        content.style.display = 'block';
-        return;
-      }
-      var waves = d.waves || [];
-      var html = '';
-      waves.forEach(function(w) {
-        var bc = w.bias==='bullish'?'#00ff88':w.bias==='bearish'?'#ff4060':'#ffc940';
-        html += '<div style="background:#0a1f30;border:1px solid #173348;border-radius:10px;padding:16px;margin-bottom:12px;">'
-          + '<div style="font-family:monospace;font-size:14px;font-weight:700;color:'+bc+';margin-bottom:6px;">'+w.symbol+' — '+w.wave+'</div>'
-          + '<div style="font-size:12px;color:#3d7a99;font-family:monospace;">'+w.bias.toUpperCase()+' · '+(w.note||'')+'</div>'
-          + '</div>';
-      });
-      if (d.analysis) {
-        html += '<div style="background:#0a1f30;border:1px solid #173348;border-radius:10px;padding:16px;margin-bottom:12px;">'
-          + '<div style="font-family:monospace;font-size:9px;color:#00e5ff;letter-spacing:2px;margin-bottom:10px;">// ANALYSIS</div>'
-          + '<div style="font-size:13px;color:#d8eef8;line-height:1.7;">'+d.analysis.replace(/\n/g,'<br>')+'</div>'
-          + '</div>';
-      }
-      if ((d.support&&d.support.length)||(d.resistance&&d.resistance.length)) {
-        html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">';
-        if (d.support&&d.support.length) {
-          html += '<div style="background:#0a1f30;border:1px solid #173348;border-radius:10px;padding:14px;">'
-            + '<div style="font-family:monospace;font-size:9px;color:#3d7a99;margin-bottom:8px;">SUPPORT</div>';
-          d.support.forEach(function(s){ html += '<div style="font-family:monospace;font-size:11px;color:#00ff88;margin-bottom:3px;">▸ '+s.label+': '+s.value+'</div>'; });
-          html += '</div>';
-        }
-        if (d.resistance&&d.resistance.length) {
-          html += '<div style="background:#0a1f30;border:1px solid #173348;border-radius:10px;padding:14px;">'
-            + '<div style="font-family:monospace;font-size:9px;color:#3d7a99;margin-bottom:8px;">RESISTANCE</div>';
-          d.resistance.forEach(function(r){ html += '<div style="font-family:monospace;font-size:11px;color:#ff4060;margin-bottom:3px;">▸ '+r.label+': '+r.value+'</div>'; });
-          html += '</div>';
-        }
-        html += '</div>';
-      }
-      content.innerHTML = html;
-      content.style.display = 'block';
-      if (d.date) {
-        var t = new Date(d.date);
-        var dateEl = document.getElementById('wc-date');
-        if (dateEl) dateEl.textContent = 'Last updated: ' + t.toLocaleString('en-IN') + ' IST';
-      }
-    })
-    .catch(function(e){
-      loading.style.display = 'none';
-      content.innerHTML = '<div style="text-align:center;padding:40px;color:#ff4060;font-family:monospace;font-size:12px;">Failed to load. Please refresh.</div>';
-      content.style.display = 'block';
-    });
-}function loadWaveCount() {
-  var loading = document.getElementById('wc-loading');
-  var content = document.getElementById('wc-content');
-  if (!loading || !content) return;
-  loading.style.display = 'block';
-  content.style.display = 'none';
-
-  fetch('https://waveedgebackflask-kexj.onrender.com/wavecounts/latest', {cache:'no-cache'})
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      loading.style.display = 'none';
-      if (!d || d.error) {
-        content.innerHTML = '<div style="text-align:center;padding:40px;color:#ff4060;font-family:monospace;font-size:12px;">No analysis posted yet. Check back after 9 AM IST.</div>';
-        content.style.display = 'block';
-        return;
-      }
-      var waves = d.waves || [];
-      var html = '';
-
-      // Wave symbol cards
-      waves.forEach(function(w) {
-        var bc = w.bias==='bullish'?'#00ff88':w.bias==='bearish'?'#ff4060':'#ffc940';
-        html += '<div style="background:#0a1f30;border:1px solid #173348;border-radius:10px;padding:16px;margin-bottom:12px;">'
-          + '<div style="font-family:Space Mono,monospace;font-size:14px;font-weight:700;color:'+bc+';margin-bottom:6px;">'+w.symbol+' — '+w.wave+'</div>'
-          + '<div style="font-size:12px;color:#3d7a99;font-family:monospace;">'+w.bias.toUpperCase()+' · '+(w.note||'')+'</div>'
-          + '</div>';
-      });
-
-      // Main analysis
-      if (d.analysis) {
-        html += '<div style="background:#0a1f30;border:1px solid #173348;border-radius:10px;padding:16px;margin-bottom:12px;">'
-          + '<div style="font-family:Space Mono,monospace;font-size:9px;color:#00e5ff;letter-spacing:2px;margin-bottom:10px;">// ANALYSIS</div>'
-          + '<div style="font-size:13px;color:#d8eef8;line-height:1.7;">'+d.analysis.replace(/\n/g,'<br>')+'</div>'
-          + '</div>';
-      }
-
-      // Support & Resistance
-      if ((d.support && d.support.length) || (d.resistance && d.resistance.length)) {
-        html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">';
-        if (d.support && d.support.length) {
-          html += '<div style="background:#0a1f30;border:1px solid #173348;border-radius:10px;padding:14px;">'
-            + '<div style="font-family:monospace;font-size:9px;color:#3d7a99;margin-bottom:8px;">SUPPORT</div>';
-          d.support.forEach(function(s){ html += '<div style="font-family:monospace;font-size:11px;color:#00ff88;margin-bottom:3px;">▸ '+s.label+': '+s.value+'</div>'; });
-          html += '</div>';
-        }
-        if (d.resistance && d.resistance.length) {
-          html += '<div style="background:#0a1f30;border:1px solid #173348;border-radius:10px;padding:14px;">'
-            + '<div style="font-family:monospace;font-size:9px;color:#3d7a99;margin-bottom:8px;">RESISTANCE</div>';
-          d.resistance.forEach(function(r){ html += '<div style="font-family:monospace;font-size:11px;color:#ff4060;margin-bottom:3px;">▸ '+r.label+': '+r.value+'</div>'; });
-          html += '</div>';
-        }
-        html += '</div>';
-      }
-
-      content.innerHTML = html;
-      content.style.display = 'block';
-
-      if (d.date) {
-        var t = new Date(d.date);
-        var dateEl = document.getElementById('wc-date');
-        if (dateEl) dateEl.textContent = 'Last updated: ' + t.toLocaleString('en-IN') + ' IST';
-      }
-    })
-    .catch(function(e){
-      loading.style.display = 'none';
-      content.innerHTML = '<div style="text-align:center;padding:40px;color:#ff4060;font-family:monospace;font-size:12px;">Failed to load. Please refresh.</div>';
-      content.style.display = 'block';
-    });
-}</script>
-
-<!-- WAVE COUNTS PAGE -->
-<div class="page" id="page-wavecount" style="min-height:100vh;background:var(--bg);padding-top:64px;overflow-y:auto;">
-  <div style="max-width:900px;margin:0 auto;padding:32px 24px;">
-
-    <!-- Header -->
-    <div style="margin-bottom:32px;">
-      <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--cyan);letter-spacing:3px;margin-bottom:8px;">// DAILY WAVE ANALYSIS</div>
-      <div style="font-family:'Orbitron',monospace;font-size:28px;font-weight:900;margin-bottom:6px;">Wave <span style="color:var(--cyan);">Counts</span></div>
-      <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">Updated daily by Gaurav · 20 years Elliott Wave experience · @ewagaurav</div>
-    </div>
-
-    <!-- Today's Analysis -->
-    <div id="wc-today" style="background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
-        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--cyan);letter-spacing:2px;">TODAY'S ANALYSIS</div>
-        <div id="wc-date" style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);"></div>
-      </div>
-      <div id="wc-loading" style="text-align:center;padding:40px;color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;">
-        <div style="width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;"></div>
-        Loading analysis...
-      </div>
-      <div id="wc-content" style="display:none;"></div>
-    </div>
-
-    <!-- Archive -->
-    <div style="background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:24px;">
-      <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--cyan);letter-spacing:2px;margin-bottom:16px;">// RECENT ANALYSIS</div>
-      <div id="wc-archive"></div>
-    </div>
-
-    <!-- Telegram CTA -->
-    <div style="background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.15);border-radius:12px;padding:20px;margin-top:20px;text-align:center;">
-      <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text);margin-bottom:8px;">Get daily wave analysis on Telegram</div>
-      <a href="https://t.me/ewagaurav" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#00e5ff,#00ff88);color:#000;padding:10px 24px;border-radius:8px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;text-decoration:none;letter-spacing:1px;">JOIN @ewagaurav →</a>
-    </div>
-  </div>
+<!-- FII/DII DATA PAGE -->
+<div class="page" id="page-fii" style="min-height:100vh;background:var(--bg);">
+  <iframe src="/fii.html" style="width:100%;height:calc(100vh - 64px);border:none;display:block;" id="fii-iframe" loading="lazy"></iframe>
 </div>
 
 <!-- TOOLS PAGE -->
