@@ -13,6 +13,10 @@
       "dest": "/sitemap.xml"
     },
     {
+      "src": "/robots.txt",
+      "dest": "/robots.txt"
+    },
+    {
       "src": "/blog.html",
       "dest": "/blog.html"
     },
