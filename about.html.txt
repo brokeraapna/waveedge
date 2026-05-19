@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - WaveEdge</title>
+    <meta name="description" content="WaveEdge - Elliott Wave Intelligence platform. 20+ years of Elliott Wave analysis experience for NSE/BSE markets. Based in New Delhi, India.">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --bg:#020c14;--s1:#061525;--s2:#0a1f30;--s3:#0f2840;
+            --border:#173348;--border2:#1e4060;
+            --cyan:#00e5ff;--cyan2:#00b8d4;--green:#00ff88;--gold:#ffca28;
+            --orange:#ff6d00;--red:#ff1744;--purple:#b388ff;--pink:#f48fb1;
+            --text:#dff0f8;--muted:#4d8099;--muted2:#2a5570;
+        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{
+            background:var(--bg);
+            color:var(--text);
+            font-family:'DM Sans',sans-serif;
+            overflow-x:hidden;
+            min-height:100vh;
+        }
+        body::before{
+            content:'';
+            position:fixed;
+            inset:0;
+            background-image:linear-gradient(rgba(0,229,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.018) 1px,transparent 1px);
+            background-size:48px 48px;
+            pointer-events:none;
+            z-index:0;
+        }
+        .wrap{max-width:860px;margin:0 auto;padding:40px 24px 60px;position:relative;z-index:1;}
+        .sec-lbl{font-family:'Space Mono',monospace;font-size:9px;color:var(--cyan);letter-spacing:3px;margin-bottom:8px;}
+        .sec-title{font-family:'Orbitron',monospace;font-size:28px;font-weight:900;margin-bottom:6px;}
+        .sec-title span{color:var(--cyan);}
+        .sec-desc{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:36px;}
+        .profile-card{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:32px;margin-bottom:24px;display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap;}
+        .avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--green));display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:28px;font-weight:900;color:#000;flex-shrink:0;}
+        .info-card{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:24px;}
+        .info-title{font-family:'Space Mono',monospace;font-size:10px;color:var(--cyan);letter-spacing:2px;margin-bottom:14px;}
+        .info-text{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);line-height:1.9;}
+        .grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px;}
+        .grid-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:20px;}
+        .grid-icon{font-size:24px;margin-bottom:10px;}
+        .grid-title{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;margin-bottom:8px;color:var(--cyan);}
+        .grid-text{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);line-height:1.7;}
+        .disclaimer{background:rgba(255,202,40,.04);border:1px solid rgba(255,202,40,.2);border-radius:10px;padding:18px 20px;}
+        .disclaimer-title{font-family:'Space Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:2px;margin-bottom:8px;}
+        .disclaimer-text{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);line-height:1.8;}
+        .btn-back{display:inline-block;margin-top:20px;color:var(--green);text-decoration:none;font-family:'Space Mono',monospace;font-size:11px;}
+        .btn-back:hover{text-decoration:underline;}
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="sec-lbl">// ABOUT WAVEEDGE</div>
+        <div class="sec-title">About <span>WaveEdge</span></div>
+        <div class="sec-desc">Elliott Wave Intelligence · New Delhi, India</div>
+
+        <div class="profile-card">
+            <div class="avatar">G</div>
+            <div style="flex:1;min-width:200px;">
+                <div style="font-family:'Orbitron',monospace;font-size:18px;font-weight:700;margin-bottom:4px;">Gaurav Malhotra</div>
+                <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--cyan);margin-bottom:12px;">Founder and Lead Analyst · WaveEdge · @ewagaurav</div>
+                <div style="font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);line-height:1.85;">20+ years of Elliott Wave analysis experience. Based in New Delhi, India. Gaurav has been tracking NSE and BSE markets using Elliott Wave theory since the early 2000s — identifying key turning points across indices, F&O stocks and commodities.<br><br>SEBI Research Analyst registration in process. All analysis is shared for educational purposes and is strictly not investment advice.</div>
+                <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+                    <a href="https://t.me/ewagaurav" target="_blank" style="background:rgba(0,136,204,.15);border:1px solid rgba(0,136,204,.3);color:#0088cc;padding:6px 14px;border-radius:6px;font-family:'Space Mono',monospace;font-size:10px;text-decoration:none;">@ewagaurav Telegram</a>
+                    <a href="https://wa.me/917715858526" target="_blank" style="background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.3);color:#25D366;padding:6px 14px;border-radius:6px;font-family:'Space Mono',monospace;font-size:10px;text-decoration:none;">WhatsApp +91-77158-58526</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-title">// WHAT IS WAVEEDGE</div>
+            <div class="info-text">WaveEdge is a financial education and market analysis platform focused on Elliott Wave theory applied to Indian stock markets (NSE/BSE). We provide daily wave count analysis, educational content, and analytical tools to help traders understand market structure.<br><br>WaveEdge is a proprietorship business registered under Udyam No. <strong style="color:var(--text);">UDYAM-DL-11-0157089</strong>, based in New Delhi, India.</div>
+        </div>
+
+        <div class="grid-3">
+            <div class="grid-card"><div class="grid-icon">📡</div><div class="grid-title">Daily Wave Analysis</div><div class="grid-text">Posted every morning before market open on Telegram @ewagaurav and waveedge.in</div></div>
+            <div class="grid-card"><div class="grid-icon">🎓</div><div class="grid-title">EW Education</div><div class="grid-text">Complete Elliott Wave theory, rules, guidelines, patterns and Fibonacci tools — free on the site.</div></div>
+            <div class="grid-card"><div class="grid-icon">🛠</div><div class="grid-title">Analytical Tools</div><div class="grid-text">Fibonacci calculator, PCR/OI tracker, MACD signal scanner and live NSE data integration.</div></div>
+        </div>
+
+        <div class="disclaimer">
+            <div class="disclaimer-title">SEBI DISCLAIMER</div>
+            <div class="disclaimer-text">WaveEdge is a financial education platform. All analysis, wave counts, and market observations published here are strictly for educational purposes only and do not constitute investment advice or buy/sell recommendations. Gaurav Malhotra is in the process of registering as a SEBI Research Analyst. Trading in equities and derivatives involves substantial risk. Please consult a SEBI-registered investment advisor before making any investment decisions.</div>
+        </div>
+
+        <a href="/" class="btn-back">← Back to Home</a>
+    </div>
+</body>
+</html>
