@@ -1,112 +1,223 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - WaveEdge</title>
-    <meta name="description" content="Contact WaveEdge. WhatsApp, Telegram, Email. We reply within minutes during market hours. +91-77158-58526, +91-92173-39433, hello@waveedge.in">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root{
-            --bg:#020c14;--s1:#061525;--s2:#0a1f30;--s3:#0f2840;
-            --border:#173348;--border2:#1e4060;
-            --cyan:#00e5ff;--cyan2:#00b8d4;--green:#00ff88;--gold:#ffca28;
-            --orange:#ff6d00;--red:#ff1744;--purple:#b388ff;--pink:#f48fb1;
-            --text:#dff0f8;--muted:#4d8099;--muted2:#2a5570;
-        }
-        *{margin:0;padding:0;box-sizing:border-box;}
-        body{
-            background:var(--bg);
-            color:var(--text);
-            font-family:'DM Sans',sans-serif;
-            overflow-x:hidden;
-            min-height:100vh;
-        }
-        body::before{
-            content:'';
-            position:fixed;
-            inset:0;
-            background-image:linear-gradient(rgba(0,229,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.018) 1px,transparent 1px);
-            background-size:48px 48px;
-            pointer-events:none;
-            z-index:0;
-        }
-        .wrap{max-width:800px;margin:0 auto;padding:40px 24px 60px;position:relative;z-index:1;}
-        .sec-lbl{font-family:'Space Mono',monospace;font-size:9px;color:var(--cyan);letter-spacing:3px;margin-bottom:8px;}
-        .sec-title{font-family:'Orbitron',monospace;font-size:28px;font-weight:900;margin-bottom:6px;}
-        .sec-title span{color:var(--cyan);}
-        .sec-desc{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:36px;}
-        .contact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:32px;}
-        .contact-card{background:linear-gradient(135deg,var(--s1),var(--s2));border-radius:14px;padding:24px;text-align:center;border:1px solid var(--border);}
-        .contact-icon{font-size:32px;margin-bottom:12px;}
-        .contact-title{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;margin-bottom:6px;}
-        .contact-sub{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:14px;}
-        .contact-link{display:block;padding:10px 16px;border-radius:8px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;text-decoration:none;margin-bottom:8px;}
-        .contact-link-small{display:block;padding:8px 16px;border-radius:8px;font-family:'Space Mono',monospace;font-size:11px;text-decoration:none;}
-        .business-card{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:24px;}
-        .business-title{font-family:'Space Mono',monospace;font-size:10px;color:var(--cyan);letter-spacing:2px;margin-bottom:18px;}
-        .business-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
-        .business-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:4px;}
-        .business-value{font-family:'Space Mono',monospace;font-size:12px;color:var(--text);}
-        .subscribe-card{background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.15);border-radius:12px;padding:24px;text-align:center;}
-        .subscribe-title{font-family:'Orbitron',monospace;font-size:15px;font-weight:700;margin-bottom:8px;}
-        .subscribe-text{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:16px;}
-        .subscribe-btn{display:inline-block;background:linear-gradient(135deg,var(--cyan),var(--green));color:#000;padding:12px 28px;border-radius:8px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;text-decoration:none;}
-        .btn-back{display:inline-block;margin-top:20px;color:var(--green);text-decoration:none;font-family:'Space Mono',monospace;font-size:11px;}
-        .btn-back:hover{text-decoration:underline;}
-        .whatsapp{background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;}
-        .telegram{background:linear-gradient(135deg,#0088cc,#006699);color:#fff;}
-        .email-bg{background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.2);color:var(--cyan);}
-        .outline-bg{background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.25);color:#25D366;}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact WaveEdge — WhatsApp, Telegram & Email · waveedge.in</title>
+<meta name="description" content="Contact WaveEdge for Elliott Wave analysis subscriptions, queries, and support. Reach us on WhatsApp (+91-77158-58526), Telegram (@ewagaurav), or email hello@waveedge.in. Based in New Delhi, India.">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6032541723861362" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#020c14;--s1:#061525;--s2:#0a1f30;--s3:#0f2840;
+  --border:#173348;--border2:#1e4060;
+  --cyan:#00e5ff;--green:#00ff88;--gold:#ffca28;
+  --orange:#ff6d00;--red:#ff1744;--purple:#b388ff;
+  --text:#dff0f8;--muted:#4d8099;--muted2:#2a5570;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden;cursor:crosshair;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.018) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0;}
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:0 44px;height:64px;background:rgba(2,12,20,.92);backdrop-filter:blur(28px);border-bottom:1px solid var(--border);}
+.logo-wrap{display:flex;align-items:center;gap:11px;cursor:pointer;text-decoration:none;}
+.logo-svg{width:44px;height:44px;flex-shrink:0;}
+.logo-text{display:flex;flex-direction:column;line-height:1;}
+.logo-main{font-family:'Orbitron',monospace;font-size:18px;font-weight:900;color:var(--text);letter-spacing:2px;}
+.logo-main span{color:var(--cyan);}
+.logo-sub{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:3px;margin-top:2px;}
+.nav-links{display:flex;list-style:none;gap:6px;align-items:center;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:12px;font-weight:500;letter-spacing:1px;text-transform:uppercase;font-family:'Space Mono',monospace;transition:color .2s;padding:6px 12px;border-radius:4px;}
+.nav-links a:hover,.nav-links a.active-link{color:var(--cyan);}
+.nav-links a.active-link{background:rgba(0,229,255,.06);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--muted);padding:7px 18px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;border-radius:5px;cursor:pointer;transition:all .2s;text-decoration:none;}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan);}
+.btn-cta{background:linear-gradient(135deg,var(--cyan),var(--green));color:#000;border:none;padding:8px 22px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;border-radius:5px;cursor:pointer;transition:all .2s;text-decoration:none;}
+.btn-cta:hover{opacity:.88;transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,229,255,.3);}
+.float-btns{position:fixed;bottom:28px;left:28px;z-index:400;display:flex;flex-direction:column;gap:10px;}
+.float-btn{width:50px;height:50px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;transition:all .2s;text-decoration:none;}
+.float-btn:hover{transform:scale(1.12);}
+.wa-btn{background:#25D366;}
+.tg-btn{background:#0088cc;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+.page-wrap{min-height:100vh;background:var(--bg);padding-top:64px;position:relative;z-index:1;}
+.inner{max-width:800px;margin:0 auto;padding:48px 24px 80px;}
+footer{border-top:1px solid var(--border);padding:32px 44px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;position:relative;z-index:1;}
+.footer-logo{font-family:'Orbitron',monospace;font-size:16px;font-weight:900;}
+.footer-logo span.c{color:var(--cyan);}
+.footer-copy{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted2);margin-top:5px;}
+.footer-links{display:flex;gap:22px;flex-wrap:wrap;}
+.footer-links a{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);text-decoration:none;transition:color .2s;}
+.footer-links a:hover{color:var(--cyan);}
+@media(max-width:900px){nav{padding:0 16px;}.nav-links{display:none;}footer{padding:24px 16px;}.inner{padding:32px 16px 60px;}}
+</style>
 </head>
 <body>
-    <div class="wrap">
-        <div class="sec-lbl">// GET IN TOUCH</div>
-        <div class="sec-title">Contact <span>Us</span></div>
-        <div class="sec-desc">We reply within minutes during market hours (9 AM to 6 PM IST)</div>
 
-        <div class="contact-grid">
-            <div class="contact-card">
-                <div class="contact-icon">💬</div>
-                <div class="contact-title">WhatsApp</div>
-                <div class="contact-sub">Primary contact · Fastest response</div>
-                <a href="https://wa.me/917715858526" target="_blank" class="contact-link whatsapp">+91-77158-58526</a>
-                <a href="https://wa.me/919217339433" target="_blank" class="contact-link-small outline-bg">+91-92173-39433</a>
-            </div>
-            <div class="contact-card">
-                <div class="contact-icon">✈️</div>
-                <div class="contact-title">Telegram</div>
-                <div class="contact-sub">Channel · Group · Direct message</div>
-                <a href="https://t.me/ewagaurav" target="_blank" class="contact-link telegram">@ewagaurav</a>
-            </div>
-            <div class="contact-card">
-                <div class="contact-icon">📧</div>
-                <div class="contact-title">Email</div>
-                <div class="contact-sub">For formal queries and subscriptions</div>
-                <a href="mailto:hello@waveedge.in" class="contact-link email-bg">hello@waveedge.in</a>
-            </div>
-        </div>
+<div class="float-btns">
+  <a href="https://wa.me/917715858526" target="_blank" class="float-btn wa-btn" title="WhatsApp Us">💬</a>
+  <a href="https://t.me/ewagaurav" target="_blank" class="float-btn tg-btn" title="Telegram">✈</a>
+</div>
 
-        <div class="business-card">
-            <div class="business-title">// BUSINESS DETAILS</div>
-            <div class="business-grid">
-                <div><div class="business-label">BUSINESS NAME</div><div class="business-value">WaveEdge</div></div>
-                <div><div class="business-label">PROPRIETOR</div><div class="business-value">Gaurav Malhotra</div></div>
-                <div><div class="business-label">UDYAM NUMBER</div><div class="business-value">UDYAM-DL-11-0157089</div></div>
-                <div><div class="business-label">LOCATION</div><div class="business-value">New Delhi, India</div></div>
-                <div><div class="business-label">PHONE / WHATSAPP</div><div class="business-value">+91-77158-58526<br>+91-92173-39433</div></div>
-                <div><div class="business-label">EMAIL</div><div class="business-value">hello@waveedge.in</div></div>
-            </div>
-        </div>
-
-        <div class="subscribe-card">
-            <div class="subscribe-title">Want to Subscribe?</div>
-            <div class="subscribe-text">WhatsApp us to activate your Professional or Institutional plan. We set it up within minutes.</div>
-            <a href="https://wa.me/919217339433?text=Hi%20Gaurav%2C%20I%20want%20to%20subscribe%20to%20WaveEdge" target="_blank" class="subscribe-btn">💬 WhatsApp to Subscribe</a>
-        </div>
-
-        <a href="/" class="btn-back">← Back to Home</a>
+<nav>
+  <a class="logo-wrap" href="/">
+    <svg class="logo-svg" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="22,2 40,12 40,32 22,42 4,32 4,12" fill="rgba(0,229,255,0.08)" stroke="rgba(0,229,255,0.35)" stroke-width="1.2"/>
+      <path d="M8 28 L13 18 L18 23 L23 10 L28 20 L33 14 L38 16" stroke="url(#lg1b)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <circle cx="13" cy="18" r="2.2" fill="#00e5ff"/>
+      <circle cx="23" cy="10" r="2.8" fill="#00ff88"/>
+      <circle cx="33" cy="14" r="2.2" fill="#ffca28"/>
+      <polygon points="22,4 26,11 18,11" fill="rgba(0,229,255,0.4)"/>
+      <defs>
+        <linearGradient id="lg1b" x1="8" y1="20" x2="38" y2="20" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#00e5ff"/><stop offset="50%" stop-color="#00ff88"/><stop offset="100%" stop-color="#ffca28"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="logo-text">
+      <div class="logo-main">Wave<span>Edge</span></div>
+      <div class="logo-sub">.in · elliott wave intel</div>
     </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/#scanner">Scanner</a></li>
+    <li><a href="/#theory">Theory &amp; Course</a></li>
+    <li><a href="/#chart">Live Chart</a></li>
+    <li><a href="/#pricing">Pricing</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html" class="active-link">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <a class="btn-ghost" href="/">Log In</a>
+    <a class="btn-cta" href="/">Free Trial</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="inner">
+    <div style="font-family:'Space Mono',monospace;font-size:9px;color:#00e5ff;letter-spacing:3px;margin-bottom:8px;">// GET IN TOUCH</div>
+    <div style="font-family:'Orbitron',monospace;font-size:clamp(24px,5vw,36px);font-weight:900;margin-bottom:6px;">Contact <span style="color:#00e5ff;">Us</span></div>
+    <div style="font-family:'Space Mono',monospace;font-size:11px;color:#4d8099;margin-bottom:40px;">We reply within minutes during market hours (9 AM to 6 PM IST)</div>
+
+    <!-- CONTACT CHANNELS -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:32px;">
+
+      <!-- WhatsApp -->
+      <div style="background:linear-gradient(135deg,#061a0e,#071f10);border:1px solid rgba(37,211,102,.25);border-radius:14px;padding:24px;text-align:center;">
+        <div style="font-size:32px;margin-bottom:12px;">💬</div>
+        <div style="font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:#25D366;margin-bottom:6px;">WhatsApp</div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;color:#4d8099;margin-bottom:14px;">Primary contact · Fastest response</div>
+        <a href="https://wa.me/917715858526" target="_blank" style="display:block;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;padding:10px 16px;border-radius:8px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;text-decoration:none;margin-bottom:8px;">+91-77158-58526</a>
+        <a href="https://wa.me/919217339433" target="_blank" style="display:block;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.25);color:#25D366;padding:8px 16px;border-radius:8px;font-family:'Space Mono',monospace;font-size:11px;text-decoration:none;">+91-92173-39433</a>
+      </div>
+
+      <!-- Telegram -->
+      <div style="background:linear-gradient(135deg,#030f1a,#041525);border:1px solid rgba(0,136,204,.25);border-radius:14px;padding:24px;text-align:center;">
+        <div style="font-size:32px;margin-bottom:12px;">✈️</div>
+        <div style="font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:#0088cc;margin-bottom:6px;">Telegram</div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;color:#4d8099;margin-bottom:14px;">Channel · Group · Direct message</div>
+        <a href="https://t.me/ewagaurav" target="_blank" style="display:block;background:linear-gradient(135deg,#0088cc,#006699);color:#fff;padding:10px 16px;border-radius:8px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;text-decoration:none;">@ewagaurav</a>
+      </div>
+
+      <!-- Email -->
+      <div style="background:#061525;border:1px solid #173348;border-radius:14px;padding:24px;text-align:center;">
+        <div style="font-size:32px;margin-bottom:12px;">📧</div>
+        <div style="font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:#00e5ff;margin-bottom:6px;">Email</div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;color:#4d8099;margin-bottom:14px;">For formal queries and subscriptions</div>
+        <a href="mailto:hello@waveedge.in" style="display:block;background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.2);color:#00e5ff;padding:10px 16px;border-radius:8px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;text-decoration:none;">hello@waveedge.in</a>
+      </div>
+
+    </div>
+
+    <!-- BUSINESS DETAILS -->
+    <div style="background:#061525;border:1px solid #173348;border-radius:14px;padding:28px;margin-bottom:24px;">
+      <div style="font-family:'Space Mono',monospace;font-size:10px;color:#00e5ff;letter-spacing:2px;margin-bottom:18px;">// BUSINESS DETAILS</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:#4d8099;margin-bottom:4px;">BUSINESS NAME</div>
+          <div style="font-family:'Space Mono',monospace;font-size:12px;color:#dff0f8;">WaveEdge</div>
+        </div>
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:#4d8099;margin-bottom:4px;">PROPRIETOR</div>
+          <div style="font-family:'Space Mono',monospace;font-size:12px;color:#dff0f8;">Gaurav Malhotra</div>
+        </div>
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:#4d8099;margin-bottom:4px;">UDYAM NUMBER</div>
+          <div style="font-family:'Space Mono',monospace;font-size:12px;color:#dff0f8;">UDYAM-DL-11-0157089</div>
+        </div>
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:#4d8099;margin-bottom:4px;">LOCATION</div>
+          <div style="font-family:'Space Mono',monospace;font-size:12px;color:#dff0f8;">New Delhi, India</div>
+        </div>
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:#4d8099;margin-bottom:4px;">PHONE / WHATSAPP</div>
+          <div style="font-family:'Space Mono',monospace;font-size:12px;color:#dff0f8;">+91-77158-58526<br>+91-92173-39433</div>
+        </div>
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:#4d8099;margin-bottom:4px;">EMAIL</div>
+          <div style="font-family:'Space Mono',monospace;font-size:12px;color:#dff0f8;">hello@waveedge.in</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOURS -->
+    <div style="background:#061525;border:1px solid #173348;border-radius:14px;padding:24px;margin-bottom:24px;">
+      <div style="font-family:'Space Mono',monospace;font-size:10px;color:#00e5ff;letter-spacing:2px;margin-bottom:14px;">// RESPONSE HOURS</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#00ff88;animation:pulse 2s infinite;flex-shrink:0;"></div>
+          <div>
+            <div style="font-family:'Space Mono',monospace;font-size:11px;color:#dff0f8;">Market Hours</div>
+            <div style="font-family:'Space Mono',monospace;font-size:10px;color:#4d8099;">9:00 AM – 3:30 PM IST · Fastest</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#ffca28;flex-shrink:0;"></div>
+          <div>
+            <div style="font-family:'Space Mono',monospace;font-size:11px;color:#dff0f8;">Extended Hours</div>
+            <div style="font-family:'Space Mono',monospace;font-size:10px;color:#4d8099;">Up to 6:00 PM IST · Mon–Fri</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#ff6d00;flex-shrink:0;"></div>
+          <div>
+            <div style="font-family:'Space Mono',monospace;font-size:11px;color:#dff0f8;">Weekends</div>
+            <div style="font-family:'Space Mono',monospace;font-size:10px;color:#4d8099;">Best effort · May be delayed</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUBSCRIBE CTA -->
+    <div style="background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.15);border-radius:12px;padding:28px;text-align:center;">
+      <div style="font-family:'Orbitron',monospace;font-size:15px;font-weight:700;margin-bottom:8px;">Want to Subscribe?</div>
+      <div style="font-family:'Space Mono',monospace;font-size:11px;color:#4d8099;margin-bottom:20px;">WhatsApp us to activate your Professional or Institutional plan. We set it up within minutes.</div>
+      <a href="https://wa.me/919217339433?text=Hi%20Gaurav%2C%20I%20want%20to%20subscribe%20to%20WaveEdge" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#00e5ff,#00ff88);color:#000;padding:12px 28px;border-radius:8px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;text-decoration:none;">💬 WhatsApp to Subscribe</a>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(1.5);}}
+</style>
+
+<footer>
+  <div>
+    <div class="footer-logo">Wave<span class="c">Edge</span><span style="color:var(--muted);font-size:12px;">.in</span></div>
+    <div class="footer-copy">© 2026 WaveEdge · Proprietorship of Gaurav Malhotra · UDYAM-DL-11-0157089 · New Delhi — Not financial advice.</div>
+  </div>
+  <div class="footer-links">
+    <a href="https://t.me/ewagaurav" target="_blank">Telegram</a>
+    <a href="https://wa.me/917715858526" target="_blank">WhatsApp</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="privacy-policy.html">Privacy Policy</a>
+  </div>
+</footer>
+
 </body>
 </html>
