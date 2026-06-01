@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WaveEdge Realty — Real Estate CRM for Agents & Brokers</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0D1B2A;
+  --blue: #1565C0;
+  --lblue: #2196F3;
+  --gold: #C9A84C;
+  --cream: #F8F5F0;
+  --white: #FFFFFF;
+  --gray: #8899AA;
+  --light: #EEF2F7;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--navy);
+  overflow-x: hidden;
+}
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 2rem;
+  background: rgba(13,27,42,0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(201,168,76,0.2);
+}
+.nav-brand { display: flex; align-items: center; gap: 0.5rem; }
+.nav-brand .logo-w {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.4rem; color: var(--white);
+}
+.nav-brand .logo-r {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.4rem; color: var(--gold);
+}
+.nav-links { display: flex; align-items: center; gap: 1.5rem; }
+.nav-links a {
+  color: rgba(255,255,255,0.7); text-decoration: none;
+  font-size: 0.875rem; font-weight: 500;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--white); }
+.btn-nav {
+  background: var(--gold); color: var(--navy);
+  padding: 0.5rem 1.25rem; border-radius: 6px;
+  font-weight: 600; font-size: 0.875rem;
+  text-decoration: none; transition: opacity 0.2s;
+}
+.btn-nav:hover { opacity: 0.9; color: var(--navy) !important; }
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  background: var(--navy);
+  display: flex; align-items: center;
+  position: relative; overflow: hidden;
+  padding: 6rem 2rem 4rem;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 70% 50%, rgba(21,101,192,0.15) 0%, transparent 60%),
+              radial-gradient(ellipse at 20% 80%, rgba(201,168,76,0.08) 0%, transparent 50%);
+}
+.hero-grid {
+  position: absolute; inset: 0; opacity: 0.04;
+  background-image: linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+.hero-content {
+  max-width: 1100px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+  align-items: center; position: relative; z-index: 1;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(201,168,76,0.12); border: 1px solid rgba(201,168,76,0.3);
+  color: var(--gold); padding: 0.4rem 1rem; border-radius: 20px;
+  font-size: 0.8rem; font-weight: 500; letter-spacing: 0.05em;
+  margin-bottom: 1.5rem;
+}
+.hero h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  color: var(--white); line-height: 1.15;
+  margin-bottom: 1.25rem;
+}
+.hero h1 em { color: var(--gold); font-style: normal; }
+.hero p {
+  color: rgba(255,255,255,0.65); font-size: 1.05rem;
+  line-height: 1.7; margin-bottom: 2rem;
+}
+.hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+.btn-primary {
+  background: var(--gold); color: var(--navy);
+  padding: 0.85rem 2rem; border-radius: 8px;
+  font-weight: 600; font-size: 0.95rem;
+  text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 20px rgba(201,168,76,0.3);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(201,168,76,0.4); }
+.btn-secondary {
+  background: rgba(255,255,255,0.08); color: var(--white);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 0.85rem 2rem; border-radius: 8px;
+  font-weight: 500; font-size: 0.95rem;
+  text-decoration: none; transition: background 0.2s;
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.14); }
+
+/* HERO CARD */
+.hero-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px; padding: 1.5rem;
+  backdrop-filter: blur(10px);
+}
+.hero-card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 1.25rem; padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.hero-card-title { color: var(--white); font-weight: 600; font-size: 0.9rem; }
+.status-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #4CAF50;
+  box-shadow: 0 0 8px rgba(76,175,80,0.6);
+}
+.kpi-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; }
+.kpi-box {
+  background: rgba(255,255,255,0.05); border-radius: 10px;
+  padding: 0.875rem; border: 1px solid rgba(255,255,255,0.07);
+}
+.kpi-val { font-size: 1.5rem; font-weight: 700; color: var(--white); }
+.kpi-lbl { font-size: 0.75rem; color: var(--gray); margin-top: 2px; }
+.kpi-box.gold .kpi-val { color: var(--gold); }
+.kpi-box.blue .kpi-val { color: #64B5F6; }
+.client-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.client-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.6rem 0.75rem; border-radius: 8px;
+  background: rgba(255,255,255,0.03);
+}
+.client-name { color: rgba(255,255,255,0.85); font-size: 0.82rem; font-weight: 500; }
+.client-tag {
+  font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 10px; font-weight: 600;
+}
+.tag-hot { background: rgba(244,67,54,0.15); color: #EF9A9A; }
+.tag-warm { background: rgba(255,152,0,0.15); color: #FFCC80; }
+.tag-done { background: rgba(76,175,80,0.15); color: #A5D6A7; }
+
+/* STATS */
+.stats {
+  background: var(--navy);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 2rem;
+}
+.stats-inner {
+  max-width: 1100px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 2rem; text-align: center;
+}
+.stat-num {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2.2rem; color: var(--gold);
+}
+.stat-lbl { color: var(--gray); font-size: 0.85rem; margin-top: 4px; }
+
+/* FEATURES */
+.features { padding: 5rem 2rem; background: var(--cream); }
+.section-label {
+  text-align: center; margin-bottom: 0.75rem;
+  font-size: 0.8rem; font-weight: 600; letter-spacing: 0.1em;
+  color: var(--blue); text-transform: uppercase;
+}
+.section-title {
+  text-align: center; margin-bottom: 0.75rem;
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  color: var(--navy);
+}
+.section-sub {
+  text-align: center; max-width: 520px; margin: 0 auto 3rem;
+  color: var(--gray); font-size: 1rem; line-height: 1.6;
+}
+.features-grid {
+  max-width: 1100px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+}
+.feat-card {
+  background: var(--white); border-radius: 14px;
+  padding: 1.75rem; border: 1px solid #E8EDF2;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative; overflow: hidden;
+}
+.feat-card::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--blue), var(--gold));
+  opacity: 0; transition: opacity 0.2s;
+}
+.feat-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
+.feat-card:hover::before { opacity: 1; }
+.feat-icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  background: var(--light); display: flex; align-items: center;
+  justify-content: center; font-size: 1.3rem; margin-bottom: 1rem;
+}
+.feat-title { font-weight: 600; font-size: 1rem; margin-bottom: 0.5rem; color: var(--navy); }
+.feat-desc { font-size: 0.875rem; color: var(--gray); line-height: 1.6; }
+
+/* PRICING */
+.pricing { padding: 5rem 2rem; background: var(--navy); }
+.pricing .section-title { color: var(--white); }
+.pricing .section-sub { color: rgba(255,255,255,0.5); }
+.pricing-grid {
+  max-width: 900px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem;
+}
+.price-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px; padding: 2rem;
+  transition: transform 0.2s;
+}
+.price-card:hover { transform: translateY(-4px); }
+.price-card.featured {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+.price-card.featured .price-name,
+.price-card.featured .price-val,
+.price-card.featured .price-period,
+.price-card.featured li { color: var(--navy) !important; }
+.price-card.featured .btn-price {
+  background: var(--navy); color: var(--white);
+}
+.price-name {
+  font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--gray); margin-bottom: 1rem;
+}
+.price-val {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2.5rem; color: var(--white);
+}
+.price-period { font-size: 0.85rem; color: var(--gray); margin-bottom: 1.5rem; }
+.price-card ul { list-style: none; margin-bottom: 1.5rem; }
+.price-card li {
+  font-size: 0.875rem; color: rgba(255,255,255,0.7);
+  padding: 0.4rem 0; display: flex; gap: 0.5rem; align-items: center;
+}
+.price-card li::before { content: '✓'; color: var(--gold); font-weight: 700; }
+.price-card.featured li::before { color: var(--navy); }
+.btn-price {
+  display: block; text-align: center;
+  background: rgba(255,255,255,0.1); color: var(--white);
+  padding: 0.75rem; border-radius: 8px; text-decoration: none;
+  font-weight: 600; font-size: 0.9rem; transition: opacity 0.2s;
+}
+.btn-price:hover { opacity: 0.85; }
+
+/* HOW IT WORKS */
+.how { padding: 5rem 2rem; background: var(--cream); }
+.steps {
+  max-width: 900px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;
+}
+.step { text-align: center; }
+.step-num {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--navy); color: var(--gold);
+  font-family: 'DM Serif Display', serif; font-size: 1.3rem;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1rem;
+}
+.step-title { font-weight: 600; margin-bottom: 0.4rem; color: var(--navy); font-size: 0.95rem; }
+.step-desc { font-size: 0.82rem; color: var(--gray); line-height: 1.5; }
+
+/* CTA */
+.cta {
+  padding: 5rem 2rem; background: var(--navy);
+  text-align: center;
+}
+.cta h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  color: var(--white); margin-bottom: 1rem;
+}
+.cta h2 em { color: var(--gold); font-style: normal; }
+.cta p { color: rgba(255,255,255,0.6); margin-bottom: 2rem; font-size: 1rem; }
+.cta-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+/* FOOTER */
+footer {
+  background: #080F17; padding: 2rem;
+  text-align: center; color: rgba(255,255,255,0.3);
+  font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.05);
+}
+footer a { color: var(--gold); text-decoration: none; }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .hero-content { grid-template-columns: 1fr; gap: 2rem; }
+  .hero-card { display: none; }
+  .features-grid { grid-template-columns: 1fr; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr 1fr; }
+  .stats-inner { grid-template-columns: 1fr 1fr; }
+  nav .nav-links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <span class="logo-w">Wave</span><span class="logo-r">Edge</span>
+    <span style="color:rgba(255,255,255,0.3);margin:0 4px">·</span>
+    <span style="color:var(--gold);font-size:0.85rem;font-weight:500">Realty</span>
+  </div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#how">How it Works</a>
+    <a href="waveedge.in">← Main Site</a>
+    <a href="login.html" class="btn-nav">Agent Login</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div>
+      <div class="hero-badge">🏢 Real Estate CRM</div>
+      <h1>Manage Your Entire <em>Real Estate Business</em> in One Place</h1>
+      <p>Client database, lead tracking, deal pipeline, document checklist, and WhatsApp automation — built for Indian real estate agents, brokers & builders.</p>
+      <div class="hero-actions">
+        <a href="login.html" class="btn-primary">Start Free Trial →</a>
+        <a href="#features" class="btn-secondary">See Features</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-header">
+        <span class="hero-card-title">📊 Live Dashboard</span>
+        <span class="status-dot"></span>
+      </div>
+      <div class="kpi-row">
+        <div class="kpi-box gold"><div class="kpi-val">247</div><div class="kpi-lbl">Total Clients</div></div>
+        <div class="kpi-box blue"><div class="kpi-val">38</div><div class="kpi-lbl">Hot Leads 🔥</div></div>
+        <div class="kpi-box"><div class="kpi-val">12</div><div class="kpi-lbl">Deals Closed</div></div>
+        <div class="kpi-box"><div class="kpi-val">₹4.2Cr</div><div class="kpi-lbl">Total Value</div></div>
+      </div>
+      <div class="client-list">
+        <div class="client-row">
+          <span class="client-name">Rahul Sharma — 3BHK Delhi</span>
+          <span class="client-tag tag-hot">Hot 🔥</span>
+        </div>
+        <div class="client-row">
+          <span class="client-name">Priya Patel — Villa Mumbai</span>
+          <span class="client-tag tag-warm">Warm</span>
+        </div>
+        <div class="client-row">
+          <span class="client-name">Amit Verma — Plot Noida</span>
+          <span class="client-tag tag-done">✓ Closed</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stats-inner">
+    <div><div class="stat-num">1,000+</div><div class="stat-lbl">Client Records</div></div>
+    <div><div class="stat-num">27</div><div class="stat-lbl">Data Fields per Client</div></div>
+    <div><div class="stat-num">60+</div><div class="stat-lbl">Document Checklist Items</div></div>
+    <div><div class="stat-num">₹999</div><div class="stat-lbl">One-Time Price</div></div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="section-label">Features</div>
+  <h2 class="section-title">Everything an Agent Needs</h2>
+  <p class="section-sub">From first enquiry to final registration — manage your entire deal pipeline in one tool.</p>
+  <div class="features-grid">
+    <div class="feat-card">
+      <div class="feat-icon">👥</div>
+      <div class="feat-title">Client Database</div>
+      <div class="feat-desc">Store 1,000+ clients with 27 fields — name, phone, budget, property type, deal stage, and more.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🔍</div>
+      <div class="feat-title">Instant Phone Search</div>
+      <div class="feat-desc">Find any client by phone number instantly. No scrolling through hundreds of rows.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📊</div>
+      <div class="feat-title">Live Dashboard</div>
+      <div class="feat-desc">Auto-updating KPI cards and 5 charts — lead pipeline, deal status, city-wise breakdown, and more.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📋</div>
+      <div class="feat-title">Documents Checklist</div>
+      <div class="feat-desc">60+ documents tracked across 6 deal stages — KYC, title, builder docs, loan, registration, possession.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📅</div>
+      <div class="feat-title">Buyer & Seller Tracking</div>
+      <div class="feat-desc">Separate auto-synced trackers for buyers and sellers. Add a client once — both sheets update automatically.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">💬</div>
+      <div class="feat-title">WhatsApp Integration</div>
+      <div class="feat-desc">Send automated messages to clients via WhatsApp Business API — enquiry confirmation, follow-ups, deal updates.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🔗</div>
+      <div class="feat-title">Media Links</div>
+      <div class="feat-desc">Attach Google Drive photo links, YouTube virtual tours, and Google Maps location per client.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📱</div>
+      <div class="feat-title">Mobile Friendly</div>
+      <div class="feat-desc">Works on Google Sheets app, AppSheet, and any browser — add clients from your phone on the go.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🔒</div>
+      <div class="feat-title">Team Access</div>
+      <div class="feat-desc">Share with 3-4 team members via Google Sheets. Everyone sees live updates in real time.</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="section-label">Process</div>
+  <h2 class="section-title">How It Works</h2>
+  <p class="section-sub">Get started in under 5 minutes. No setup, no installation.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-title">Purchase</div>
+      <div class="step-desc">Pay ₹999 once. Receive the Google Sheet link instantly on WhatsApp.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-title">Open in Google Sheets</div>
+      <div class="step-desc">Click the link, open in Google Sheets — ready to use immediately.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-title">Add Clients</div>
+      <div class="step-desc">Fill in client details — buyer/seller auto-filters, dashboard updates live.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-title">Close Deals</div>
+      <div class="step-desc">Track documents, follow-ups, and deal stages — never miss a step.</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="section-label" style="color:var(--gold)">Pricing</div>
+  <h2 class="section-title">Simple, One-Time Price</h2>
+  <p class="section-sub">No monthly fees. No subscriptions. Pay once, use forever.</p>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-name">Basic</div>
+      <div class="price-val">₹999</div>
+      <div class="price-period">One-time · Personal use</div>
+      <ul>
+        <li>Client Database (1,000 rows)</li>
+        <li>Phone Search</li>
+        <li>Buyer & Seller Tracker</li>
+        <li>Documents Checklist</li>
+        <li>WhatsApp support</li>
+      </ul>
+      <a href="https://wa.me/919217339433?text=Hi%2C%20I%20want%20to%20buy%20WaveEdge%20Realty%20CRM%20%E2%82%B9999" class="btn-price">Buy Now — ₹999</a>
+    </div>
+    <div class="price-card featured">
+      <div class="price-name">⭐ Most Popular</div>
+      <div class="price-val">₹999</div>
+      <div class="price-period">One-time · Team use</div>
+      <ul>
+        <li>Everything in Basic</li>
+        <li>Live Dashboard + Charts</li>
+        <li>Media Links (Photos/Video)</li>
+        <li>WhatsApp API Setup Guide</li>
+        <li>Team sharing (4 members)</li>
+        <li>Lifetime updates</li>
+      </ul>
+      <a href="https://wa.me/919217339433?text=Hi%2C%20I%20want%20to%20buy%20WaveEdge%20Realty%20CRM%20%E2%82%B9999" class="btn-price">Buy Now — ₹999</a>
+    </div>
+    <div class="price-card">
+      <div class="price-name">Custom</div>
+      <div class="price-val">₹4,999</div>
+      <div class="price-period">One-time · White label</div>
+      <ul>
+        <li>Your own branding</li>
+        <li>Custom fields added</li>
+        <li>WhatsApp API full setup</li>
+        <li>Onboarding call</li>
+        <li>Priority support</li>
+      </ul>
+      <a href="https://wa.me/919217339433?text=Hi%2C%20I%20want%20Custom%20WaveEdge%20Realty%20CRM" class="btn-price">Contact Us</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <h2>Ready to <em>Close More Deals?</em></h2>
+  <p>Join real estate agents across India who manage their business with WaveEdge Realty.</p>
+  <div class="cta-actions">
+    <a href="https://wa.me/919217339433?text=Hi%2C%20I%20want%20to%20buy%20WaveEdge%20Realty%20CRM%20%E2%82%B9999" class="btn-primary">💬 Buy on WhatsApp — ₹999</a>
+    <a href="https://t.me/ewagaurav" class="btn-secondary">✈ Telegram @ewagaurav</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 WaveEdge Analytics · <a href="/privacy-policy.html">Privacy Policy</a> · 
+  <a href="https://waveedge.in">waveedge.in</a> · 
+  Not financial advice</p>
+</footer>
+
+</body>
+</html>
