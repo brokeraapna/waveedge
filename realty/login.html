@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Login — WaveEdge Realty</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0D1B2A;
+  --blue: #1565C0;
+  --lblue: #2196F3;
+  --gold: #C9A84C;
+  --cream: #F8F5F0;
+  --white: #FFFFFF;
+  --gray: #8899AA;
+  --light: #EEF2F7;
+  --error: #EF5350;
+  --success: #66BB6A;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--navy);
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+/* Background effects */
+body::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 30% 50%, rgba(21,101,192,0.12) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 20%, rgba(201,168,76,0.06) 0%, transparent 50%);
+}
+.grid-bg {
+  position: absolute; inset: 0; opacity: 0.03;
+  background-image: linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+.login-wrapper {
+  position: relative; z-index: 1;
+  width: 100%; max-width: 420px;
+  padding: 1.5rem;
+}
+
+/* Brand */
+.brand {
+  text-align: center; margin-bottom: 2rem;
+}
+.brand-name {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.8rem; color: var(--white);
+}
+.brand-name em { color: var(--gold); font-style: normal; }
+.brand-sub {
+  font-size: 0.8rem; color: var(--gray);
+  margin-top: 4px; letter-spacing: 0.05em;
+}
+
+/* Card */
+.login-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px; padding: 2.25rem;
+  backdrop-filter: blur(20px);
+}
+.card-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.5rem; color: var(--white);
+  margin-bottom: 0.375rem;
+}
+.card-sub { font-size: 0.875rem; color: var(--gray); margin-bottom: 1.75rem; }
+
+/* Form */
+.form-group { margin-bottom: 1.25rem; }
+label {
+  display: block; font-size: 0.8rem; font-weight: 600;
+  color: rgba(255,255,255,0.6); margin-bottom: 0.5rem;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.input-wrap { position: relative; }
+.input-wrap .icon {
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  font-size: 1rem; opacity: 0.4;
+}
+input[type="email"], input[type="password"] {
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px; padding: 0.85rem 1rem 0.85rem 2.75rem;
+  color: var(--white); font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem; outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+input:focus {
+  border-color: var(--gold);
+  background: rgba(255,255,255,0.09);
+}
+input::placeholder { color: rgba(255,255,255,0.25); }
+.toggle-pass {
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  cursor: pointer; opacity: 0.4; font-size: 1rem;
+  transition: opacity 0.2s; user-select: none;
+}
+.toggle-pass:hover { opacity: 0.8; }
+
+/* Remember + Forgot */
+.form-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+.remember {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.82rem; color: var(--gray); cursor: pointer;
+}
+.remember input { width: auto; padding: 0; }
+.forgot { font-size: 0.82rem; color: var(--gold); text-decoration: none; }
+.forgot:hover { text-decoration: underline; }
+
+/* Button */
+.btn-login {
+  width: 100%; padding: 0.9rem;
+  background: var(--gold); color: var(--navy);
+  border: none; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem; font-weight: 700;
+  cursor: pointer; transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+  box-shadow: 0 4px 20px rgba(201,168,76,0.25);
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+}
+.btn-login:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(201,168,76,0.35); }
+.btn-login:active { transform: translateY(0); }
+.btn-login:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+/* Spinner */
+.spinner {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid rgba(13,27,42,0.3);
+  border-top-color: var(--navy);
+  animation: spin 0.7s linear infinite;
+  display: none;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Alert */
+.alert {
+  padding: 0.75rem 1rem; border-radius: 8px;
+  font-size: 0.85rem; margin-bottom: 1.25rem;
+  display: none; align-items: center; gap: 0.5rem;
+}
+.alert.error { background: rgba(239,83,80,0.12); border: 1px solid rgba(239,83,80,0.3); color: #EF9A9A; }
+.alert.success { background: rgba(102,187,106,0.12); border: 1px solid rgba(102,187,106,0.3); color: #A5D6A7; }
+.alert.show { display: flex; }
+
+/* Divider */
+.divider {
+  display: flex; align-items: center; gap: 1rem;
+  margin: 1.5rem 0; color: rgba(255,255,255,0.2); font-size: 0.8rem;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1;
+  height: 1px; background: rgba(255,255,255,0.1);
+}
+
+/* Back link */
+.back-link {
+  text-align: center; margin-top: 1.5rem;
+  font-size: 0.82rem; color: var(--gray);
+}
+.back-link a { color: var(--gold); text-decoration: none; }
+.back-link a:hover { text-decoration: underline; }
+
+/* Security badge */
+.security {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0.4rem; margin-top: 1.5rem;
+  font-size: 0.75rem; color: rgba(255,255,255,0.25);
+}
+
+@media (max-width: 480px) {
+  .login-card { padding: 1.5rem; }
+}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<div class="login-wrapper">
+  <!-- Brand -->
+  <div class="brand">
+    <div class="brand-name">Wave<em>Edge</em> · Realty</div>
+    <div class="brand-sub">Agent Portal</div>
+  </div>
+
+  <!-- Card -->
+  <div class="login-card">
+    <div class="card-title">Welcome back</div>
+    <div class="card-sub">Sign in to your agent dashboard</div>
+
+    <!-- Alert -->
+    <div class="alert error" id="alertBox">
+      <span>⚠️</span>
+      <span id="alertMsg">Invalid email or password.</span>
+    </div>
+
+    <form id="loginForm" autocomplete="off">
+      <!-- Email -->
+      <div class="form-group">
+        <label>Email Address</label>
+        <div class="input-wrap">
+          <span class="icon">📧</span>
+          <input type="email" id="email" placeholder="agent@example.com" required autocomplete="email">
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-wrap">
+          <span class="icon">🔒</span>
+          <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password">
+          <span class="toggle-pass" id="togglePass" onclick="togglePassword()">👁</span>
+        </div>
+      </div>
+
+      <!-- Remember + Forgot -->
+      <div class="form-footer">
+        <label class="remember">
+          <input type="checkbox" id="remember"> Remember me
+        </label>
+        <a href="#" class="forgot" onclick="forgotPassword()">Forgot password?</a>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn-login" id="loginBtn">
+        <span class="spinner" id="spinner"></span>
+        <span id="btnText">Sign In →</span>
+      </button>
+    </form>
+
+    <div class="divider">or</div>
+
+    <div style="text-align:center">
+      <a href="https://wa.me/919217339433?text=I%20need%20access%20to%20WaveEdge%20Realty%20CRM"
+         style="font-size:0.85rem;color:var(--gold);text-decoration:none;">
+        💬 Request access via WhatsApp
+      </a>
+    </div>
+  </div>
+
+  <div class="back-link">
+    ← <a href="/realty">Back to WaveEdge Realty</a> &nbsp;·&nbsp;
+    <a href="/">Main Site</a>
+  </div>
+
+  <div class="security">
+    🔒 Secured · WaveEdge Realty
+  </div>
+</div>
+
+<script>
+// ── Config ────────────────────────────────────────────────────────────────
+// Point this to your Flask backend on Render
+const API_BASE = 'https://waveedgebackflask.onrender.com';
+
+// ── Toggle password visibility ────────────────────────────────────────────
+function togglePassword() {
+  const inp = document.getElementById('password');
+  const icon = document.getElementById('togglePass');
+  if (inp.type === 'password') {
+    inp.type = 'text'; icon.textContent = '🙈';
+  } else {
+    inp.type = 'password'; icon.textContent = '👁';
+  }
+}
+
+// ── Show alert ────────────────────────────────────────────────────────────
+function showAlert(msg, type='error') {
+  const box = document.getElementById('alertBox');
+  const txt = document.getElementById('alertMsg');
+  box.className = `alert ${type} show`;
+  txt.textContent = msg;
+}
+function hideAlert() {
+  document.getElementById('alertBox').className = 'alert error';
+}
+
+// ── Loading state ─────────────────────────────────────────────────────────
+function setLoading(on) {
+  const btn  = document.getElementById('loginBtn');
+  const spin = document.getElementById('spinner');
+  const txt  = document.getElementById('btnText');
+  btn.disabled = on;
+  spin.style.display = on ? 'block' : 'none';
+  txt.textContent = on ? 'Signing in...' : 'Sign In →';
+}
+
+// ── Forgot password ───────────────────────────────────────────────────────
+function forgotPassword() {
+  const email = document.getElementById('email').value;
+  if (!email) {
+    showAlert('Enter your email address first.');
+    return;
+  }
+  window.open(`https://wa.me/919217339433?text=Reset%20password%20for%20${encodeURIComponent(email)}`, '_blank');
+}
+
+// ── Login form submit ─────────────────────────────────────────────────────
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  hideAlert();
+
+  const email    = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const remember = document.getElementById('remember').checked;
+
+  if (!email || !password) {
+    showAlert('Please fill in all fields.');
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const res = await fetch(`${API_BASE}/api/realty/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.token) {
+      // Save token
+      const storage = remember ? localStorage : sessionStorage;
+      storage.setItem('we_realty_token', data.token);
+      storage.setItem('we_realty_user', JSON.stringify({
+        name: data.name, email: data.email, role: data.role
+      }));
+      showAlert(`Welcome back, ${data.name}! Redirecting...`, 'success');
+      setTimeout(() => { window.location.href = '/realty/dashboard'; }, 1000);
+    } else {
+      showAlert(data.message || 'Invalid email or password.');
+    }
+  } catch (err) {
+    showAlert('Connection error. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+});
+
+// ── Auto-fill from localStorage if remembered ─────────────────────────────
+window.addEventListener('load', () => {
+  const token = localStorage.getItem('we_realty_token');
+  if (token) {
+    // Already logged in — redirect to dashboard
+    window.location.href = '/realty/dashboard';
+  }
+});
+</script>
+</body>
+</html>
