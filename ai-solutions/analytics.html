@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Analytics - WaveEdge AI Solutions</title>
+    <meta name="description" content="Extract insights from your data with AI-powered dashboards and predictive analytics. Custom dashboards, real-time reporting, and customer segmentation.">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:#020c14;
+            --s1:#061525;
+            --s2:#0a1f30;
+            --s3:#0f2840;
+            --border:#173348;
+            --border2:#1e4060;
+            --cyan:#00e5ff;
+            --cyan2:#00b8d4;
+            --green:#00ff88;
+            --gold:#ffca28;
+            --orange:#ff6d00;
+            --red:#ff1744;
+            --purple:#b388ff;
+            --pink:#f48fb1;
+            --text:#dff0f8;
+            --muted:#4d8099;
+            --muted2:#2a5570;
+        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{
+            background:var(--bg);
+            color:var(--text);
+            font-family:'DM Sans',sans-serif;
+            overflow-x:hidden;
+        }
+        body::before{
+            content:'';
+            position:fixed;
+            inset:0;
+            background-image:linear-gradient(rgba(0,229,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.018) 1px,transparent 1px);
+            background-size:48px 48px;
+            pointer-events:none;
+            z-index:0;
+        }
+        
+        nav{
+            position:fixed;
+            top:0;
+            left:0;
+            right:0;
+            z-index:500;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            padding:0 44px;
+            height:64px;
+            background:rgba(2,12,20,.92);
+            backdrop-filter:blur(28px);
+            border-bottom:1px solid var(--border);
+        }
+        .logo-wrap{
+            display:flex;
+            align-items:center;
+            gap:11px;
+            cursor:pointer;
+            text-decoration:none;
+        }
+        .logo-svg{width:44px;height:44px;}
+        .logo-main{font-family:'Orbitron',monospace;font-size:18px;font-weight:900;color:var(--text);letter-spacing:2px;}
+        .logo-main span{color:var(--cyan);}
+        .logo-sub{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:3px;margin-top:2px;}
+        .nav-links{display:flex;list-style:none;gap:6px;align-items:center;}
+        .nav-links a{color:var(--muted);text-decoration:none;font-size:12px;font-weight:500;letter-spacing:1px;text-transform:uppercase;font-family:'Space Mono',monospace;transition:color .2s;cursor:pointer;padding:6px 12px;border-radius:4px;}
+        .nav-links a:hover,.nav-links a.active{color:var(--cyan);}
+        
+        .btn-cta{
+            background:linear-gradient(135deg,var(--cyan),var(--green));
+            color:#000;
+            border:none;
+            padding:8px 22px;
+            font-family:'DM Sans',sans-serif;
+            font-size:13px;
+            font-weight:700;
+            border-radius:5px;
+            cursor:pointer;
+            transition:all .2s;
+            text-decoration:none;
+            display:inline-block;
+        }
+        .btn-cta:hover{opacity:.88;transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,229,255,.3);}
+        .btn-outline{
+            background:transparent;
+            border:1px solid var(--cyan);
+            color:var(--cyan);
+            padding:
