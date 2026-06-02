@@ -45,8 +45,28 @@
       "dest": "/wavecounts.html"
     },
     {
+      "src": "/ai-solutions/whatsapp-api.html",
+      "dest": "/ai-solutions/whatsapp-api.html"
+    },
+    {
+      "src": "/ai-solutions/ai-chatbot.html",
+      "dest": "/ai-solutions/ai-chatbot.html"
+    },
+    {
+      "src": "/ai-solutions/automation.html",
+      "dest": "/ai-solutions/automation.html"
+    },
+    {
+      "src": "/ai-solutions/ai-content.html",
+      "dest": "/ai-solutions/ai-content.html"
+    },
+    {
+      "src": "/ai-solutions/analytics.html",
+      "dest": "/ai-solutions/analytics.html"
+    },
+    {
       "src": "/ai-solutions/(.*)",
-      "dest": "/ai-solutions/$1"
+      "dest": "/ai-solutions/index.html"
     },
     {
       "src": "/ai-solutions/",
