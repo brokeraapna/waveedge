@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbots - WaveEdge AI Solutions</title>
+    <meta name="description" content="Custom AI-powered chatbots for website & WhatsApp. Handle customer queries 24/7 with intelligent responses. Train on your data, multi-language support.">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:#020c14;
+            --s1:#061525;
+            --s2:#0a1f30;
+            --s3:#0f2840;
+            --border:#173348;
+            --border2:#1e4060;
+            --cyan:#00e5ff;
+            --cyan2:#00b8d4;
+            --green:#00ff88;
+            --gold:#ffca28;
+            --orange:#ff6d00;
+            --red:#ff1744;
+            --purple:#b388ff;
+            --pink:#f48fb1;
+            --text:#dff0f8;
+            --muted:#4d8099;
+            --muted2:#2a5570;
+        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{
+            background:var(--bg);
+            color:var(--text);
+            font-family:'DM Sans',sans-serif;
+            overflow-x:hidden;
+        }
+        body::before{
+            content:'';
+            position:fixed;
+            inset:0;
+            background-image:linear-gradient(rgba(0,229,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.018) 1px,transparent 1px);
+            background-size:48px 48px;
+            pointer-events:none;
+            z-index:0;
+        }
+        
+        nav{
+            position:fixed;
+            top:0;
+            left:0;
+            right:0;
+            z-index:500;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            padding:0 44px;
+            height:64px;
+            background:rgba(2,12,20,.92);
+            backdrop-filter:blur(28px);
+            border-bottom:1px solid var(--border);
+        }
+        .logo-wrap{
+            display:flex;
+            align-items:center;
+            gap:11px;
+            cursor:pointer;
+            text-decoration:none;
+        }
+        .logo-svg{width:44px;height:44px;}
+        .logo-main{font-family:'Orbitron',monospace;font-size:18px;font-weight:900;color:var(--text);letter-spacing:2px;}
+        .logo-main span{color:var(--cyan);}
+        .logo-sub{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:3px;margin-top:2px;}
+        .nav-links{display:flex;list-style:none;gap:6px;align-items:center;}
+        .nav-links a{color:var(--muted);text-decoration:none;font-size:12px;font-weight:500;letter-spacing:1px;text-transform:uppercase;font-family:'Space Mono',monospace;transition:color .2s;cursor:pointer;padding:6px 12px;border-radius:4px;}
+        .nav-links a:hover,.nav-links a.active{color:var(--cyan);}
+        
+        .btn-cta{
+            background:linear-gradient(135deg,var(--cyan),var(--green));
+            color:#000;
+            border:none;
+            padding:8px 22px;
+            font-family:'DM Sans',sans-serif;
+            font-size:13px;
+            font-weight:700;
+            border-radius:5px;
+            cursor:pointer;
+            transition:all .2s;
+            text-decoration:none;
+            display:inline-block;
+        }
+        .btn-cta:hover{opacity:.88;transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,229,255,.3);}
+        .btn-outline{
+            background:transparent;
+            border:1px solid var(--cyan);
+            color:var(--cyan);
+            padding:8px 22px;
+            font-family:'DM Sans',sans-serif;
+            font-size:13px;
+            font-weight:700;
+            border-radius:5px;
+            cursor:pointer;
+            transition:all .2s;
+            text-decoration:none;
+            display:inline-block;
+        }
+        .btn-outline:hover{background:rgba(0,229,255,.1);}
+        
+        .wrap{max-width:1280px;margin:0 auto;padding:0 40px;position:relative;z-index:1;}
+        .hero{padding:120px 0 60px;text-align:center;}
+        .hero-badge{
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            background:rgba(0,229,255,.07);
+            border:1px solid rgba(0,229,255,.22);
+            color:var(--cyan);
+            padding:6px 18px;
+            border-radius:100px;
+            font-family:'Space Mono',monospace;
+            font-size:10px;
+            letter-spacing:2px;
+            margin-bottom:32px;
+        }
+        .hero h1{font-family:'Orbitron',monospace;font-size:clamp(42px,7vw,78px);font-weight:900;line-height:1.1;margin-bottom:24px;}
+        .hero h1 span{color:var(--cyan);}
+        .hero-sub{max-width:600px;color:var(--muted);font-size:16px;line-height:1.75;margin:0 auto 40px;font-family:'Space Mono',monospace;}
+        
+        .feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:30px;margin:60px 0;}
+        @media(max-width:700px){.feature-grid{grid-template-columns:1fr;}}
+        
+        .feature-card{
+            background:var(--s1);
+            border:1px solid var(--border);
+            border-radius:16px;
+            padding:28px;
+        }
+        .feature-icon{font-size:40px;margin-bottom:16px;}
+        .feature-title{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;margin-bottom:12px;color:var(--cyan);}
+        .feature-text{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);line-height:1.7;}
+        
+        .demo-box{
+            background:linear-gradient(135deg,var(--s2),var(--s3));
+            border-radius:20px;
+            padding:40px;
+            margin:40px 0;
+            text-align:center;
+        }
+        .demo-input{
+            background:var(--bg);
+            border:1px solid var(--border);
+            border-radius:12px;
+            padding:15px 20px;
+            width:100%;
+            max-width:400px;
+            margin:20px auto;
+            color:var(--text);
+            font-family:'Space Mono',monospace;
+            font-size:14px;
+        }
+        
+        .contact-strip{
+            background:var(--s1);
+            border:1px solid var(--border);
+            border-radius:12px;
+            padding:32px 36px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            margin:48px 0;
+            gap:20px;
+            flex-wrap:wrap;
+        }
+        .cs-title{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;margin-bottom:6px;}
+        .cs-sub{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);}
+        .wa-big{
+            background:#25D366;
+            color:#fff;
+            border:none;
+            padding:12px 28px;
+            border-radius:7px;
+            font-family:'DM Sans',sans-serif;
+            font-size:14px;
+            font-weight:700;
+            cursor:pointer;
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            text-decoration:none;
+        }
+        
+        footer{
+            border-top:1px solid var(--border);
+            padding:32px 44px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            flex-wrap:wrap;
+            gap:20px;
+        }
+        .footer-links{display:flex;gap:22px;}
+        .footer-links a{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);text-decoration:none;}
+        
+        .pulse{width:7px;height:7px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;display:inline-block;}
+        @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(1.5);}}
+        
+        .breadcrumb{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:30px;}
+        .breadcrumb a{color:var(--cyan);text-decoration:none;}
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="logo-wrap" style="text-decoration:none;">
+        <svg class="logo-svg" viewBox="0 0 44 44" fill="none">
+            <polygon points="22,2 40,12 40,32 22,42 4,32 4,12" fill="rgba(0,229,255,0.08)" stroke="rgba(0,229,255,0.35)" stroke-width="1.2"/>
+            <path d="M8 28 L13 18 L18 23 L23 10 L28 20 L33 14 L38 16" stroke="url(#lg1)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <circle cx="13" cy="18" r="2.2" fill="#00e5ff"/>
+            <circle cx="23" cy="10" r="2.8" fill="#00ff88"/>
+            <circle cx="33" cy="14" r="2.2" fill="#ffca28"/>
+            <defs><linearGradient id="lg1" x1="8" y1="20" x2="38" y2="20" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00e5ff"/><stop offset="100%" stop-color="#ffca28"/></linearGradient></defs>
+        </svg>
+        <div class="logo-text">
+            <div class="logo-main">Wave<span>Edge</span></div>
+            <div class="logo-sub">AI SOLUTIONS</div>
+        </div>
+    </a>
+    <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/ai-solutions/">Services</a></li>
+        <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="https://wa.me/917715858526" class="btn-cta">💬 Get Quote</a>
+</nav>
+
+<div class="wrap">
+    <div class="breadcrumb">
+        <a href="/ai-solutions/">AI Solutions</a> → AI Chatbots
+    </div>
+
+    <div class="hero">
+        <div class="hero-badge"><div class="pulse"></div>24/7 CUSTOMER SUPPORT</div>
+        <h1>AI-Powered <span>Chatbots</span></h1>
+        <p class="hero-sub">Custom AI-powered chatbots for website & WhatsApp. Handle customer queries 24/7 with intelligent responses. Train on your data, multi-language support.</p>
+        <a href="#contact" class="btn-cta" style="padding:14px 32px;">🤖 Build Your Chatbot →</a>
+    </div>
+
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🧠</div>
+            <div class="feature-title">Custom Training</div>
+            <div class="feature-text">Train the chatbot on your specific data — FAQs, product catalog, policies, and more. The bot learns exactly what your business needs.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🌐</div>
+            <div class="feature-title">Multi-Language</div>
+            <div class="feature-text">Support for Hindi, English, and regional languages. Your customers can interact in their preferred language.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">💬</div>
+            <div class="feature-title">WhatsApp Integration</div>
+            <div class="feature-text">Deploy your chatbot directly on WhatsApp Business API. Seamless integration with your existing WhatsApp number.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🌐</div>
+            <div class="feature-title">Website Embed</div>
+            <div class="feature-text">Add the chatbot widget to your website. Engage visitors, answer questions, and capture leads automatically.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <div class="feature-title">Analytics Dashboard</div>
+            <div class="feature-text">Track conversations, user satisfaction, and bot performance. Insights to continuously improve your chatbot.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔌</div>
+            <div class="feature-title">CRM Integration</div>
+            <div class="feature-text">Connect with your CRM, helpdesk, or e-commerce platform. Automatically create tickets, leads, or orders.</div>
+        </div>
+    </div>
+
+    <div class="demo-box">
+        <div class="feature-title">Want to see a live demo?</div>
+        <div style="font-family:'Space Mono',monospace;font-size:13px;color:var(--muted);margin-bottom:20px;">We'll build a custom demo chatbot for your business — free of cost.</div>
+        <a href="https://wa.me/917715858526?text=Hi%20Gaurav%2C%20I%20want%20a%20demo%20chatbot%20for%20my%20business" class="btn-cta">🎯 Request Free Demo →</a>
+    </div>
+
+    <div class="contact-strip" id="contact">
+        <div class="cs-text">
+            <div class="cs-title">Ready to deploy your AI chatbot?</div>
+            <div class="cs-sub">Get a free consultation — we'll show you how a chatbot can help your business.</div>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <a href="https://wa.me/917715858526?text=Hi%20Gaurav%2C%20I%20want%20to%20build%20an%20AI%20chatbot" target="_blank" class="wa-big">💬 Start Now</a>
+            <a href="mailto:hello@waveedge.in" class="btn-outline">✉️ Email Us</a>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div>
+        <div style="font-family:'Orbitron',monospace;font-size:16px;font-weight:900;">Wave<span style="color:var(--cyan)">Edge</span></div>
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted2);margin-top:5px;">© 2026 WaveEdge — AI Solutions Division</div>
+    </div>
+    <div class="footer-links">
+        <a href="/">Main Site</a>
+        <a href="https://wa.me/917715858526">WhatsApp</a>
+        <a href="https://t.me/ewagaurav">Telegram</a>
+        <a href="mailto:hello@waveedge.in">Email</a>
+    </div>
+</footer>
+
+</body>
+</html>
