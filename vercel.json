@@ -65,6 +65,10 @@
       "dest": "/ai-solutions/analytics.html"
     },
     {
+      "src": "/ai-solutions/custom-api.html",
+      "dest": "/ai-solutions/custom-api.html"
+    },
+    {
       "src": "/ai-solutions",
       "dest": "/ai-solutions/index.html"
     },
