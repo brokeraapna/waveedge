@@ -92,4 +92,194 @@
             background:transparent;
             border:1px solid var(--cyan);
             color:var(--cyan);
-            padding:
+            padding:8px 22px;
+            font-family:'DM Sans',sans-serif;
+            font-size:13px;
+            font-weight:700;
+            border-radius:5px;
+            cursor:pointer;
+            transition:all .2s;
+            text-decoration:none;
+            display:inline-block;
+        }
+        .btn-outline:hover{background:rgba(0,229,255,.1);}
+        
+        .wrap{max-width:1280px;margin:0 auto;padding:0 40px;position:relative;z-index:1;}
+        .hero{padding:120px 0 60px;text-align:center;}
+        .hero-badge{
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            background:rgba(0,229,255,.07);
+            border:1px solid rgba(0,229,255,.22);
+            color:var(--cyan);
+            padding:6px 18px;
+            border-radius:100px;
+            font-family:'Space Mono',monospace;
+            font-size:10px;
+            letter-spacing:2px;
+            margin-bottom:32px;
+        }
+        .hero h1{font-family:'Orbitron',monospace;font-size:clamp(42px,7vw,78px);font-weight:900;line-height:1.1;margin-bottom:24px;}
+        .hero h1 span{color:var(--cyan);}
+        .hero-sub{max-width:600px;color:var(--muted);font-size:16px;line-height:1.75;margin:0 auto 40px;font-family:'Space Mono',monospace;}
+        
+        .feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:30px;margin:60px 0;}
+        @media(max-width:700px){.feature-grid{grid-template-columns:1fr;}}
+        
+        .feature-card{
+            background:var(--s1);
+            border:1px solid var(--border);
+            border-radius:16px;
+            padding:28px;
+        }
+        .feature-icon{font-size:40px;margin-bottom:16px;}
+        .feature-title{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;margin-bottom:12px;color:var(--cyan);}
+        .feature-text{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);line-height:1.7;}
+        
+        .contact-strip{
+            background:var(--s1);
+            border:1px solid var(--border);
+            border-radius:12px;
+            padding:32px 36px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            margin:48px 0;
+            gap:20px;
+            flex-wrap:wrap;
+        }
+        .cs-title{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;margin-bottom:6px;}
+        .cs-sub{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);}
+        .wa-big{
+            background:#25D366;
+            color:#fff;
+            border:none;
+            padding:12px 28px;
+            border-radius:7px;
+            font-family:'DM Sans',sans-serif;
+            font-size:14px;
+            font-weight:700;
+            cursor:pointer;
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            text-decoration:none;
+        }
+        
+        footer{
+            border-top:1px solid var(--border);
+            padding:32px 44px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            flex-wrap:wrap;
+            gap:20px;
+        }
+        .footer-links{display:flex;gap:22px;}
+        .footer-links a{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);text-decoration:none;}
+        
+        .pulse{width:7px;height:7px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;display:inline-block;}
+        @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(1.5);}}
+        
+        .breadcrumb{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:30px;}
+        .breadcrumb a{color:var(--cyan);text-decoration:none;}
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="logo-wrap" style="text-decoration:none;">
+        <svg class="logo-svg" viewBox="0 0 44 44" fill="none">
+            <polygon points="22,2 40,12 40,32 22,42 4,32 4,12" fill="rgba(0,229,255,0.08)" stroke="rgba(0,229,255,0.35)" stroke-width="1.2"/>
+            <path d="M8 28 L13 18 L18 23 L23 10 L28 20 L33 14 L38 16" stroke="url(#lg1)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <circle cx="13" cy="18" r="2.2" fill="#00e5ff"/>
+            <circle cx="23" cy="10" r="2.8" fill="#00ff88"/>
+            <circle cx="33" cy="14" r="2.2" fill="#ffca28"/>
+            <defs><linearGradient id="lg1" x1="8" y1="20" x2="38" y2="20" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00e5ff"/><stop offset="100%" stop-color="#ffca28"/></linearGradient></defs>
+        </svg>
+        <div class="logo-text">
+            <div class="logo-main">Wave<span>Edge</span></div>
+            <div class="logo-sub">AI SOLUTIONS</div>
+        </div>
+    </a>
+    <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/ai-solutions/">Services</a></li>
+        <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="https://wa.me/917715858526" class="btn-cta">💬 Get Quote</a>
+</nav>
+
+<div class="wrap">
+    <div class="breadcrumb">
+        <a href="/ai-solutions/">AI Solutions</a> → Data Analytics
+    </div>
+
+    <div class="hero">
+        <div class="hero-badge"><div class="pulse"></div>AI-POWERED INSIGHTS</div>
+        <h1>Data <span>Analytics</span></h1>
+        <p class="hero-sub">Extract insights from your data with AI-powered dashboards and predictive analytics. Custom dashboards, real-time reporting, and customer segmentation.</p>
+        <a href="#contact" class="btn-cta" style="padding:14px 32px;">📊 Get Analytics →</a>
+    </div>
+
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="feature-icon">📈</div>
+            <div class="feature-title">Custom Dashboards</div>
+            <div class="feature-text">Interactive dashboards tailored to your business metrics. Visualize KPIs, trends, and patterns at a glance.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔮</div>
+            <div class="feature-title">Predictive Modeling</div>
+            <div class="feature-text">Forecast sales, customer behavior, and market trends with machine learning models trained on your data.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">👥</div>
+            <div class="feature-title">Customer Segmentation</div>
+            <div class="feature-text">Automatically group customers based on behavior, preferences, and value. Target the right audience.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <div class="feature-title">Real-time Reporting</div>
+            <div class="feature-text">Live data updates and automated report generation. Never miss important changes in your business.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔌</div>
+            <div class="feature-title">Data Integration</div>
+            <div class="feature-text">Connect with your existing data sources — databases, CRMs, spreadsheets, and APIs.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🤖</div>
+            <div class="feature-title">AI Insights</div>
+            <div class="feature-text">Natural language insights from your data. Ask questions and get answers instantly.</div>
+        </div>
+    </div>
+
+    <div class="contact-strip" id="contact">
+        <div class="cs-text">
+            <div class="cs-title">Ready to unlock insights from your data?</div>
+            <div class="cs-sub">Get a free consultation — we'll analyze your data and show you actionable insights.</div>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <a href="https://wa.me/917715858526?text=Hi%20Gaurav%2C%20I%20want%20data%20analytics%20for%20my%20business" target="_blank" class="wa-big">💬 Start Now</a>
+            <a href="mailto:hello@waveedge.in" class="btn-outline">✉️ Email Us</a>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div>
+        <div style="font-family:'Orbitron',monospace;font-size:16px;font-weight:900;">Wave<span style="color:var(--cyan)">Edge</span></div>
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted2);margin-top:5px;">© 2026 WaveEdge — AI Solutions Division</div>
+    </div>
+    <div class="footer-links">
+        <a href="/">Main Site</a>
+        <a href="https://wa.me/917715858526">WhatsApp</a>
+        <a href="https://t.me/ewagaurav">Telegram</a>
+        <a href="mailto:hello@waveedge.in">Email</a>
+    </div>
+</footer>
+
+</body>
+</html>
