@@ -2,6 +2,8 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
+  <!-- ==================== MAIN PAGES ==================== -->
+
   <!-- HOME -->
   <url>
     <loc>https://www.waveedge.in/</loc>
@@ -10,33 +12,101 @@
     <priority>1.0</priority>
   </url>
 
-  <!-- SEO LANDING PAGE -->
+  <!-- BLOG -->
   <url>
-    <loc>https://www.waveedge.in/elliott-wave-ai-scanner-nse</loc>
+    <loc>https://www.waveedge.in/blog.html</loc>
+    <lastmod>2026-04-23</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- ABOUT -->
+  <url>
+    <loc>https://www.waveedge.in/about.html</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- CONTACT -->
+  <url>
+    <loc>https://www.waveedge.in/contact.html</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- PRIVACY POLICY -->
+  <url>
+    <loc>https://www.waveedge.in/privacy-policy.html</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- ==================== AI SOLUTIONS PAGES ==================== -->
+
+  <!-- AI SOLUTIONS LANDING -->
+  <url>
+    <loc>https://www.waveedge.in/ai-solutions/</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
-  <!-- SCANNER -->
+  <!-- WHATSAPP API -->
   <url>
-    <loc>https://www.waveedge.in/#scanner</loc>
+    <loc>https://www.waveedge.in/ai-solutions/whatsapp-api.html</loc>
     <lastmod>2026-04-23</lastmod>
-    <changefreq>daily</changefreq>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
+  <!-- AI CHATBOT -->
+  <url>
+    <loc>https://www.waveedge.in/ai-solutions/ai-chatbot.html</loc>
+    <lastmod>2026-04-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- WORKFLOW AUTOMATION -->
+  <url>
+    <loc>https://www.waveedge.in/ai-solutions/automation.html</loc>
+    <lastmod>2026-04-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- AI CONTENT -->
+  <url>
+    <loc>https://www.waveedge.in/ai-solutions/ai-content.html</loc>
+    <lastmod>2026-04-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- DATA ANALYTICS -->
+  <url>
+    <loc>https://www.waveedge.in/ai-solutions/analytics.html</loc>
+    <lastmod>2026-04-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- CUSTOM API -->
+  <url>
+    <loc>https://www.waveedge.in/ai-solutions/custom-api.html</loc>
+    <lastmod>2026-04-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- ==================== TOOLS & SIGNALS ==================== -->
 
   <!-- AI SIGNALS -->
   <url>
     <loc>https://www.waveedge.in/signals.html</loc>
-    <lastmod>2026-04-23</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- ANALYSIS BLOG -->
-  <url>
-    <loc>https://www.waveedge.in/blog.html</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
@@ -50,20 +120,58 @@
     <priority>0.7</priority>
   </url>
 
-  <!-- THEORY & COURSE -->
+  <!-- SCANNER -->
   <url>
-    <loc>https://www.waveedge.in/#theory</loc>
+    <loc>https://www.waveedge.in/scanner.html</loc>
     <lastmod>2026-04-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
   </url>
 
-  <!-- PRICING -->
+  <!-- WAVE COUNTS -->
   <url>
-    <loc>https://www.waveedge.in/#pricing</loc>
+    <loc>https://www.waveedge.in/wavecounts.html</loc>
+    <lastmod>2026-04-23</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- ADMIN (Optional, often blocked by robots.txt) -->
+  <!--
+  <url>
+    <loc>https://www.waveedge.in/admin.html</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  -->
+
+  <!-- ==================== LEGACY / OTHER PAGES ==================== -->
+
+  <!-- FII DATA -->
+  <url>
+    <loc>https://www.waveedge.in/fii.html</loc>
+    <lastmod>2026-04-23</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
+
+  <!-- ELLIOTT WAVE LANDING (SEO Page) -->
+  <url>
+    <loc>https://www.waveedge.in/elliott-wave-ai-scanner-nse</loc>
+    <lastmod>2026-04-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- CONNECT PAGE (If needed) -->
+  <!--
+  <url>
+    <loc>https://www.waveedge.in/connect.html</loc>
+    <lastmod>2026-04-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  -->
 
 </urlset>
