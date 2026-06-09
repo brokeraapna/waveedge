@@ -1,4 +1,72 @@
 User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=no
 Allow: /
 
+# === AI ट्रेनिंग ब्लॉक करें (Data Collection) ===
+
+# OpenAI (ChatGPT)
+User-agent: GPTBot
+Disallow: /
+
+# Google (Gemini)
+User-agent: Google-Extended
+Disallow: /
+
+# Anthropic (Claude)
+User-agent: ClaudeBot
+Disallow: /
+User-agent: Claude-Web
+Disallow: /
+User-agent: anthropic-ai
+Disallow: /
+
+# Perplexity AI
+User-agent: PerplexityBot
+Disallow: /
+
+# ByteDance (TikTok AI)
+User-agent: Bytespider
+Disallow: /
+
+# Meta (Future AI models)
+User-agent: meta-externalagent
+Disallow: /
+
+# Other general AI bots
+User-agent: Amazonbot
+Disallow: /
+User-agent: Applebot-Extended
+Disallow: /
+User-agent: CCBot
+Disallow: /
+User-agent: cohere-ai
+Disallow: /
+User-agent: YouBot
+Disallow: /
+
+# === AI सर्च (Real-time) को ऑप्शनल रखें ===
+# हमने इन्हें block किया, क्योंकि आपके बिना permission वो भी content scrape कर सकते हैं.
+User-agent: OAI-SearchBot
+Disallow: /
+User-agent: ChatGPT-User
+Disallow: /
+User-agent: Perplexity-User
+Disallow: /
+
+# === महत्वपूर्ण पेजों को हमेशा ब्लॉक रखें ===
+Disallow: /admin/
+Disallow: /app/
+Disallow: /billing/
+Disallow: /accounts/
+Disallow: /api/
+Disallow: /internal/
+Disallow: /server-status/
+
+# === Allow Traditional Search Engines (Google/Bing) ===
+User-agent: Googlebot
+Allow: /
+User-agent: Bingbot
+Allow: /
+
+# === Sitemap Location ===
 Sitemap: https://waveedge.in/sitemap.xml
