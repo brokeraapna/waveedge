@@ -77,4 +77,8 @@
       "dest": "/ai-solutions/index.html"
     }
   ]
+      {
+      "src": "/faq.html",
+      "dest": "/faq.html"
+    },
 }
