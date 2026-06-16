@@ -45,6 +45,22 @@
       "dest": "/wavecounts.html"
     },
     {
+      "src": "/about.html",
+      "dest": "/about.html"
+    },
+    {
+      "src": "/contact.html",
+      "dest": "/contact.html"
+    },
+    {
+      "src": "/privacy-policy.html",
+      "dest": "/privacy-policy.html"
+    },
+    {
+      "src": "/faq.html",
+      "dest": "/faq.html"
+    },
+    {
       "src": "/ai-solutions/whatsapp-api.html",
       "dest": "/ai-solutions/whatsapp-api.html"
     },
@@ -77,8 +93,4 @@
       "dest": "/ai-solutions/index.html"
     }
   ]
-      {
-      "src": "/faq.html",
-      "dest": "/faq.html"
-    },
 }
